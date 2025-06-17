@@ -1,0 +1,250 @@
+{% extends "base.html" %}  
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+
+            <!-- begin app-main -->
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                <!-- begin row -->
+
+
+                
+                    <div class="row">
+                        <div class="col-md-12 m-b-30">
+                            <!-- begin page title -->
+                            <div class="user-welcome d-block d-xl-flex flex-nowrap align-items-center">
+                                <div class="bg-img mb-2 mb-xl-0 mr-3">
+                                          <!-- |Here we are dispplaying the profile picture if it exist or not -->
+                                    {% if profile.profile_picture %}
+                                    <img class="img-fluid rounded" src="{{profile.profile_picture.url }}"  alt="user">
+                                    {% else %}
+                                    <img class="img-fluid rounded" src="{% static 'assets/img/avtar/admin-avatar.png' %} " alt="user">
+                                    {% endif %}
+                                  
+                                </div>
+                                <div class="page-title mb-2 mb-xl-0">
+                                    <h1 class="mb-1">Welcome, {{user.username}} </h1>
+                                    <p style="text-transform: uppercase;">Role: {{user.get_role}}</p>
+                                </div>
+                                <div class="ml-auto d-flex align-items-center secondary-menu text-center">
+                                    
+                                </div>
+                                <div class="ml-xl-4 mt-xl-0 ml-0 mt-3 d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <a class="btn btn-success" href="#!" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Quick Link   <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                        <div class="dropdown-menu custom-dropdown dropdown-menu-right dropdown-menu-left-mobile p-4">
+                                                 <a class="dropdown-item" href="{% url 'unassignedjobs' %}"><i class="ti ti-layers-alt"></i>Add Jobs </a>
+                                            <a class="dropdown-item" href="{% url 'unassignedjobs' %}"><i class="ti ti-id-badge"></i>View Unassigned Jobs </a>
+                                            <a class="dropdown-item" href="{% url 'allreports' %}"><i class="ti ti-email"></i>View Reports</a>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+                    </div>
+                    <!-- end row -->
+                    <!-- begin row -->
+                                        
+                    <div class="row">
+                        <div class="col-xl-3 col-sm-6">
+                            <a  href="{% url 'unassignedjobs' %}">
+                            <div data-toggle="tooltip" data-placement="top" title="These are jobs yet to be assigned to agents"  class=" tooltip-wrapper card card-statistics h-100 m-b-0 bg-orange">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{unassigned_jobs}}</h2>
+                                    <p class="text-white"> Unassigned Jobs</p>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
+                        <div class="col-xl-3 col-sm-6"> 
+                            <div data-toggle="tooltip" data-placement="top" title="Total jobs Completed"  class=" tooltip-wrapper card card-statistics h-100 m-b-0 bg-info">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{totalcompletedjobs}}</h2>
+                                    <p class="text-white">Completed Jobs</p>
+                                </div>
+                            </div>
+                      
+                        </div>
+                   
+
+                     
+                      
+                        
+                        <div class="col-xl-3 col-sm-6">
+                            <a  href="{% url 'agentDetails' %}">
+                            <div data-toggle="tooltip" data-placement="top" title="This is the total number of agents we have"  class=" tooltip-wrapper card card-statistics h-100 m-b-0 bg-primary">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{total_no_of_agent}}</h2>
+                                    <p class="text-white">Registered Agents </p>
+                                </div>
+                            </div>
+                        </a>
+                        </div>
+
+
+                        <div class="col-xl-3 col-sm-6">
+                           
+                            <div data-toggle="tooltip" data-placement="top" title="Registered Number of Clients" class="tooltip-wrapper  card card-statistics h-100 m-b-0 bg-danger">
+                                <div class="card-body">
+
+                                    <h2 class="text-white mb-0">{{total_no_of_clients}}</h2>
+                                    <p class="text-white">Registered Clients </p>
+                                  
+                                </div>
+                            </div>
+                      
+                        </div>
+
+
+
+                    </div> <br/>
+
+                    <!-- begin row -->
+
+                    <div class="row">
+                        <div class="col-sm-12 col-xxl-3 mb-30">
+                            <div class="card card-statistic car-dealer-contants h-100 mb-0 o-hidden">
+                                <div class="card-body p-0">
+                                    <div class="bg-gradient">
+                                        <div class="card-header border-0 d-flex justify-content-between mb-3">
+                                            <div class="card-heading">
+                                                <h4 class="card-title text-white">All Reports History</h4>
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="apechart-wrapper">
+                                            <div id="cardealerdemo1" class="chart-fit"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row no-gutters">
+                                        <div class="col-xxs-6">
+                                            <div class="media align-items-center p-4 border-sm-right border-bottom">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-user-check text-primary font-30"></i>
+                                                </div>
+                                                <a  href="{% url 'pendingreports' %}">
+                                                <div data-toggle="tooltip" data-placement="top" title="Jobs already verified by agents awaiting approval" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Pending Reports</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{PendingReports }}</h3>
+                                                </div>
+                                            </a>
+                                            </div>
+                                            <div class="media align-items-center p-4 border-sm-right border-bottom border-sm-bottom-0">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-compass text-primary font-30"></i>
+                                                </div>
+                                                <div data-toggle="tooltip" data-placement="top" title="Total Reports approved Today" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Today's Approved Reports</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{todaysReport}}</h3>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="media align-items-center p-4 border-sm-right border-bottom border-sm-bottom-0">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-compass text-primary font-30"></i>
+                                                </div>
+                                                <div data-toggle="tooltip" data-placement="top" title="Overall total Report Approved" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Total Approved Reports</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{ApprovedReports}}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xxs-6">
+                                            <div class="media align-items-center p-4 border-bottom">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-eye text-primary font-30"></i>
+                                                </div>
+                                                <a  href="{% url 'rejectedjobs' %}">
+                                                <div data-toggle="tooltip" data-placement="top" title="Total Jobs Rejected" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Rejected Jobs</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{Rejected_jobs}}</h3>
+                                                </div>
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="media align-items-center p-4">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-activity text-primary font-30"></i>
+                                                </div>
+                                                <div data-toggle="tooltip" data-placement="top" title="Total Approved Reports this Month" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Month's Approved Reports</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{ current_month_reports}}</h3>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="media align-items-center p-4">
+                                                <div class="mr-4">
+                                                    <i class="fe fe-activity text-primary font-30"></i>
+                                                </div>
+                                                <a  href="{% url 'rejectedreports' %}">
+                                                <div data-toggle="tooltip" data-placement="top" title="Total rejected Reports" class="tooltip-wrapper media-body">
+                                                    <strong class="text-dark">Rejected Reports</strong>
+                                                    <h3 class="font-light text-muted mb-0">{{RejectedReports}}</h3>
+                                                </div>
+                                                </a>
+                                            </div>
+
+
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      
+                        
+                    </div>
+            
+
+
+                    
+                    
+                    <!-- end row -->
+                                     </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+
+</div>
+<!-- end app -->
+    {% endblock content %}
+

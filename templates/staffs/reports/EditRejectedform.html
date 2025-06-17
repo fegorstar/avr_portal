@@ -1,0 +1,290 @@
+
+{% extends "base.html" %}
+{% load widget_tweaks %}  
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                    <!--mail-Compose-contant-start-->
+                    <div class="row account-contant">
+                        <div class="col-12">
+                            <div class="card card-statistics">
+                                <div class="card-body p-0">
+                                    <div class="row no-gutters">
+                                        <div class="col-xl-5 pb-xl-0 pb-5 border-right">
+                                            <div class="page-account-profil pt-5">
+                                                <div class="profile-img text-center">
+                                                  
+                                                    <h3> Customer Details</h3>   
+                                                        <div class="profile">
+                                                       
+                                                              
+                                                               
+                                                            <table class="table text-left  table-responsive">
+                                                
+                                                                                               
+        <tbody style="width:100%">
+            <tr>
+                <td class="table-secondary">Client: </td>
+                <td>{{selected_report.customer.client}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Agent:</td>
+                <td>{{selected_report.customer.agent}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">ID:</td>
+                <td> {{selected_report.JobRefNo}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Client Reference Number:</td>
+                <td> {{selected_report.clientJobrefID}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Customer Name:</td>
+                <td>{{selected_report.customer.first_name}} {{selected_report.customer.last_name}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Email Address:</td>
+                <td>{{selected_report.customer.email}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Phone Number:</td>
+                <td>{{selected_report.customer.phone_number}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Customer Address:</td>
+                <td>{{selected_report.customer.address}}</td>
+            </tr>
+          
+         
+            <tr>
+                <td  class="table-secondary">State:</td>
+                <td>{{selected_report.customer.state}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">City:</td>
+                <td>{{selected_report.customer.city}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Batch No:</td>
+                <td>{{selected_report.customer.BATCH_NO}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Date Added:</td>
+                <td>{{selected_report.created_at}}</td>
+            </tr>
+
+        
+
+            <tr>
+                <td  class="table-secondary">Added By:</td>
+                <td>{{selected_report.customer.created_by.first_name}} {{selected_report.customer.created_by.last_name}}</td>
+            </tr>
+
+          
+    
+
+            <tr>
+
+            <td  class="table-secondary">Report Status</td>
+            <td>{% if selected_report.Reportstatus == '0' %}
+                <span class="badge badge-warning ">Pending</span>
+            
+                {% elif selected_report.Reportstatus == '1' %}
+                <span class="badge badge-primary ">Approved</span>
+            
+                {% elif selected_report.Reportstatus == '2' %}
+                <span class="badge badge-danger ">Rejected</span>
+            
+              {% else %}
+              <span class="badge badge-warning ">Pending</span>
+              {% endif %}</td>
+                                
+                                
+            </tr>
+
+         
+        </tbody>
+                                                            </table>
+                                                           
+                                                        </div>
+                                                    </div>
+                                              
+
+                                           
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-7 col-md- col-12 border-t border-right">
+                                            <div class="page-account-form">
+                                                <div class="form-titel border-bottom p-3">
+                                                    <h5 class=" text-center mb-0 py-2 text-uppercase">EDIT REPORT</h5>
+                                                </div>
+                                                <div class="p-4">
+                                               
+                                                    
+                                                    <form action="{% url 'EditRejectedReport' selected_report.id %}" enctype='multipart/form-data'  method="POST">
+
+                                                        {% csrf_token %}
+
+                                                        {% include 'partials/alerts.html' %}
+
+
+
+                                                        <div class="form-row" style="margin-top:20px">
+
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">Select Verification Message</label>
+                                                                {% render_field Reportform.VerificationMessage class="form-control form-select"  %}
+                                                                <label style="color:red" class="text-danger">{{ Reportform.VerificationMessage.errors }}</label>
+                                                            </div>
+                                                            
+
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">What is the Building Condition?</label>
+                                                                {% render_field Reportform.buildingCondition class="form-control form-select"  %}
+                                                                <label style="color:red" class="text-danger">{{ Reportform.buildingCondition.errors }}</label>
+                                                   
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">What is the Building Color?</label>
+                                                                {% render_field Reportform.buildingColor class="form-control"  %}
+                                                            </div>
+                                                    
+                                                    
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Building Type?</label>
+                                                                {% render_field Reportform.buildingType class="form-control form-select"  %}
+                                                            </div>
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Customer Relationship with Address?</label>
+                                                                {% render_field Reportform.CustomerRelationshipWithaddress class="form-control form-select"  %}
+                                                            </div>
+                                                    
+                                                    
+                                                            <div class="form-group col-md-5">
+                                                                <label for="inputAddress">Is Address Residential?</label>
+                                                                {% render_field Reportform.AddressResidential class="form-control form-select"  %}
+                                                            </div>
+                                                            <div class="form-group col-md-7">
+                                                                <label for="inputAddress">Name of Individual interviewed?</label>
+                                                                {% render_field Reportform.NameofindividualInterviewed class="form-control"  %}
+                                                            </div>
+                                                    
+                                                    
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Relationship with Customer?</label>
+                                                                {% render_field Reportform.RelationshipWithCustomer class="form-control"  %}
+                                                            </div>
+                                                         
+                                                    
+                                                    
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">More Comment (If Any)?</label>
+                                                                {% render_field Reportform.MoreComment class="form-control"  %}
+                                                            </div>
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Landmark</label>
+                                                                {% render_field Reportform.Landmark class="form-control"  %}
+                                                            </div>
+                                                    
+                                                    
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">Address Photo</label>
+                                                                {% render_field Reportform.photo1 class="form-control"  %}
+                                                                <label style="color:red" class="text-danger">{{ Reportform.photo1.errors }}</label>
+                                                   
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">Address Photo 2 (Optional):</label>
+                                                                {% render_field Reportform.photo2 class="form-control"  %}
+                                                                <label style="color:red" class="text-danger">{{ Reportform.photo2.errors }}</label>
+                                                   
+                                                            </div>
+
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">Report Status</label>
+                                                                {% render_field Reportform.Reportstatus class="form-control form-select"  %}
+                                                            </div>
+
+                                                         
+
+                                                            
+                                                            <span class="errorlist">
+                                                                {% for field in form %}
+                                                                    {% if field.errors %}
+                                                                    <ul>
+                                                                        {% for error in field.errors %}
+                                                                            <span style="color: red;">{{error}}</span>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                        
+                                                                <span style="color: red;">{{form.non_field_errors}}</span>
+                                                            </span>
+
+                                                        <div class="text-right">
+                                                            <a  style="margin-right:10px" href="{% url 'rejectedreports' %}" class="btn btn-danger text-white"><i class="fa fa-long-arrow-left" data-toggle="tooltip" title="Go Back"></i>  Go Back</a>
+                       
+                                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                                           
+                                                        </div>
+                                                     
+                                                          </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--mail-Compose-contant-end-->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+    <!-- end app-wrap -->
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}
+

@@ -1,0 +1,198 @@
+{% extends "base.html" %}  
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                    <!--mail-Compose-contant-start-->
+                    <div class="row account-contant">
+                        <div class="col-12">
+                            <div class="card card-statistics">
+                                <div class="card-body p-0">
+                                    <div class="row no-gutters">
+                                        <div class="col-xl-5 pb-xl-0 pb-5 border-right">
+                                            <div class="page-account-profil pt-5">
+                                                <div class="profile-img text-center rounded-circle">
+                                                    <div class="pt-5">
+                                                        <div class="bg-img m-auto">
+                                                            {% if profile.profile_picture %}
+                                    <img class="img-fluid rounded" src="{{profile.profile_picture.url }}"  alt="user" >
+                                    {% else %}
+                                    <img class="img-fluid rounded" src="{% static 'assets/img/avtar/admin-avatar.png' %} " alt="user">
+                                    {% endif %}
+                                                        
+                                                        </div>
+                                                        <div class="profile pt-4">
+                                                                     
+                                                            <table class="table text-left  table-responsive">
+                                                                                               
+                                                                <tbody style="width:100%">
+                                                                    <tr>
+                                                                        <td class="table-secondary">First Name: </td>
+                                                                        <td>{{profile.user.first_name}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td  class="table-secondary">Last Name:</td>
+                                                                        <td>{{profile.user.last_name}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td  class="table-secondary">UserName:</td>
+                                                                        <td>{{profile.user.username}}</td>
+                                                                    </tr>
+                                                        
+                                                        
+                                                                    <tr>
+                                                                        <td  class="table-secondary">Email Address:</td>
+                                                                        <td>{{profile.user.email}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td  class="table-secondary">Phone Number:</td>
+                                                                        <td>{{profile.user.phone_number}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td  class="table-secondary">City:</td>
+                                                                        <td>{{profile.city}}</td>
+                                                                    </tr>
+                                                        
+                                                                    <tr>
+                                                                        <td  class="table-secondary">State:</td>
+                                                                        <td>{{profile.state}}</td>
+                                                                    </tr>
+                                                        
+                                                                    <tr>
+                                                                        <td  class="table-secondary">Role:</td>
+                                                                        <td>{{user.get_role}}</td>
+                                                                    </tr>
+
+                                                                 
+                                                                    <tr>
+                                                                        <td  class="table-secondary">Status:</td>
+                                                                   
+                                                                    <td>  
+                                                                        {% if user.is_active  %}
+                                                                        <span class="badge badge-success ">Active</span>
+                                                                  
+                                                                
+                                                                      {% else %}
+                                                                      <span class="badge badge-danger ">Inactive</span>
+                                                                      {% endif %}</td>
+                                                                    </tr>
+
+                                                                 
+                                                                </tbody>
+                                                                                                                    </table>
+                                                           
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                           
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-7 col-md- col-12 border-t border-right">
+                                            <div class="page-account-form">
+                                                <div class="form-titel border-bottom p-3">
+                                                    <h5 class="mb-0 py-2 text-uppercase">Account Settings</h5>
+                                                </div>
+                                                {% include 'partials/alerts.html' %}
+                                                <div class="p-4">
+                                                  
+                                                    <form action="{% url 'staffprofile' %}" method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                     
+                                                        <div class="form-row">
+                                                            <div class="form-group col-md-12">
+                                                                <label for="name1">Profile Picture</label>
+                                                                {% render_field profile_form.profile_picture class="form-control" %}
+                                                                <label style="color:red" class="text-danger">{{ profile_form.profile_picture.errors }}</label>
+                                                            
+                                                            </div>
+
+                                                            <div class="form-group col-md-6">
+                                                                <label for="name1">Username</label>
+                                                                {% render_field user_form.username class="form-control" %}
+                                                                <label style="color:red" class="text-danger">{{ user_form.username.errors }}</label>
+                                                            
+                                                               
+                                                            
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="name1">First Name</label>
+                                                                {% render_field user_form.first_name class="form-control" %}
+                                                               
+                                                            
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="name1">Last Name</label>
+                                                                {% render_field user_form.last_name class="form-control" %}
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="email1">Email</label>
+                                                                {% render_field user_form.email class="form-control" %}
+                                                            </div>
+                                                            <div class="form-group col-md-12">
+                                                                <label for="phone1">Phone Number</label>
+                                                                {% render_field user_form.phone_number class="form-control" %}
+                                                            </div>
+                                                            
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="add1">City</label>
+                                                            {% render_field profile_form.city class="form-control" %}
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="add2">State</label>
+                                                            {% render_field profile_form.state class="form-control" %}
+                                                        </div>
+                                                        
+                                                        <button type="submit" class="btn btn-primary">Update Information</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--mail-Compose-contant-end-->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}
+

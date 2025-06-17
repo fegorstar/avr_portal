@@ -1,0 +1,24 @@
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS='is-invalid' %}
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Remove Job?</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+                  
+    <p>Are you sure you want to Remove this Job with Customer ID<b> {{selected_job.ref_no}}</b> ?</p>
+    <p class="text-warning"><small>This action cannot be undone.</small></p>
+ 
+  <div class="modal-footer">
+    {% if selected_job %}
+    <button type="button" class="btn btn-danger" hx-post="{% url 'clientPerformJobRemoval' pk=selected_job.pk %}">Remove</button>
+    <span class="flex-grow-1"></span>
+    {% endif %}
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      Cancel
+    </button>
+   
+  </div>
+</form>
+{% endwith %}

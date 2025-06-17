@@ -1,0 +1,103 @@
+
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                        <h4 class="card-title">Agents Details  <span class="nav-label label label-primary">{{TotalAgents}}</span></span></h4>                     
+                                    </div>
+                                    
+                                </div>
+                                <div class="card-body">       
+                                    <div class=" table-responsive"> 
+                                        <table   id="agentsDetailsrecorddatatable"  class="table table-hover table-bordered table-xl mb-0">
+                                    
+                                            <thead class="thead-light">
+                                               
+                                                <tr>
+                                                    <th>Action </th>
+                                                    <th>Profile Picture </th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone Number </th>
+                                                    <th>Address</th>
+                                                    <th>State</th>
+                                                    <th>City</th>
+                                                    <th>Status </th>
+                                                    <th>Last Login</th>
+                                                    <th>ProofOfId</th>
+                                                    <th>Guarantor PhoneNo </th>
+                                                    <th>Guarantor Name </th>
+                                                    <th>BankAccountDetails </th>
+                                                    <th>Date Joined </th>
+                                                   
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- DataTable content will be loaded here by JavaScript -->
+                                            </tbody>
+                                        </table>
+                          
+                                    </div>
+
+                                   
+         
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}
+
+

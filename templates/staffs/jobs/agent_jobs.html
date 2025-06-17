@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agent Jobs</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <style>
+        /* Add your custom CSS styles here */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>{{ agent_name }} Pending Jobs - {{ job_count }}</h1>
+    </div>
+    <table id="agentJobsTable">
+        <thead>
+            <tr>
+                <th>Ref No</th>
+                <th>Client Job Ref ID</th>
+                <!-- Add other headers -->
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Scripts at the bottom of the page -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#agentJobsTable').DataTable({
+                dom: 'lBfrtip',
+                buttons: ['csv', 'pdf', 'print'],
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    url: '{% url "agent_jobs" agent_id %}',
+                    type: 'GET',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'ref_no' },
+                    { data: 'clientJobrefID' },
+                    // Add other columns as needed
+                ]
+            });
+        });
+    </script>
+</body>
+</html>

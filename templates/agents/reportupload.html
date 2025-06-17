@@ -1,0 +1,160 @@
+{% extends "base.html" %}  
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Agent Dashboard {% endblock %}
+{% block content %}
+
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                    <!--mail-Compose-contant-start-->
+                    <div class="row account-contant">
+                        <div class="col-12">
+                            <div class="card card-statistics">
+                                <div class="card-body p-0">
+                                    <div class="row no-gutters">
+                                        <div class="col-xl-5 pb-xl-0 pb-5 border-right">
+                                            <div class="page-account-profil pt-5">
+                                                <div class="profile-img text-center rounded-circle">
+                                                  
+                                                     
+                                                  
+                                                       <div class="card-body">
+                                                        <p class="text-uppercase text-primary" style="font-weight:bold">Instructions for Bulk upload of Reports:</p> 
+                                                        <hr>
+                                                        <ul class="jobportaldemo2-list list-unstyled m-t-20 text-left">
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i>Download template for Reports upload- <a class="text-danger" href="{% static 'assets/filedownloads/template_for_reportupload.csv' %}">Download <i class="fa fa-download"></i></a></li>
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i>If you have download your assigned jobs, just copy the JobRefNo column and use it to replace the one in the Template you downloaded, then enter the other details: <b>VerificationMessage, buildingCondition,buildingColor, buildingType, CustomerRelationshipWithaddress, AddressResidential, NameofindividualInterviewed, RelationshipWithCustomer, MoreComment and Landmark.    </b>                                               </li>
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i> After that, just save, upload the csv file and click on Submit button. You will get a successfully message of the reports upload.</li>
+                                                           
+                                                        </ul>
+                                                                                               
+                                                       
+                                                           
+                                                        </div>
+                                                    </div>
+                                              
+
+                                           
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-7 col-md- col-12 border-t border-right">
+                                            <div class="page-account-form">
+                                                <div class="form-titel border-bottom p-3">
+                                                    <h5 class=" text-center mb-0 py-2 text-uppercase"> Bulk Reports Upload</h5>
+                                                </div>
+                                                <div class="p-4">
+                                                    {% if form_errors %}
+                                                    <div class="alert alert-danger">
+                                                        <h5>Errors occurred during upload:</h5>
+                                                        <ul>
+                                                            {% for error in form_errors %}
+                                                                {% if forloop.first %}
+                                                                    <li  style="color:#ffff">{{ error.row }}: {{ error.error }}</li>
+                                                                {% else %}
+                                                                    {% comment %} Check if current error message is different from the first error {% endcomment %}
+                                                                    {% with first_error=form_errors.0.error %}
+                                                                        {% if error.error != first_error %}
+                                                                            <li  style="color:#ffff">{{ error.row }}: {{ error.error }}</li>
+                                                                        {% endif %}
+                                                                    {% endwith %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    {% elif row_count %}
+                                                    <div class="alert alert-success">
+                                                        <h5>Upload Summary:</h5>
+                                                        <ul  style="color:#ffff">
+                                                            <li  style="color:#ffff">Total rows processed: {{ row_count }}</li>
+                                                            <li  style="color:#ffff">New reports uploaded: {{ new_reports_count }}</li>
+                                                            <li  style="color:#ffff">Reports updated: {{ updated_reports_count }}</li>
+                                                            <li  style="color:#ffff">Reports skipped: {{ skipped_reports_count }}</li>
+                                                            <li  style="color:#ffff"> Jobs not found: {{ jobs_not_found_count }}</li>
+                                                        </ul>
+                                                        <a style="color:red"
+                                                            href="{% url 'myreport' %}">Click here to View!</a>
+                                                    </div>
+                                                    {% endif %}
+
+                                                    <form action="/uploadreportbyagent/" 
+                                                    enctype="multipart/form-data" method="post"
+                                                    onsubmit="showLoader()">
+                                                    {% csrf_token %}
+                                                    <div class="mb-3" style="margin-top:20px">
+                                                        {{ form.as_p }}
+                                                    </div>
+                                                    <div class="text-left">
+                                                        <a  style="margin-right:10px" href="{% url 'myreport' %}" class="btn btn-danger text-white"><i class="fa fa-long-arrow-left" data-toggle="tooltip" title="Go Back"></i>View Reports</a>
+                       
+                                                        <button type="submit" class="btn btn-success"
+                                                            id="submitBtn">
+                                                            <i class="fa fa-upload"></i> Submit
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                                <!-- Loader for Bulk Reports Upload -->
+                                                <div id="loadingImage" class="text-center"
+                                                style="display: none;">
+                                                <img src="{% static 'assets/processingReportapproval.gif' %}"
+                                                    alt="Loading..." /> Uploading Reports...
+                                            </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--mail-Compose-contant-end-->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+    <!-- end app-wrap -->
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+   
+<script>
+    function showLoader() {
+        // Display the loader when the form is submitted
+        document.getElementById('loadingImage').style.display = 'block';
+        // Hide the submit button
+        document.getElementById('submitBtn').style.display = 'none';
+    }
+</script>
+
+{% endblock content %}

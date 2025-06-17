@@ -1,0 +1,157 @@
+{% extends "base.html" %}  
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Client Dashboard {% endblock %}
+{% block content %}
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                    <!--mail-Compose-contant-start-->
+                    <div class="row account-contant">
+                        <div class="col-12">
+                            <div class="card card-statistics">
+                                <div class="card-body p-0">
+                                    <div class="row no-gutters">
+                                        <div class="col-xl-5 pb-xl-0 pb-5 border-right">
+                                            <div class="page-account-profil pt-5">
+                                                <div class="profile-img text-center rounded-circle">
+                                                  
+                                                     
+                                                  
+                                                       <div class="card-body">
+                                                        <p class="text-uppercase text-primary" style="font-weight:bold">Instructions for Bulk upload of Jobs:</p> 
+                                                        <hr>
+                                                        <ul class="jobportaldemo2-list list-unstyled m-t-20 text-left">
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i>Download template for Jobs upload- <a class="text-danger" href="{% static 'assets/filedownloads/jobuploadtemplate_forstaff.csv' %}">Download <i class="fa fa-download"></i></a></li>
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i> The file to be uploaded must be in <b>CSV.</b></li>
+                                                            <li class="py-1"> <i class="fa fa-dot-circle-o pr-2 text-primary"></i>For <b>'client'</b> field in the downloaded template, ID is inserted. Staffs should get the client IDs from the Admin.
+                                                        </li>
+                                                        </ul>
+                                                        
+                                                                                                       
+                                                       
+                                                           
+                                                        </div>
+                                                    </div>
+                                              
+
+                                           
+
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-7 col-md- col-12 border-t border-right">
+                                            <div class="page-account-form">
+                                                <div class="form-titel border-bottom p-3">
+                                                    <h5 class=" text-center mb-0 py-2 text-uppercase"> Bulk Jobs Upload</h5>
+                                                </div>
+                                                <div class="p-4 text-danger">
+                                                    {% if form_errors %}
+                                                        <ul>
+                                                            {% for error in form_errors %}
+                                                                <li>
+                                                                    Row {{ error.row }}:
+                                                                    <ul>
+                                                                        {% for field, error_messages in error.errors.items %}
+                                                                            <li class="text-danger" style="color:red; list-style-type: none;">
+                                                                                {{ field }}: 
+                                                                                {% for message in error_messages %}
+                                                                                    <span>{{ message }}</span>
+                                                                                {% endfor %}
+                                                                            </li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% elif row_count %}
+                                                    <p class="text-success text-center">
+                                                        Your Jobs Upload Was Successful!
+                                                        {% if new_jobs_count %}
+                                                            {{ new_jobs_count }} new job(s) added!
+                                                        {% endif %}
+                                                        {% if skipped_jobs_count %}
+                                                            {% if new_jobs_count %}
+                                                                <br>
+                                                            {% endif %}
+                                                            {{ skipped_jobs_count }} job(s) were skipped as they already exist in the system.
+                                                        {% endif %}
+                                                        <br>
+                                                        <a style="color:red" href="{% url 'unassignedjobs' %}">Click here to View!</a>
+                                                    </p>
+                                                    {% endif %}
+                                                    
+                                                    <form id="uploadForm" action="/importclientjobs/" enctype="multipart/form-data" method="post" onsubmit="showLoader()">
+                                                      
+                                                        {% csrf_token %}
+                                                        <div class="mb-3" style="margin-top:20px">
+                                                         
+                                                            {{ form.as_p }}  </div>
+                                                       
+                                                 
+
+                                                        <div class="text-left">
+                                                            <a  style="margin-right:10px" href="{% url 'clientjobs' %}" class="btn btn-light"><i class="fa fa-long-arrow-left" data-toggle="tooltip" title="Go Back"></i>View Jobs</a>
+                       
+                                                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                                                <i class="fa fa-upload"></i> Submit
+                                                            </button>
+                                                        </div>
+                                                    </form>
+
+                                                    <!-- Loader for Bulk Jobs Upload -->
+                                                    <div id="loadingImage" class="text-center" style="display: none;">
+                                                        <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Uploading New Jobs...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--mail-Compose-contant-end-->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+    <!-- end app-wrap -->
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+<script>
+    function showLoader() {
+        // Display the loader when the form is submitted
+        document.getElementById('loadingImage').style.display = 'block';
+        // Hide the submit button
+        document.getElementById('submitBtn').style.display = 'none';
+    }
+</script>
+
+    {% endblock content %}

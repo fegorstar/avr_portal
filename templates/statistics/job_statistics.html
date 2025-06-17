@@ -1,0 +1,166 @@
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                      <h4 class="card-title">Job Statistics</h4>
+                                    </div>
+                                   
+                                </div>
+                           
+                                <div class="card-body">       
+                                  {% for stats in job_statistics %}
+                                  <hr style="height: 1px; width: 100%; border: none; background-color: #ccc;">
+
+                                  <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <div style="flex: 1;">
+                                      <h3 title="Client: {{ stats.client.client_name }}">{{ stats.client.client_name }}</h3>
+
+                                        <div class="row">
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Overall total jobs">{{ stats.overall_total_jobs }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-secondary"></i>Total Jobs</span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Number of jobs received in the current month">{{ stats.current_month_jobs }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-primary"></i>Month's Received Job</span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Number of unassigned jobs">{{ stats.unassigned_jobs_count }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-warning"></i>   Unassigned Jobs</span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Number of pending jobs">{{ stats.pending_jobs_count }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-info"></i> Pending Jobs </span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Number of rejected jobs">{{ stats.rejected_jobs_count }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-danger"></i> Rejected Jobs</span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                            <h4 class="mb-0" title="Number of completed jobs">{{ stats.done_jobs_count }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-success"></i>   Done Jobs </span>
+                                          </div>
+                                         
+                                        </div>
+                                        <hr>
+
+                                        <div class="row">
+                                          <div class="col">
+                                            <canvas id="jobChart-{{ stats.client.client_name }}" width="200" height="200"></canvas>
+                                          </div>
+                                        </div>
+
+                                        <script>
+                                          // Get data from Django template
+                                          var pendingJobs = {{ stats.pending_jobs_count|default:0 }};
+                                          var unassignedJobs = {{ stats.unassigned_jobs_count|default:0 }};
+                                          var rejectedJobs = {{ stats.rejected_jobs_count|default:0 }};
+                                          var doneJobs = {{ stats.done_jobs_count|default:0 }};
+                                          var currentMonthJobs = {{ stats.current_month_jobs|default:0 }};
+                                          var overallTotalJobs = {{ stats.overall_total_jobs|default:0 }};
+
+                                          // Set up Chart.js
+                                          var ctx = document.getElementById('jobChart-{{ stats.client.client_name }}').getContext('2d');
+                                          var jobChart = new Chart(ctx, {
+                                            type: 'pie',
+                                            data: {
+                                              labels: ['Pending Jobs', 'Unassigned Jobs', 'Rejected Jobs', 'Done Jobs', 'Current Month Jobs', 'Overall Total Jobs'],
+                                              datasets: [{
+                                                data: [pendingJobs, unassignedJobs, rejectedJobs, doneJobs, currentMonthJobs, overallTotalJobs],
+                                                backgroundColor: [
+                                                  'rgba(54, 162, 235, 0.7)',
+                                                  'rgba(255, 206, 86, 0.7)',
+                                                  'rgba(255, 99, 132, 0.7)',
+                                                  'rgba(75, 192, 192, 0.7)',
+                                                  'rgba(153, 102, 255, 0.7)',
+                                                  'rgba(255, 159, 64, 0.7)'
+                                                ],
+                                                borderColor: [
+                                                  'rgba(54, 162, 235, 1)',
+                                                  'rgba(255, 206, 86, 1)',
+                                                  'rgba(255, 99, 132, 1)',
+                                                  'rgba(75, 192, 192, 1)',
+                                                  'rgba(153, 102, 255, 1)',
+                                                  'rgba(255, 159, 64, 1)'
+                                                ],
+                                                borderWidth: 1
+                                              }]
+                                            },
+                                            options: {
+                                              responsive: true,
+                                              maintainAspectRatio: false,
+                                              legend: {
+                                                position: 'top'
+                                              },
+                                              title: {
+                                                display: true,
+                                                text: 'Job Statistics'
+                                              }
+                                            }
+                                          });
+                                        </script>
+                                      </div>
+                                    </div>
+                                  {% endfor %}
+                                    </div>
+
+                                   
+         
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}

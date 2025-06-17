@@ -1,0 +1,154 @@
+
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                         <h4 class="card-title">Rejected Jobs <span class="nav-label label label-primary">{{Total_rejectedjobs}}</span></span></h4>
+                                                        
+                                    </div>
+                                    <div class="dropdown">
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-primary" id="assign-selected"><i class="fa fa-user"></i> Re-assign</button>
+
+                                <button id="delete-selected" class="btn btn-danger"><i class="fa fa-trash-o"></i> Delete</button>
+                              
+                           
+                                        </div>
+                                                  </div>
+                                </div>
+                                <div class="card-body"> 
+                                    <form id="jobFilterForm">
+                                        <div class="form-row">
+                                            <div class="col-md-5 mb-3">
+                                                <label>By Client</label>
+                                                {% render_field my_Filter.form.client class="form-control form-select" id="selUser2" placeholder="client" %}
+                                            </div>
+                                    
+                                            <div class="col-md-7">
+                                                <label class="d-block">Filter by Date Range</label>
+                                                <div class="row">
+                                                    <div class="col-md-12 mr-3">
+                                                        <div class="input-group date" id="startDatePicker">
+                                                            {{ my_Filter.form.created_at.0 }}
+                                                        </div>
+                                                    </div>
+                                    
+                                                    <div class="col-md-12 ml-3">
+                                                        <div class="input-group date" id="endDatePicker">
+                                                            {{ my_Filter.form.created_at.1 }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    
+                                            <div class="col-md-5 mb-3">
+                                                <label>By Agent</label>
+                                                {% render_field my_Filter.form.agent class="form-control form-select" id="selUser" placeholder="Agent" %}
+                                            </div>
+                                    
+                                            <div class="col-md-5 mb-3">
+                                                <label>By Status</label>
+                                                {% render_field my_Filter.form.status id="selUser1" class="form-control form-select" placeholder="Status" %}
+                                            </div>
+                                    
+                                            <div class="col-md-2 mb-3">
+                                                <label>&nbsp;</label>
+                                                <button class="btn btn-primary btn-block" type="submit">Search</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <hr style="margin-top: 20px; margin-bottom: 20px; border-width: 2px;">     
+                                    <div class=" table-responsive"> 
+                                        <table   id="rejectedjobsdatatable"  class="table table-hover table-bordered table-xl mb-0">
+                                    
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>
+                                                        <span class="custom-checkbox">
+                                                            <input type="checkbox" id="check-all">
+                                                            <label for="selectAll"></label>
+                                                        </span>
+                                                    </th>
+                                                    <th>Action</th>
+                                                    <th>Ref. Number</th>
+                                                    <th>Customer Name</th>
+                                                    <th>Customer Address</th>
+                                                    <th>State</th>
+                                                    <th>City</th>
+                                                    <th>Client</th>
+                                                    <th>Agent</th>
+                                                    <th>When Assigned</th>
+                                                    <th>Dated Added</th>
+                                                   
+                                                   
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- DataTable content will be loaded here by JavaScript -->
+                                            </tbody>
+                                        </table>
+                          
+                                    </div>
+
+                                 
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+   
+    {% include 'partials/footer.html' %}
+    {% include 'staffs/jobs/modals.html' %}  
+         
+</div>
+<!-- end app -->
+    {% endblock content %}
+
+

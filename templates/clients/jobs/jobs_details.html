@@ -1,0 +1,113 @@
+{% load widget_tweaks %}
+
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title text-center">Job Details</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <table class=" col-md-12 table text-left  table-responsive " width="100%">
+                                    
+        <tbody style="width:100%">
+            <tr>
+                <td class="table-secondary">Client: </td>
+                <td>{{selected_job.client}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Agent:</td>
+                <td>{{selected_job.agent}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">ID:</td>
+                <td> {{selected_job.ref_no}}</td>
+            </tr>
+
+            
+            <tr>
+                <td  class="table-secondary">Client Job Reference Number:</td>
+                <td> {{selected_job.clientJobrefID}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Customer Name:</td>
+                <td>{{selected_job.first_name}} {{selected_job.last_name}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Email Address:</td>
+                <td>{{selected_job.email}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Phone Number:</td>
+                <td>{{selected_job.phone_number}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Customer Address:</td>
+                <td>{{selected_job.address}}</td>
+            </tr>
+          
+         
+            <tr>
+                <td  class="table-secondary">State:</td>
+                <td>{{selected_job.state}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">City:</td>
+                <td>{{selected_job.city}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Batch No:</td>
+                <td>{{selected_job.BATCH_NO}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Date Added:</td>
+                <td>{{selected_job.created_at}}</td>
+            </tr>
+
+        
+
+            <tr>
+                <td  class="table-secondary">Added By:</td>
+                <td>{{selected_job.created_by.first_name}} {{selected_job.created_by.last_name}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Last Updated By:</td>
+                <td>{{selected_job.updated_by.first_name}} {{selected_job.updated_by.last_name}}</td>
+            </tr>
+
+    
+
+            <tr>
+
+            <td  class="table-secondary">Status</td>
+            <td>{% if selected_job.status == '0' %}
+                <span class="badge badge-warning ">Undone</span>
+        
+                {% elif selected_job.status == '1' %}
+                <span class="badge badge-primary ">Done</span>
+        
+              {% else %}
+              <span class="badge badge-warning ">Undone</span>
+              {% endif %}</td>
+                                
+            </tr>
+
+         
+        </tbody>
+    </table>
+    </table>
+   
+              
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      Close
+    </button>
+ 
+  </div>
+</form>
+

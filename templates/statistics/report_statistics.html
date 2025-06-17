@@ -1,0 +1,172 @@
+
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                      <h4 class="card-title">Report Statistics</h4>
+                                    </div>
+                                   
+                                </div>
+                                <div class="card-body">
+                                    {% for stats in report_statistics %}
+                                    <hr style="height: 1px; width: 100%; border: none; background-color: #ccc;">
+                  
+                                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                      <div style="flex: 1;">
+                                        <h3>{{ stats.client.client_name }}</h3>
+
+                                        
+                                        <div class="row">
+                                            <div class="border-right col mr-4">
+                                                <h4 class="mb-0">{{ stats.pending_reports_count }}</h4>
+                                                <span> <i class="fa fa-square pr-1 text-warning"></i>   Pending Reports</span>
+                                            </div>
+                                            <div class="border-right col mr-4">
+                                                <h4 class="mb-0">{{ stats.rejected_reports_count }}</h4>
+                                                <span> <i class="fa fa-square pr-1 text-danger"></i> Rejected Reports</span>
+                                            </div>
+                                           
+                                       
+                                        </div><hr>
+
+                                        <div class="row">
+                                          <div class="border-right col mr-4">
+                                              <h4 class="mb-0">{{ stats.today_approved_reports_count }}</h4>
+                                              <span> <i class="fa fa-square pr-1 text-info"></i>    Today's Approved Reports</span>
+                                          </div>
+                                          <div class="border-right col mr-4">
+                                              <h4 class="mb-0">{{ stats.month_approved_reports_count }}</h4>
+                                              <span> <i class="fa fa-square pr-1 text-success"></i>   Month's Approved Reports </span>
+                                          </div>
+                                         
+                                     
+                                      </div><hr>
+
+                                      <div class="row">
+                                        <div class="border-right col mr-4">
+                                            <h4 class="mb-0">{{ stats.total_approved_reports_count }}</h4>
+                                            <span> <i class="fa fa-square pr-1 text-primary"></i> Total Approved Reports</span>
+                                        </div>
+                                        
+                                    </div>
+
+                                      
+                                      </div>
+                                      <div style="flex: 1; max-width: 400px; max-height: 400px; margin-left: 20px;">
+                                        <canvas id="reportChart-{{ stats.client.client_name }}" width="200" height="200"></canvas>
+                  
+                                        <script>
+                                          // Get data from Django template
+                                          var pendingReports = {{ stats.pending_reports_count|default:0 }};
+                                          var rejectedReports = {{ stats.rejected_reports_count|default:0 }};
+                                          var todayApprovedReports = {{ stats.today_approved_reports_count|default:0 }};
+                                          var monthApprovedReports = {{ stats.month_approved_reports_count|default:0 }};
+                                          var totalApprovedReports = {{ stats.total_approved_reports_count|default:0 }};
+                  
+                                          // Set up Chart.js
+                                          var ctx = document.getElementById('reportChart-{{ stats.client.client_name }}').getContext('2d');
+                                          var reportChart = new Chart(ctx, {
+                                            type: 'pie',
+                                            data: {
+                                              labels: ['Pending Reports', 'Rejected Reports', 'Today\'s Approved Reports', 'Month\'s Approved Reports', 'Total Approved Reports'],
+                                              datasets: [{
+                                                data: [pendingReports, rejectedReports, todayApprovedReports, monthApprovedReports, totalApprovedReports],
+                                                backgroundColor: [
+                                                 
+                                                  'rgba(255, 206, 86, 0.7)',
+                                                  'rgba(255, 99, 132, 0.7)',
+                                                  'rgba(54, 162, 235, 0.7)',
+                                                  'rgba(75, 192, 192, 0.7)',
+                                                  'rgba(153, 102, 255, 0.7)'
+                                                ],
+                                                borderColor: [
+                                                 
+                                                  'rgba(255, 206, 86, 1)',
+                                                  'rgba(255, 99, 132, 1)',
+                                                  'rgba(54, 162, 235, 1)',
+                                                  'rgba(75, 192, 192, 1)',
+                                                  'rgba(153, 102, 255, 1)'
+                                                ],
+                                                borderWidth: 1
+                                              }]
+                                            },
+                                            options: {
+                                              responsive: true,
+                                              maintainAspectRatio: false,
+                                              legend: {
+                                                position: 'top'
+                                              },
+                                              title: {
+                                                display: true,
+                                                text: 'Report Statistics'
+                                              }
+                                            }
+                                          });
+                                        </script>
+                                      </div>
+                                    </div>
+                                    {% endfor %}
+                                    </div>
+
+                                   
+         
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}
+
+

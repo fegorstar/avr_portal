@@ -1,0 +1,99 @@
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                        <h4 class="card-title">Approve & Send Reports</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Approve and Send Reports to API</h3>
+                                    <p class="mb-2" style="color:red">Note: Make sure the <b>ActivityId</b> and <b>Address</b> columns is in the CSV file. This module approves and sends reports (feedbacks) to the Client API.</p>
+                                    
+                                    <!-- Display Approval Status -->
+                                    {% if approval_status %}
+                                    <div class="alert alert-success mt-4">
+                                        <h4>Approval Status:</h4>
+                                        <p style="color:white;">Report Successfully Sent: <b>{{ success_count }}</b></p>
+                                        <p style="color:white;">Records Not Found: <b >{{ not_found_count }}</b></p>
+                                        <p style="color:white;">Records Found but Not Sent: <b>{{ not_sent_count }}</b></p>
+                                    </div>
+                                    {% endif %}
+
+                                    <form method="post" enctype="multipart/form-data" onsubmit="showLoaderApprove()" action="{% url 'approve_and_send' %}">
+                                        {% csrf_token %}
+                                        <div class="form-group col-md-6">
+                                            <label for="csv_file">CSV File:</label>
+                                            <input type="file" name="csv_file" accept=".csv" class="form-control" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6 mt-3">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Approve & Send Feedback</button>
+                                        </div>
+                                    </form>
+
+                                    <!-- Loader for Approve and Send Reports -->
+                                    <div id="loadingImageApprove" class="text-center" style="display: none;">
+                                        <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Sending Feedback...
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+<script>
+    function showLoaderApprove() {
+        // Display the loader when the form is submitted
+        document.getElementById('loadingImageApprove').style.display = 'block';
+    }
+</script>
+    {% endblock content %}

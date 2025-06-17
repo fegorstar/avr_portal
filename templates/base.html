@@ -1,0 +1,2914 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      AVR Portal |{% block title %}
+
+      {% endblock %}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %}" />
+    <!-- External CSS libraries -->
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" />
+    <!-- plugin stylesheets -->
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors.css' %}" />
+    <!-- app style -->
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/checkbox.css' %}" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.en-GB.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Initialize datepicker for the start date input
+        var startDatePicker = $('#id_created_at_0').datepicker({
+          format: 'yyyy-mm-dd',
+          todayHighlight: true,
+          autoclose: true
+        })
+      
+        // Set placeholder for the start date input
+        startDatePicker.attr('placeholder', 'Start Date')
+      
+        // Initialize datepicker for the end date input
+        var endDatePicker = $('#id_created_at_1').datepicker({
+          format: 'yyyy-mm-dd',
+          todayHighlight: true,
+          autoclose: true
+        })
+      
+        // Set placeholder for the end date input
+        endDatePicker.attr('placeholder', 'End Date')
+      })
+      
+      // Initialize select2
+      $('#selUser').select2()
+      
+      // Initialize select2
+      $('#selUser1').select2()
+      
+      // Initialize select2
+      $('#selUser2').select2()
+      
+      // Initialize select2
+      $('#selUser3').select2()
+      
+      // Initialize select2
+      $('#selUser4').select2()
+    </script>
+    <style>
+      .error-wrap {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .error-content {
+        text-align: center;
+      }
+      .error-content img {
+        display: block;
+        margin: 0 auto 30px;
+        max-width: 600px;
+      }
+      .error-content p {
+        margin: 0 auto 20px;
+        max-width: 520px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page_loader"></div>
+
+    {% block content %}
+
+    {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include html2pdf library -->
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
+    <script>
+      //================alljobsdatatable========================
+      $(document).ready(function () {
+        var dataTable = $('#datatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          ajax: {
+            url: '{% url "fetch_data" %}',
+            type: 'GET',
+            data: function (d) {
+              // Collect form data and include it in the AJAX request
+              var formData = $('#jobFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="btn-primary" onclick="editJob(' + row.id + ')"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Job" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'whenAssigned',
+              render: function (data, type, row) {
+                // Clean the data (remove special characters)
+                var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
+                return cleanedData
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================unassignedjobsdatatable========================
+        // ================== unassignedjobsdatatable =========================
+        var dataTable = $('#unassignedjobsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+      
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          lengthMenu: [
+            [10, 25, 50, 100, 5000],
+            [10, 25, 50, 100, 5000]
+          ],
+          ajax: {
+            url: '{% url "fetch_unassigneddata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Collect form data and include it in the AJAX request
+              var formData = $('#jobFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+      
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="btn-primary" onclick="editJob(' + row.id + ')"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Job" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'whenAssigned',
+              render: function (data, type, row) {
+                // Clean the data (remove special characters)
+                var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
+                return cleanedData
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================rejectedjobsdatatable========================
+        //================rejectedjobsdatatable========================
+        var dataTable = $('#rejectedjobsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          ajax: {
+            url: '{% url "fetchrejected_job" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#rejectedjobsdatatable_filter input').val()
+      
+              // Collect form data and include it in the AJAX request
+              var formData = $('#jobFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+      
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="btn-primary" onclick="editJob(' + row.id + ')"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Job" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'whenAssigned',
+              render: function (data, type, row) {
+                // Clean the data (remove special characters)
+                var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
+                return cleanedData
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================pendingreportsdatatable========================
+      
+        var dataTable = $('#pendingreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          ajax: {
+            url: '{% url "fetch_pendingreportdata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#pendingreportsdatatable_filter input').val()
+              // Collect form data and include it in the AJAX request
+              var formData = $('#ReportFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="edit-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================approvedreportsdatatable========================
+        var dataTable = $('#approvedreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: {
+            url: '{% url "fetch_approvedreportdata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#approvedreportsdatatable_filter input').val()
+      
+              // Collect form data and include it in the AJAX request
+              var formData = $('#ReportFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> '
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================allreportsdatatable========================
+      
+        var dataTable = $('#allreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          ajax: {
+            url: '{% url "fetch_allreportdata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#allreportsdatatable_filter input').val()
+      
+              // Collect form data and include it in the AJAX request
+              var formData = $('#ReportFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+      
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="allreportedit-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+              }
+            },
+      
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'buildingCondition',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingColor',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingType',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================allagentsreportsdatatable========================
+        var dataTable = $('#allagentsreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: '{% url "fetchagentreportdata" %}',
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="agentedit-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingCondition',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingColor',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingType',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================unassignedjobsdatatable========================
+        var dataTable = $('#agentunassignedjobsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: '{% url "fetch_agentunassignedjobs" %}',
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="agentreportjob-btn btn-success" data-id="' + row.id + '"> <i data-toggle="tooltip" data-placement="top" title="Verify and send Job Report" data-original-title="View" class="fa fa-send"></i> </button> ' + '<button class="reject-job-btn btn-danger" data-id="' + row.id + '"> <i data-toggle="tooltip" data-placement="top" title="Reject Job" data-original-title="Reject" class="fa fa-times"></i> </button>'
+              }
+            },
+      
+            {
+              data: 'jobrefno',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'whenAssigned',
+              render: function (data, type, row) {
+                // Clean the data (remove special characters)
+                var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
+                return cleanedData
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================agentspendingjobsrecorddatatable========================
+        var dataTable = $('#agentspendingjobsrecorddatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: '{% url "fetch_allagentspendingjobs" %}',
+          columns: [
+            {
+              data: 'agent__fullname',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'pending_job_count',
+              render: function (data, type, row) {
+                // Check if it's a display type or not
+                if (type === 'display') {
+                  // Use the agent ID to construct the URL
+                  var agentId = row.agent_id // Replace 'agent_id' with your actual field name
+                  //return '<a href="/agentjobs/' + agentId + '/jobs">' + data + '</a>';
+                }
+                // For sorting and filtering, return the raw data
+                return data
+              }
+            },
+            {
+              data: 'agent__user__last_login',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent__user__phone_number',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent__address',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent__user__is_active',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================agentsDetailsrecorddatatable========================
+        var dataTable = $('#agentsDetailsrecorddatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: '{% url "fetch_allagentDetails" %}',
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Agent Details" data-original-title="View" class="fa fa-eye"></i> </button> '
+              }
+            },
+            {
+              data: 'profile_picture',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'fullname',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'email',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'PhoneNumber',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'is_active',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'last_login',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'proofOfId',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'guarantorPhoneNumber',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'guarantorName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'BankAccountDetails',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================rejectedreportsdatatable========================
+        var rejectedReportsTable = $('#rejectedreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          ajax: {
+            url: '{% url "fetch_rejectedreportdata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#rejectedreportsdatatable_filter input').val()
+      
+              // Collect form data and include it in the AJAX request
+              var formData = $('#ReportFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+      
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="editrejectedreport-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button> ' + '<button class="delete-report btn-danger" data-id="' + row.id + '"><i class="fe fe-trash" data-toggle="tooltip" data-placement="top" title="Delete Report to reassign Job" data-original-title="Delete"></i></button> '
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================agentsrejectedreportsdatatable========================
+        var dataTable = $('#agentsrejectedreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          ajax: '{% url "fetch_agentrejectedreportdata" %}',
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="editagentrejectedreport-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+              }
+            },
+      
+            {
+              data: 'JobRefNo',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        //================searchreportsquerydatatable========================
+        var dataTable = $('#searchreportsquerydatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: '{% url "OutstandingReports" %}',
+          columns: [
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'buildingCondition',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingColor',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingType',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'downloadLink',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            }
+          ]
+        })
+      
+        // Add a click event listener to the "View" button
+        $('#datatable tbody').on('click', '.view-btn', function () {
+          var productId = $(this).data('id')
+          // Fetch product details and populate the modal
+          $.ajax({
+            url: '{% url "fetch_job_details" %}', // Replace with the URL to your Django view
+            data: { id: productId },
+            dataType: 'json',
+            success: function (data) {
+              // Populate the modal with the product details
+              var modalBody = $('#jobdetailsModal .modal-body #jobDetails')
+              modalBody.html('<p style="padding-bottom:5px"><strong>Client:</strong> ' + data.client + '</p>' + '<p style="padding-bottom:5px"><strong>Agent:</strong> ' + data.agent + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Name:</strong> ' + data.name + '</p>' + '<p style="padding-bottom:5px"><strong>JobRef:</strong> ' + data.ref + '</p>' + '<p style="padding-bottom:5px"><strong>Client RefID:</strong> ' + data.clientrefNo + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Address:</strong> ' + data.address + '</p>' + '<p style="padding-bottom:5px"><strong>Email Address:</strong> ' + data.email + '</p>' + '<p style="padding-bottom:5px"><strong>Phone Number:</strong> ' + data.phone_number + '</p>' + '<p style="padding-bottom:5px"><strong>State:</strong> ' + data.state + '</p>' + '<p style="padding-bottom:5px"><strong>City:</strong> ' + data.city + '</p>' + '<p style="padding-bottom:5px"><strong>Batch No:</strong> ' + data.batchno + '</p>' + '<p style="padding-bottom:5px"><strong>Date Added:</strong> ' + data.dateAdded + '</p>' + '<p style="padding-bottom:5px"><strong>Added By:</strong> ' + data.addedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Assigned By:</strong> ' + data.assignedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Status:</strong> ' + data.status + '</p>')
+      
+              // Show the modal
+              $('#jobdetailsModal').modal('show')
+            }
+          })
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#unassignedjobsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_job_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            var modalBody = $('#jobdetailsModal .modal-body #jobDetails')
+            modalBody.html('<p style="padding-bottom:5px"><strong>Client:</strong> ' + data.client + '</p>' + '<p style="padding-bottom:5px"><strong>Agent:</strong> ' + data.agent + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Name:</strong> ' + data.name + '</p>' + '<p style="padding-bottom:5px"><strong>JobRef:</strong> ' + data.ref + '</p>' + '<p style="padding-bottom:5px"><strong>Client RefID:</strong> ' + data.clientrefNo + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Address:</strong> ' + data.address + '</p>' + '<p style="padding-bottom:5px"><strong>Email Address:</strong> ' + data.email + '</p>' + '<p style="padding-bottom:5px"><strong>Phone Number:</strong> ' + data.phone_number + '</p>' + '<p style="padding-bottom:5px"><strong>State:</strong> ' + data.state + '</p>' + '<p style="padding-bottom:5px"><strong>City:</strong> ' + data.city + '</p>' + '<p style="padding-bottom:5px"><strong>Batch No:</strong> ' + data.batchno + '</p>' + '<p style="padding-bottom:5px"><strong>Date Added:</strong> ' + data.dateAdded + '</p>' + '<p style="padding-bottom:5px"><strong>Added By:</strong> ' + data.addedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Assigned By:</strong> ' + data.assignedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Status:</strong> ' + data.status + '</p>')
+      
+            // Show the modal
+            $('#jobdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#rejectedjobsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_job_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            var modalBody = $('#jobdetailsModal .modal-body #jobDetails')
+            modalBody.html('<p style="padding-bottom:5px"><strong>Client:</strong> ' + data.client + '</p>' + '<p style="padding-bottom:5px"><strong>Agent:</strong> ' + data.agent + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Name:</strong> ' + data.name + '</p>' + '<p style="padding-bottom:5px"><strong>JobRef:</strong> ' + data.ref + '</p>' + '<p style="padding-bottom:5px"><strong>Client RefID:</strong> ' + data.clientrefNo + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Address:</strong> ' + data.address + '</p>' + '<p style="padding-bottom:5px"><strong>Email Address:</strong> ' + data.email + '</p>' + '<p style="padding-bottom:5px"><strong>Phone Number:</strong> ' + data.phone_number + '</p>' + '<p style="padding-bottom:5px"><strong>State:</strong> ' + data.state + '</p>' + '<p style="padding-bottom:5px"><strong>City:</strong> ' + data.city + '</p>' + '<p style="padding-bottom:5px"><strong>Batch No:</strong> ' + data.batchno + '</p>' + '<p style="padding-bottom:5px"><strong>Date Added:</strong> ' + data.dateAdded + '</p>' + '<p style="padding-bottom:5px"><strong>Added By:</strong> ' + data.addedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Assigned By:</strong> ' + data.assignedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Status:</strong> ' + data.status + '</p>')
+      
+            // Show the modal
+            $('#jobdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // View AgentsDetails
+      $('#agentsDetailsrecorddatatable tbody').on('click', '.view-btn', function () {
+        var agentId = $(this).data('id')
+        // Fetch agent details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_agent_details" %}',
+          data: { id: agentId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the agent details
+            $('#fullname').text(data.fullname)
+            $('#Agentemail').text(data.AgentEmail)
+            $('#PhoneNumber').text(data.PhoneNumber)
+            $('#Agentaddress').text(data.Agentaddress)
+            $('#Agentstate').text(data.Agentstate)
+            $('#Agentcity').text(data.Agentcity)
+            $('#AgentStatus').html(data.is_active)
+            $('#last_login').text(data.last_login)
+            $('#guarantorPhoneNumber').text(data.guarantorPhoneNumber)
+            $('#guarantorName').text(data.guarantorName)
+            $('#BankAccountDetails').text(data.BankAccountDetails)
+            $('#created_at').text(data.created_at)
+            $('#profile_picture').attr('src', data.profile_picture) // Set the source attribute of the image tag
+            $('#proofOfId').attr('href', data.proofOfId) // Set the href attribute of the proof of ID link
+      
+            // Show the modal
+            $('#agentdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#pendingreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#rejectedreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#approvedreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#allreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // Add a click event listener to the "View" button
+      $('#allagentsreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetchagentreportdetails" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // view details of agent rejected reports
+      $('#agentsrejectedreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetchagentreportdetails" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            // Inside your success function:
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      // =================ALL UNDONE JOBS VIEW DETAILSS SECTION=====================
+      $('#agentunassignedjobsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_job_detailsagentsection" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            var modalBody = $('#jobdetailsModal .modal-body #jobDetails')
+            modalBody.html('<p style="padding-bottom:5px"><strong>Client:</strong> ' + data.client + '</p>' + '<p style="padding-bottom:5px"><strong>Agent:</strong> ' + data.agent + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Name:</strong> ' + data.name + '</p>' + '<p style="padding-bottom:5px"><strong>JobRef:</strong> ' + data.ref + '</p>' + '<p style="padding-bottom:5px"><strong>Client RefID:</strong> ' + data.clientrefNo + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Address:</strong> ' + data.address + '</p>' + '<p style="padding-bottom:5px"><strong>Email Address:</strong> ' + data.email + '</p>' + '<p style="padding-bottom:5px"><strong>State:</strong> ' + data.state + '</p>' + '<p style="padding-bottom:5px"><strong>City:</strong> ' + data.city + '</p>' + '<p style="padding-bottom:5px"><strong>Batch No:</strong> ' + data.batchno + '</p>' + '<p style="padding-bottom:5px"><strong>Date Added:</strong> ' + data.dateAdded + '</p>' + '<p style="padding-bottom:5px"><strong>Added By:</strong> ' + data.addedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Assigned By:</strong> ' + data.assignedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Status:</strong> ' + data.status + '</p>')
+      
+            // Show the modal
+            $('#jobdetailsModal').modal('show')
+          }
+        })
+      })
+      
+      //===== Handle row selection and 'Check All' functionality for all tables==============
+      $('#check-all').change(function () {
+        var checked = this.checked
+        $('.select-checkbox').prop('checked', checked)
+      })
+      
+      $('#datatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      $('#unassignedjobsdatatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      $('#rejectedjobsdatatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      $('#pendingreportsdatatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      $('#allreportsdatatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      $('#rejectedreportsdatatable tbody').on('change', '.select-checkbox', function () {
+        // Check if all checkboxes are selected
+        var allChecked = $('.select-checkbox').length === $('.select-checkbox:checked').length
+        $('#check-all').prop('checked', allChecked)
+      })
+      
+      //===== end of Handling row selection and 'Check All' functionality for all tables==============
+      
+      // ============Handle delete selected action for job===============================
+      $('#delete-selected').click(function () {
+        var selectedIds = []
+        $('.select-checkbox:checked').each(function () {
+          selectedIds.push($(this).data('id'))
+        })
+      
+        // Check if at least one record is selected
+        if (selectedIds.length === 0) {
+          alert('Please select at least one record to delete.')
+          return
+        }
+      
+        // Show the confirmation modal
+        $('#confirmation-modal').modal('show')
+      
+        $('#confirm-delete').click(function () {
+          // Close the confirmation modal
+          $('#confirmation-modal').modal('hide')
+      
+          // Send the selected IDs to your server for deletion
+          var csrf = $('input[name=csrfmiddlewaretoken]').val()
+      
+          $.ajax({
+            url: '{% url "delete_job" %}',
+            method: 'POST',
+            data: {
+              ids: selectedIds,
+              csrfmiddlewaretoken: csrf
+            },
+            dataType: 'json',
+            success: function (response) {
+              if (response.success) {
+                // Reload the page after successful deletion
+                window.location.reload()
+              } else {
+                alert('Failed to delete selected records.')
+              }
+            }
+          })
+        })
+      })
+      
+      // ============Handle delete selected action for job for client===============================
+      $('#delete-selected').click(function () {
+        var selectedIds = []
+        $('.select-checkbox:checked').each(function () {
+          selectedIds.push($(this).data('id'))
+        })
+      
+        // Check if at least one record is selected
+        if (selectedIds.length === 0) {
+          alert('Please select at least one record to delete.')
+          return
+        }
+      
+        // Show the confirmation modal
+        $('#confirmation-modal').modal('show')
+      
+        $('#confirm-delete').click(function () {
+          // Close the confirmation modal
+          $('#confirmation-modal').modal('hide')
+      
+          // Send the selected IDs to your server for deletion
+          var csrf = $('input[name=csrfmiddlewaretoken]').val()
+      
+          $.ajax({
+            url: '{% url "clientdelete_job" %}',
+            method: 'POST',
+            data: {
+              ids: selectedIds,
+              csrfmiddlewaretoken: csrf
+            },
+            dataType: 'json',
+            success: function (response) {
+              if (response.success) {
+                // Reload the page after successful deletion
+                window.location.reload()
+              } else {
+                alert('Failed to delete selected records.')
+              }
+            }
+          })
+        })
+      })
+      //==========================JOB BULK ASSIGN===============================
+      $(document).ready(function () {
+        // Event listener for "Assign Selected" button
+        $('#assign-selected').click(function () {
+          // Open the modal
+          $('#bulkassignModal').modal('show')
+        })
+      
+        // Event listener for "Assign" button within the modal
+        $('#bulkassign_btn').click(function (e) {
+          e.preventDefault()
+      
+          var agentId = $('#selectedagent').val()
+          var selectedJobIds = []
+          $('.select-checkbox:checked').each(function () {
+            selectedJobIds.push($(this).data('id'))
+          })
+      
+          if (agentId && selectedJobIds.length > 0) {
+            // Show a confirmation dialog
+            if (confirm('Are you sure you want to assign the selected jobs?')) {
+              // Continue with assignment if confirmed
+              var csrf = $('input[name=csrfmiddlewaretoken]').val()
+      
+              // Prepare the form data
+              var formData = new FormData()
+              formData.append('csrfmiddlewaretoken', csrf)
+              formData.append('agent', agentId)
+              for (var i = 0; i < selectedJobIds.length; i++) {
+                formData.append('job_ids[]', selectedJobIds[i])
+              }
+      
+              // Send the assignment request
+              $.ajax({
+                url: '{% url "assignbulkjobs" %}', // Replace with your Django URL
+                method: 'POST',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (response) {
+                  if (response.success) {
+                    // Handle success, possibly show a success message
+                    location.reload() // Reload the page after assignment
+                  } else {
+                    alert('Failed to assign selected jobs.')
+                  }
+                }
+              })
+            }
+          } else {
+            alert('Make sure you Select Job and Agent!.')
+          }
+        })
+      })
+      
+      // Function to open the edit job modal
+      function editJob(id) {
+        $.ajax({
+          url: '{% url "edit_job_details" %}', // Replace with your URL
+          data: { id: id },
+          dataType: 'json', // Assuming you return JSON data from the view
+          success: function (data) {
+            $('#job_id').val(data.id)
+            $('#first_name').val(data.first_name)
+            $('#last_name').val(data.last_name)
+            $('#phone_number').val(data.phone_number)
+            $('#email').val(data.email)
+            $('#state').val(data.state)
+            $('#city').val(data.city)
+            $('#BATCH_NO').val(data.BATCH_NO)
+            $('#address').val(data.address)
+            $('#published').val(data.published)
+            $('#status').val(data.status)
+      
+            $('#editJobModal').modal('show')
+          }
+        })
+      }
+      
+      // Handle form submission for editing the job
+      $('#editJobForm').submit(function (e) {
+        e.preventDefault()
+        $.ajax({
+          type: 'post',
+          url: '{% url "update_job" %}', // Replace with your URL
+          data: $(this).serialize(),
+          success: function (response) {
+            if (response.success) {
+              $('#editJobModal').modal('hide')
+              // You can update the table data or show a success message here
+              var dataTable = $('#datatable').DataTable()
+              var unassignedjobsdatatable = $('#unassignedjobsdatatable').DataTable()
+              var rejectedjobsdatatable = $('#rejectedjobsdatatable').DataTable()
+              var fetchclientjobdatatable = $('#fetchclientjobdatatable').DataTable()
+              dataTable.ajax.reload()
+              unassignedjobsdatatable.ajax.reload()
+              rejectedjobsdatatable.ajax.reload()
+              fetchclientjobdatatable.ajax.reload()
+            }
+          }
+        })
+      })
+      
+      // Function to open the client edit job modal
+      function clienteditJob(id) {
+        $.ajax({
+          url: '{% url "clientedit_job_details" %}', // Replace with your URL
+          data: { id: id },
+          dataType: 'json', // Assuming you return JSON data from the view
+          success: function (data) {
+            $('#job_id').val(data.id)
+            $('#first_name').val(data.first_name)
+            $('#last_name').val(data.last_name)
+            $('#phone_number').val(data.phone_number)
+            $('#email').val(data.email)
+            $('#state').val(data.state)
+            $('#city').val(data.city)
+            $('#BATCH_NO').val(data.BATCH_NO)
+            $('#address').val(data.address)
+            $('#published').val(data.published)
+            $('#status').val(data.status)
+      
+            $('#editJobModal').modal('show')
+          }
+        })
+      }
+      
+      // Handle form submission for editing the job for client
+      $('#editJobForm').submit(function (e) {
+        e.preventDefault()
+        $.ajax({
+          type: 'post',
+          url: '{% url "clientupdate_job" %}', // Replace with your URL
+          data: $(this).serialize(),
+          success: function (response) {
+            if (response.success) {
+              $('#editJobModal').modal('hide')
+              // You can update the table data or show a success message here
+              var dataTable = $('#datatable').DataTable()
+              var unassignedjobsdatatable = $('#unassignedjobsdatatable').DataTable()
+              var rejectedjobsdatatable = $('#rejectedjobsdatatable').DataTable()
+              var fetchclientjobdatatable = $('#fetchclientjobdatatable').DataTable()
+              dataTable.ajax.reload()
+              unassignedjobsdatatable.ajax.reload()
+              rejectedjobsdatatable.ajax.reload()
+              fetchclientjobdatatable.ajax.reload()
+            }
+          }
+        })
+      })
+      
+      //===================BULK REPORT APPROVAL=========================================
+      $(document).ready(function () {
+        // Add a click event listener to the "Bulk Approve Reports" button
+        $('#bulkApprovalBtn').on('click', function () {
+          // Get the selected report IDs
+          var selectedReportIds = []
+          var csrf_token = '{{ csrf_token }}'
+      
+          // Show the loading image
+          $('#loadingImage').show()
+      
+          // Loop through the checkboxes to find the selected reports
+          $('#pendingreportsdatatable tbody input[type="checkbox"]:checked').each(function () {
+            selectedReportIds.push($(this).data('id'))
+          })
+      
+          // Check if any reports are selected
+          if (selectedReportIds.length > 0) {
+            // Ask for confirmation before proceeding
+            var confirmation = confirm('Are you sure you want to bulk approve these reports?')
+            if (confirmation) {
+              // Send the selected report IDs to the server for bulk approval
+              $.ajax({
+                url: '{% url "Pendingbulk_report_approval" %}',
+                type: 'POST',
+                data: { 'ids[]': selectedReportIds },
+                headers: {
+                  'X-CSRFToken': csrf_token
+                },
+                success: function (data) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle the success response, e.g., reload the data table
+                  $('#pendingreportsdatatable').DataTable().ajax.reload()
+                  location.reload()
+                },
+                error: function (xhr, textStatus, error) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle errors, e.g., display an error message
+                  console.log('Error:', error)
+                }
+              })
+            } else {
+              // Hide the loading image if the confirmation is canceled
+              $('#loadingImage').hide()
+            }
+          } else {
+            // Hide the loading image if no reports are selected
+            $('#loadingImage').hide()
+            alert('No reports are selected for bulk approval.')
+          }
+        })
+      })
+      
+      //===================END OFBULK REPORT APPROVAL=========================================
+      
+      //=====================BULK APPROVAL FOR ALL REPORTS===============================
+      //===================BULK REPORT APPROVAL=========================================
+      $(document).ready(function () {
+        // Add a click event listener to the "Bulk Approve Reports" button
+        $('#bulkApprovalBtnALLREPORT').on('click', function () {
+          // Get the selected report IDs (you might need to adjust this part)
+          var selectedReportIds = []
+          var csrf_token = '{{ csrf_token }}'
+      
+          // Show the loading image
+          $('#loadingImage').show()
+      
+          // Loop through the checkboxes to find the selected reports
+          $('#allreportsdatatable tbody input[type="checkbox"]:checked').each(function () {
+            selectedReportIds.push($(this).data('id'))
+          })
+      
+          // Check if any reports are selected
+          if (selectedReportIds.length > 0) {
+            // Ask for confirmation before proceeding
+            var confirmation = confirm('Are you sure you want to bulk approve these reports?')
+            if (confirmation) {
+              // Send the selected report IDs to the server for bulk approval
+              $.ajax({
+                url: '{% url "allreportbulk_approval" %}', // Replace with the URL for your bulk approval view
+                type: 'POST',
+                data: { 'ids[]': selectedReportIds },
+                headers: {
+                  'X-CSRFToken': csrf_token
+                },
+                success: function (data) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle the success response, e.g., reload the data table
+                  $('#allreportsdatatable').DataTable().ajax.reload()
+                  location.reload()
+                },
+                error: function (xhr, textStatus, error) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle errors, e.g., display an error message
+                  console.log('Error:', error)
+                }
+              })
+            } else {
+              // Hide the loading image if the confirmation is canceled
+              $('#loadingImage').hide()
+            }
+          } else {
+            // Hide the loading image if no reports are selected
+            $('#loadingImage').hide()
+            alert('No reports are selected for bulk approval.')
+          }
+        })
+      })
+      //===================END OFBULK ALL REPORT APPROVAL=========================================
+      
+      //===================BULK REPORT APPROVAL OF REJECTED REPORT=========================================
+      $(document).ready(function () {
+        // Add a click event listener to the "Bulk Approve Reports" button
+        $('#bulkApprovalBtnrejectedreport').on('click', function () {
+          // Get the selected report IDs (you might need to adjust this part)
+          var selectedReportIds = []
+          var csrf_token = '{{ csrf_token }}'
+      
+          // Show the loading image
+          $('#loadingImage').show()
+      
+          // Loop through the checkboxes to find the selected reports
+          $('#rejectedreportsdatatable tbody input[type="checkbox"]:checked').each(function () {
+            selectedReportIds.push($(this).data('id'))
+          })
+      
+          // Check if any reports are selected
+          if (selectedReportIds.length > 0) {
+            // Ask for confirmation before proceeding
+            var confirmation = confirm('Are you sure you want to bulk approve these reports?')
+            if (confirmation) {
+              // Send the selected report IDs to the server for bulk approval
+              $.ajax({
+                url: '{% url "RejectedBulkReportApproval" %}', // Replace with the URL for your bulk approval view
+                type: 'POST',
+                data: { 'ids[]': selectedReportIds },
+                headers: {
+                  'X-CSRFToken': csrf_token
+                },
+                success: function (data) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle the success response, e.g., reload the data table
+                  $('#rejectedreportsdatatable').DataTable().ajax.reload()
+                  location.reload()
+                },
+                error: function (xhr, textStatus, error) {
+                  // Hide the loading image
+                  $('#loadingImage').hide()
+      
+                  // Handle errors, e.g., display an error message
+                  console.log('Error:', error)
+                }
+              })
+            } else {
+              // Hide the loading image if the confirmation is canceled
+              $('#loadingImage').hide()
+            }
+          } else {
+            // Hide the loading image if no reports are selected
+            $('#loadingImage').hide()
+            alert('No reports are selected for bulk approval.')
+          }
+        })
+      })
+      //===================END OF BULK REJECTED REPORT APPROVAL=========================================
+      
+      //========================== Function to open the edit report modal============================
+      $(document).on('click', '.allreportedit-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/editallreport/' + reportId + '/'
+      })
+      
+      //========================== Function to open the edit report modal============================
+      $(document).on('click', '.edit-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/editpendingreport/' + reportId + '/'
+      })
+      
+      //========================== Function to open the edit report modal============================
+      $(document).on('click', '.agentedit-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/editagentreport/' + reportId + '/'
+      })
+      
+      //========================== Function to open the edit report modal============================
+      $(document).on('click', '.editrejectedreport-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/EditRejectedReport/' + reportId + '/'
+      })
+      
+      //========================== Function to open the edit report modal edit agent rejected report agent section============================
+      $(document).on('click', '.editagentrejectedreport-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/EditagentRejectedReport/' + reportId + '/'
+      })
+      
+      //========================== Function to open the report Job page============================
+      $(document).on('click', '.agentreportjob-btn', function () {
+        var reportId = $(this).data('id')
+        // Redirect to the Edit Report page with the report ID
+        window.location.href = '/reportAddress/' + reportId + '/'
+      })
+      
+      //=======================================export to csv reports=======================
+      // Handle CSV export button click
+      $('#allagentsreportsdatatable').on('click', 'button.buttons-csv', function () {
+        dataTable.button('csv').trigger()
+      })
+      
+      // Handle PDF export button click
+      $('#allagentsreportsdatatable').on('click', 'button.buttons-pdf', function () {
+        dataTable.button('pdf').trigger()
+      })
+      
+      //==================================REJECT JOB SECTION=========================
+      // Handle clicking the "Reject Job" button
+      $('#agentunassignedjobsdatatable').on('click', '.reject-job-btn', function () {
+        const jobId = $(this).data('id')
+        // Set the job ID in the modal for later use
+        $('#rejectJobModal').data('job-id', jobId)
+        // Show the rejection confirmation modal
+        $('#rejectJobModal').modal('show')
+      })
+      // Handle confirming the job rejection
+      $('#confirmRejectJob').on('click', function () {
+        const jobId = $('#rejectJobModal').data('job-id')
+        var csrf_token = '{{ csrf_token }}'
+        // Make an AJAX request to update the job status
+        $.ajax({
+          url: '/reject-job/' + jobId + '/', // Include the trailing slash  // Replace with the actual URL to update the job status
+          type: 'POST',
+          headers: {
+            'X-CSRFToken': csrf_token
+          },
+          data: { status: 2 }, // Assuming status 2 means "Rejected"
+          success: function (response) {
+            // Handle success, e.g., remove the job row from the DataTable
+            $('#agentunassignedjobsdatatable').DataTable().row('.selected').remove().draw(false)
+            // Close the modal
+            $('#rejectJobModal').modal('hide')
+            window.location.reload()
+          },
+          error: function () {
+            // Handle errors
+          }
+        })
+      })
+      
+      //========================================DELETE REPORT===============================
+      $('#rejectedreportsdatatable').on('click', '.delete-report', function () {
+        var reportId = $(this).data('id')
+        var csrf_token = '{{ csrf_token }}'
+        $('#confirmationModal').modal('show')
+        $('#confirmDelete').on('click', function () {
+          $('#confirmationModal').modal('hide')
+          $.ajax({
+            type: 'POST',
+            url: '/delete_report/' + reportId + '/',
+            data: {},
+            headers: {
+              'X-CSRFToken': csrf_token
+            },
+            success: function (data) {
+              // Handle success, e.g., refresh the DataTable
+              var dataTable = $('#rejectedreportsdatatable').DataTable()
+              dataTable.ajax.reload()
+              window.location.reload()
+            },
+            error: function (xhr, status, error) {
+              // Handle error
+              console.error(xhr.responseText)
+            }
+          })
+        })
+      })
+      //========================================END OF DELETE REPORT===============================
+      
+      //===========================================CLIENT CODES====================================
+      $(document).ready(function () {
+        var dataTable = $('#allclientreportsdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          ajax: {
+            url: '{% url "fetch_clientreportdata" %}',
+            type: 'GET',
+            data: function (d) {
+              // Include the search value in the AJAX request
+              d.searchValue = $('#approvedreportsdatatable_filter input').val()
+      
+              // Collect form data and include it in the AJAX request
+              var formData = $('#ReportFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> '
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        var dataTable = $('#fetchclientjobdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100], // Specify your length options
+            [10, 25, 50, 100]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          ajax: {
+            url: '{% url "fetchclientjob_data" %}',
+            type: 'GET',
+            data: function (d) {
+              // Collect form data and include it in the AJAX request
+              var formData = $('#jobFilterForm').serializeArray()
+              $.each(formData, function (index, element) {
+                d[element.name] = element.value
+              })
+            }
+          },
+          columns: [
+            {
+              data: null,
+              orderable: false,
+              render: function (data, type, row) {
+                return ' <span class="custom-checkbox"> <input type="checkbox" class="select-checkbox" data-id="' + row.id + '"> <label for="checkbox1"></label> </span>'
+              }
+            },
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="btn-primary" onclick="clienteditJob(' + row.id + ')"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Job" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+            {
+              data: 'state',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'city',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'whenAssigned',
+              render: function (data, type, row) {
+                // Clean the data (remove special characters)
+                var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
+                return cleanedData
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+        // Add a click event listener to the "View" button
+        $('#allclientreportsdatatable tbody').on('click', '.view-btn', function () {
+          var productId = $(this).data('id')
+          // Fetch product details and populate the modal
+          $.ajax({
+            url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+            data: { id: productId },
+            dataType: 'json',
+            success: function (data) {
+              // Populate the modal with the product details
+              // Inside your success function:
+              $('#id').text(data.id)
+              $('#client').text(data.client)
+              $('#agent').text(data.agent)
+              $('#name').text(data.name)
+              $('#clientrefNo').text(data.clientrefNo)
+              $('#customeraddress').text(data.customeraddress) // Populate address
+              $('#TAT').text(data.TAT)
+              $('#VerificationMessage').text(data.VerificationMessage)
+              $('#VerificationStatus').text(data.VerificationStatus)
+              $('#BuildingCondition').text(data.BuildingCondition)
+              $('#buildingColor').text(data.buildingColor)
+              $('#buildingType').text(data.buildingType)
+              $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+              $('#AddressResidential').text(data.AddressResidential)
+              $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+              $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+              $('#MoreComment').text(data.MoreComment)
+              $('#Landmark').text(data.Landmark)
+              $('#dateAdded').text(data.dateAdded)
+              $('#approvedBy').text(data.approvedBy)
+              $('#Reportstatus').html(data.Reportstatus)
+              $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
+              $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
+              $('#downloadLink').attr('href', data.downloadLink)
+      
+              // Show the modal
+              $('#reportdetailsModal').modal('show')
+            }
+          })
+        })
+      
+        // Add a click event listener to the "View" button
+        $('#fetchclientjobdatatable tbody').on('click', '.view-btn', function () {
+          var productId = $(this).data('id')
+          // Fetch product details and populate the modal
+          $.ajax({
+            url: '{% url "fetch_job_details" %}', // Replace with the URL to your Django view
+            data: { id: productId },
+            dataType: 'json',
+            success: function (data) {
+              // Populate the modal with the product details
+              var modalBody = $('#jobdetailsModal .modal-body #jobDetails')
+              modalBody.html('<p style="padding-bottom:5px"><strong>Client:</strong> ' + data.client + '</p>' + '<p style="padding-bottom:5px"><strong>Agent:</strong> ' + data.agent + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Name:</strong> ' + data.name + '</p>' + '<p style="padding-bottom:5px"><strong>JobRef:</strong> ' + data.ref + '</p>' + '<p style="padding-bottom:5px"><strong>Client RefID:</strong> ' + data.clientrefNo + '</p>' + '<p style="padding-bottom:5px"><strong>Customer Address:</strong> ' + data.address + '</p>' + '<p style="padding-bottom:5px"><strong>Email Address:</strong> ' + data.email + '</p>' + '<p style="padding-bottom:5px"><strong>Phone Number:</strong> ' + data.phone_number + '</p>' + '<p style="padding-bottom:5px"><strong>State:</strong> ' + data.state + '</p>' + '<p style="padding-bottom:5px"><strong>City:</strong> ' + data.city + '</p>' + '<p style="padding-bottom:5px"><strong>Batch No:</strong> ' + data.batchno + '</p>' + '<p style="padding-bottom:5px"><strong>Date Added:</strong> ' + data.dateAdded + '</p>' + '<p style="padding-bottom:5px"><strong>Added By:</strong> ' + data.addedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Assigned By:</strong> ' + data.assignedBy + '</p>' + '<p style="padding-bottom:5px"><strong>Status:</strong> ' + data.status + '</p>')
+      
+              // Show the modal
+              $('#jobdetailsModal').modal('show')
+            }
+          })
+        })
+      
+        //==========================end of the clients side===============
+      })
+    </script>
+
+    <script src="{% static 'assets/js/avr_portal_scripts.js' %}"></script>
+    <!-- plugins -->
+    <script src="{% static 'assets/js/vendors.js' %}"></script>
+    <!-- Add the Bootstrap JavaScript and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="{% static 'assets/js/dialog.js' %}"></script>
+    <script src="{% static 'assets/js/toast.js' %}"></script>
+    <!-- custom app -->
+    <script src="{% static 'assets/js/app.js' %}"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+  </body>
+</html>

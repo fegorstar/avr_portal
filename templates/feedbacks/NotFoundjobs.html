@@ -1,0 +1,137 @@
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                         <h4 class="card-title">Missing Portal Jobs</h4>             
+                                    </div>
+                                  
+                                </div>
+                                <div class="card-body"> 
+                                    <h3>Upload your CSV file and view jobs that did not get to the portal!</h3>
+                                    <p style="color:red" class="mb-2">Note: The header names of the column of the CSV file must be: <b>CIF |fullname | ActivityId |Address</b>. This Module searches by CIF, ActivityId ( which is the JobRefNo/clientJobrefID).</p>
+
+                                    <form method="post" enctype="multipart/form-data" onsubmit="showLoaderJobs()">
+                                        
+                                        {% csrf_token %}
+                                        <div class="form-group col-md-6">
+                                            <label for="exampleInputPassword1">CSV File:</label>
+                                            <input type="file" name="csv_file" accept=".csv" class="form-control"  required >
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Retrieve</button>
+                                        </div>
+                                    </form>
+
+                                    <div class="table-responsive"> 
+                                        
+                                        <!-- Display matched reports in DataTable if available -->
+                                        {% if jobs_from_csv %}
+                                        <hr>
+                                        <table id="unmatchedJobsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>CIF</th>
+                                                    <th>fullname</th>
+                                                    <th>ActivityId</th>
+                                                    <th>Address</th>
+                                                    <!-- Add more fields as needed -->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for job in jobs_from_csv %}
+                                                <tr>
+                                                    <td>{{ job.CIF }}</td>
+                                                    <td>{{ job.fullname }}</td>
+                                                    <td>{{ job.ActivityId }}</td>
+                                                    <td>{{ job.Address }}</td>
+                                                    <!-- Add more fields as needed -->
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    
+                                        <!-- Initialize and configure the DataTable -->
+                                        <script>
+                                            $(document).ready(function() {
+                                                $('#unmatchedJobsTable').DataTable({
+                                                    dom: 'Bfrtip',
+                                                    buttons: ['csv']
+                                                });
+                                            });
+                                        </script>
+                                        {% else %}
+                                        {% if no_jobs_found %}
+                                            <!-- Message when no jobs are found -->
+                                            <p class="alert alert-info">No missing jobs in the portal. All jobs were uploaded Successfully</p>
+                                        {% endif %}
+                                    {% endif %}
+                                    </div>
+                                    
+                                    <!-- Loader for Missing Portal Jobs -->
+                                    <div id="loadingImageJobs" class="text-center" style="display: none;">
+                                        <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Retrieving Jobs Not in Portal...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+            <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+<script>
+    function showLoaderJobs() {
+        // Display the loader when the form is submitted
+        document.getElementById('loadingImageJobs').style.display = 'block';
+    }
+</script>
+{% endblock content %}

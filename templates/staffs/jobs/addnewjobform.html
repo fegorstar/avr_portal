@@ -1,0 +1,92 @@
+
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS='is-invalid' %}
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Add New Job</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <span class="errorlist">
+        {% for field in form %}
+            {% if field.errors %}
+            <ul class="errorlist">
+                {% for error in field.errors %}
+                    <span style="color: red;">{{error}}</span>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endfor %}
+
+        <span style="color: red;">{{form.non_field_errors}}</span>
+    </span>
+
+    <div class="form-group">
+        <label>Select Client</label>
+        {% render_field  form.client class="form-control form-select" id='selUser3' placeholder="Client"  %}
+          <div class="invalid-feedback">{{ form.client.errors|first }}</div>
+    </div>
+    
+    <div class="form-group">
+        <label>Client Job Reference No:(Optional)</label>
+        {% render_field form.clientJobrefID   class="form-control" placeholder=""  %}
+        <div class="invalid-feedback">{{ form.clientJobrefID.errors|first }}</div>
+    </div>
+
+  
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {% render_field form.first_name class="form-control" placeholder="First Name" %}
+            <label style="color:red" class="text-danger">{{ form.first_name.errors }}</label>
+        </div>
+        <div class="form-group col-md-6">
+            {% render_field form.last_name class="form-control" placeholder="Last Name" %}
+            <label style="color:red" class="text-danger">{{ form.last_name.errors }}</label>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {% render_field form.state class="form-control" placeholder="State" %}
+        </div>
+        <div class="form-group col-md-6">
+            {% render_field form.city class="form-control" placeholder="City" %}
+        </div>
+    </div>	
+    
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {% render_field form.phone_number class="form-control" placeholder="Phone Number" %}
+
+        </div>
+        <div class="form-group col-md-6">
+            {% render_field form.email class="form-control" placeholder="Email" %}
+            <label style="color:red" class="text-danger">{{ form.email.errors }}</label>
+        </div>
+    </div>		
+
+    <div class="form-group">
+        {% render_field form.BATCH_NO  class="form-control" placeholder="Batch No"  %}
+        <div class="invalid-feedback">{{ form.BATCH_NO.errors|first }}</div>
+    </div>
+    <div class="form-group">
+        {% render_field form.address class="form-control" placeholder="Address" %}
+
+    </div>
+
+
+    <!-- <div class="form-group">
+        <label>Publish:</label>
+        {% render_field form.published class="form-control form-select" placeholder="Published" %}
+
+    </div> -->
+              
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      Cancel
+    </button>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </div>
+</form>
+{% endwith %}

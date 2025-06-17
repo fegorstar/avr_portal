@@ -1,0 +1,171 @@
+{% extends "base.html" %}  
+{% load widget_tweaks %}
+{% load static %}
+{% block title %} Staff Dashboard {% endblock %}
+{% block content %}
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                       <div class="row">
+                       
+                        <div class="col-xxl-8 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div class="card-heading text-end">
+                                         <h4 class="card-title">Retrieve Outstanding Reports</h4>             
+                                    </div>
+                                  
+                                </div>
+                                <div class="card-body"> 
+                                    <h3>Get all Outstanding Reports!</h3>
+                                        <p class="mb-2" style="color:red">Note: Make sure the CIF, ActivityId and Address column headers in the CSV file are correctly named as: <b>CIF | ActivityId | Address</b>.  This module searches by CIF, ActivityId/Address!. </p>
+                                        <form method="post" enctype="multipart/form-data" action="{% url 'search_reports' %}" onsubmit="showLoader()">
+                                            {% csrf_token %}
+                                            <div class="form-group col-md-6">
+                                                <label for="exampleInputPassword1">Upload CSV File:</label>
+                                                <input type="file" name="csv_file" accept=".csv" class="form-control" required>
+                                            </div>
+                                        
+                                            <div class="form-group col-md-6">
+                                                <label for="search_criteria">Search Criteria:</label>
+                                                <select name="search_criteria" class="form-control form-select" required>
+                                                    <option value="ActivityId">Client Job Reference ID</option>
+                                                    <option value="fullname">Customer Name</option>
+                                                    <option value="Address">Address</option>
+                                                    <option value="clientJobrefID_address">Client Job Reference ID and Address</option>
+                                                    <option value="address_customer_name">Address and Customer Name</option>
+                                                    <option value="clientJobrefID_address_customer_name">Client Job Reference ID, Address, and Customer Name</option>
+                                                    <option value="clientJobrefID_address_customer_name_CIF">Client Job Reference ID, Address, Customer Name, and CIF</option>
+                                                    <option value="CIF">CIF</option>
+                                                </select>
+                                            </div>
+                                        
+                                            <div class="form-group col-md-6">
+                                                <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Retrieve</button>
+                                            </div>
+                                        </form>
+                                        <div class=" table-responsive"> 
+                                            <!-- Display messages -->
+                                            {% if messages %}
+                                            <ul class="messages">
+                                                {% for message in messages %}
+                                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                            {% endif %}
+                                            
+                                            <!-- Display matched reports in DataTable if available -->
+                                            {% if reports %}
+                                            <table id="reportsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ActivityId  </th>
+                                                        <th>CustomerName  </th>
+                                                        <th>CustomerAddress </th>
+                                                        <th>Ver.Message</th>
+                                                        <th>Building Color</th>
+                                                        <th>Building Type</th>
+                                                        <th>PDF URL</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for report in reports %}
+                                                    <tr>
+                                                        <td>{{ report.clientJobrefID }}</td>
+                                                        <td>{{ report.customer.first_name }} {{ report.customer.last_name }}</td>
+                                                        <td>{{ report.address }}</td>
+                                                        <td>{{ report.VerificationMessage }}</td>
+                                                        <td>{{ report.buildingColor }}</td>
+                                                        <td>{{ report.buildingType }}</td>
+                                                        <td>
+                                                            <a class="btn btn-success report-link" target="_blank" href="{{ current_domain }}{% url 'reportinPdf' pk=report.pk %}" >
+                                                                {{ current_domain }}{% url 'reportinPdf' pk=report.pk %}
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            
+                                            <!-- Initialize and configure the DataTable -->
+                                            <script>
+                                                $(document).ready(function() {
+                                                    $('#reportsTable').DataTable({
+                                                        dom: 'Bfrtip',
+                                                        buttons: ['csv']
+                                                    });
+                                                });
+                                            </script>
+                                            {% else %}
+                                            {% if no_reports_found %}
+                                                <!-- Message when no outstanding reports are found -->
+                                                <p class="alert alert-info">No outstanding reports found.</p>
+                                            {% endif %}
+                                        {% endif %}
+                                        </div>
+                                        
+                                        <div id="loadingImage" class="text-center" style="display: none;">
+                                            <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Retrieving Outstanding Reports...
+                                        </div>
+                                        
+                                        <script>
+                                            function showLoader() {
+                                                // Display the loader when the form is submitted
+                                                document.getElementById('loadingImage').style.display = 'block';
+                                                // Hide the "No reports found" message
+                                                document.getElementById('noReportsMessage').style.display = 'none';
+                                            }
+                                        </script>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->      
+                <!-- end container-fluid -->
+              
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'staffs/jobs/modals.html' %}
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    <script>
+        function showLoader() {
+            // Display the loader when the form is submitted
+            document.getElementById('loadingImage').style.display = 'block';
+        }
+    </script>
+    {% endblock content %}

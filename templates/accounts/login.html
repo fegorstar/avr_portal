@@ -1,0 +1,97 @@
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>AVR Portal</title>
+   
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="{% static 'assets/img/favicon.ico' %} ">
+        <!-- External CSS libraries -->
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <!-- plugin stylesheets -->
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/styles_1.css' %}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </head>
+    <body>
+   
+
+<div class="main-wrapper login-body">
+   <div class="login-wrapper">
+      <div class="container">
+         <div class="loginbox">
+            <div class="login-left">
+              </div>
+            <div class="login-right">
+               <div class="login-right-wrap text-center">
+               <img class="img-fluid" src="{% static 'assets/img/logo.jpg' %}" style="width:100px" alt="Logo">
+                  <h1 class="mb-2">OOLP AVR Portal</h1>
+                    <p  class=" blink_me text-danger" style="font-size:13px"> Welcome back, Please login to your account.</p>
+                    <form action="{% url 'login' %}" method="post" enctype="multipart/form-data">
+                     {% include 'partials/alerts.html' %}
+                     {% csrf_token %}
+                     <!-- Other form fields -->
+                     <div class="form-group">
+                         <input class="form-control" type="email" name="email" placeholder="Email">
+                     </div>
+                     <div class="form-group">
+                         <div class="input-group" id="show_hide_password">
+                             <input id="password-field" type="password" class="form-control" name="password">
+                             <a href="javascript:;" class="input-group-text bg-transparent">
+                                 <span toggle="#password-field" class="fa fa-eye-slash field-icon toggle-password"></span>
+                             </a>
+                         </div>
+                     </div>
+                     <div class="form-group">
+                         <button class="btn btn-primary btn-block" type="submit">Login</button>
+                     </div>
+                 </form>
+              
+                     </div>
+                    
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+  
+     <script src="{% static 'assets/js/scripts.js' %}"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+       <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+
+      
+   <script>
+     
+         $(document).ready(function() {
+             // Disable the login button after submission
+             $('form').submit(function() {
+                 $('button[type="submit"]', this).prop('disabled', true);
+             });
+         });
+   
+    
+      $(".toggle-password").click(function() {
+  
+        $(this).toggleClass("fa-eye fa-eye-slash");
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") == "password") {
+          input.attr("type", "text");
+        } else {
+          input.attr("type", "password");
+        }
+      });
+     </script>
+    
+    </body>
+    
+    </html>
+    {% endblock content %}

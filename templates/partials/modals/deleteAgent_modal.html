@@ -1,0 +1,22 @@
+  <!-- Delete Client Modal -->
+  <div id="deleteAgentModal{{agent.pk}}" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form>
+				<div class="modal-header">						
+					<h4 class="modal-title">Delete {{ agent.user.first_name }}  {{ agent.user.last_name }}?</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</div>
+				<div class="modal-body">					
+                    <p>Are you sure you want to delete <b>{{ agent.user.first_name }}  {{ agent.user.last_name }}</b> Records?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+				</div>
+				<div class="modal-footer">
+					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+					 <a href="{%url 'deleteAgent' pk=agent.pk%}" class="btn btn-danger text-white">Delete</a>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+

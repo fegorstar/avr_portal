@@ -1,0 +1,41 @@
+{% extends "base.html" %}  
+{% load static %}
+{% block title %} 404 {% endblock %}
+{% block content %}
+
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+  <!--start error-404-contant-->
+
+    
+
+  <div class="error-contant" style="margin-top:50px; border:0">
+
+    <div class="container">
+    <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+    <div class="error-content">
+    <img src="{% static 'assets/img/404.jpg' %}" alt="Iamge">
+    <h2>Oops! Page Not Found</h2>
+    <p>The page you are looking for might have been removed had its name changed or is temporarily unavailable.</p>
+    <a href="{% url 'login' %}" class="btn btn-round btn-primary mt-3">Back to Home</a>
+             
+    </div>
+    </div>
+    </div>
+    </div>
+   
+  
+</div>
+<!--end error-404-contant-->      
+
+<!-- end app -->
+    {% endblock content %}
+

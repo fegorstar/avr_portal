@@ -1,0 +1,191 @@
+{% extends "base.html" %}  
+{% load static %}
+{% block title %} Client Dashboard {% endblock %}
+{% block content %}
+
+
+  <!-- begin app -->
+  <div class="app">
+    <!-- begin app-wrap -->
+    <div class="app-wrap">
+
+        <!-- begin pre-loader -->
+        {% include 'partials/preloader.html' %}
+        <!-- end pre-loader -->
+       
+      
+        <!-- begin app-header -->
+        {% include 'partials/header.html' %}
+        <!-- end app-header -->
+
+
+        <!-- begin app-container -->
+        <div class="app-container">
+
+              <!-- begin app-nabar -->
+            {% include 'partials/sidebar.html' %}
+                <!-- end sidebar-nav -->
+            </aside>
+            <!-- end app-navbar -->
+
+
+            <!-- begin app-main -->
+            <div class="app-main" id="main">
+                <!-- begin container-fluid -->
+                <div class="container-fluid">
+                <!-- begin row -->
+                    <div class="row">
+                        <div class="col-md-12 m-b-30">
+                            <!-- begin page title -->
+                            <div class="user-welcome d-block d-xl-flex flex-nowrap align-items-center">
+                                <div class="bg-img mb-2 mb-xl-0 mr-3">
+                                        <!-- |Here we are dispplaying the profile picture if it exist or not -->
+                                        {% if profile.profile_picture %}
+                                        <img class="img-fluid rounded" src="{{profile.profile_picture.url }}"  alt="user">
+                                        {% else %}
+                                        <img class="img-fluid rounded" src="{% static 'assets/img/avtar/admin-avatar.png' %} " alt="user">
+                                        {% endif %}
+                                       </div>
+                                <div class="page-title mb-2 mb-xl-0">
+                                    <h1 class="mb-1">Welcome, {{user.username}} </h1>
+                                    <p style="text-transform: uppercase;">Role: {{user.get_role}}</p>
+                                    <p>Client ID: {{client_id}}</p>
+                                </div>
+                                <div class="ml-auto d-flex align-items-center secondary-menu text-center">
+                                   
+                                </div>
+                                <div class="ml-xl-4 mt-xl-0 ml-0 mt-3 d-flex align-items-center">
+                                    <div class="dropdown">
+                                        <a class="btn btn-success" href="#!" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Quick Link   <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                        <div class="dropdown-menu custom-dropdown dropdown-menu-right dropdown-menu-left-mobile p-4">
+                                            <a class="dropdown-item" href="{% url 'clientjobs' %}"><i class="ti ti-layers-alt"></i>Add Job </a>
+                                           <a class="dropdown-item" href="{% url 'clientreports' %}"><i class="ti ti-email"></i>View Reports</a>
+                                      
+                                   </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+                    </div>
+                    <!-- end row -->
+                    <!-- begin row -->
+                                           <!-- Notification -->
+                                         <!-- end row -->
+                    <!-- begin row -->
+                    <div class="row">
+                        <div class="col-xs-6 col-xxl-3 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0 bg-info">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{UndoneRequests}}</h2>
+                                    <p class="text-white">Undone Requests</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-xxl-3 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0 bg-primary">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{DoneRequests}}</h2>
+                                    <p class="text-white">Done Requests </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-xxl-3 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0 bg-orange">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{PendingReports }}</h2>
+                                    <p class="text-white">Pending Reports </p>
+                                </div>
+                            </div>
+                        </div>
+                      
+
+                        <div class="col-xs-6 col-xxl-3 m-b-30">
+                            <div class="card card-statistics h-100 m-b-0 bg-primary">
+                                <div class="card-body">
+                                    <h2 class="text-white mb-0">{{todaysReport}}</h2>
+                                    <p class="text-white">Today's Approved Reports </p>
+                                </div>
+                            </div>
+                        </div>
+
+                   
+                    </div>
+
+                    
+
+                    <div class="row">
+                        <div class="col-xxl-6 m-b-30">
+                            <div class="card card-statistics site-visitor h-100 mb-0">
+                                <div class="card-header">
+                                    <h4 class="card-title" style="text-transform:uppercase">Requests and User Summary</h4>
+                                </div>
+                                <div class="card-body">
+                               
+
+                                       
+                                        <div class="col-sm-12 ml-auto">
+                                                                                                
+         <div class="row text-left">
+                                                <div class="border-right col mr-5">
+                                                    <h4 class="mb-0">{{current_month_reports}}</h4>
+                                                    <span> <i class="fa fa-square pr-1 text-success"></i>Month's Approved Report</span>
+                                                </div>
+
+                                                <div class="border-right col mr-5">
+                                                    <h4 class="mb-0">{{ApprovedReports}}</h4>
+                                                    <span> <i class="fa fa-square pr-1 text-success"></i>Total Approved Report</span>
+                                                </div>
+                                                <!-- <div class=" col mr-5">
+                                                    <h4 class="mb-0">6,578</h4>
+                                                    <span > <i class="fa fa-square pr-1 text-primary"></i>Total Registered Branches</span>
+                                                </div>
+                                                -->
+                                              
+
+                                                                                                </div>
+                         
+                                                                                                
+                                                                                                                                                                                                 
+                                                                                                
+
+
+
+                                   
+                                        
+                                        
+                                        
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </div>
+
+                    
+                    
+                    
+
+                    
+                    <!-- end row -->
+                                     </div>
+                <!-- end container-fluid -->
+            </div>
+            <!-- end app-main -->
+        </div>
+        <!-- end app-container -->
+        <!-- begin footer -->
+       
+        <!-- end footer -->
+    </div>
+    <!-- end app-wrap -->
+    {% include 'partials/footer.html' %}
+</div>
+<!-- end app -->
+    {% endblock content %}
+

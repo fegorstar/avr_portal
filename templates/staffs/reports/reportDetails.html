@@ -1,0 +1,147 @@
+{% load widget_tweaks %}
+
+<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title text-center">Report Details</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <a class="btn btn-success" target="_blank" href="{% url 'reportinPdf' pk=selected_report.pk %}" style="margin-left:15px">  <i class="fa fa-download"></i> Download Report</a> 
+    <table class=" col-md-12 table text-left  table-responsive " width="100%">
+                      
+        <tbody style="width:100%">
+
+            <tr>
+                <td  class="table-secondary">ID:</td>
+                <td> {{selected_report.customer.ref_no}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Client Job Reference No:</td>
+                <td> {{selected_report.customer.clientJobrefID}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Customer Name:</td>
+                <td>{{selected_report.customer.first_name}} {{selected_report.customer.last_name}}</td>
+            </tr>
+            <tr>
+                <td class="table-secondary">Client: </td>
+                <td>{{selected_report.Client}}</td>
+            </tr>
+
+            <tr>
+                <td class="table-secondary">Agent: </td>
+                <td>{{selected_report.customer.agent}}</td>
+            </tr>
+            <tr>
+                <td class="table-secondary">TAT: </td>
+                <td>{{selected_report.TAT}} hours</td>
+            </tr>
+            <tr>
+                <td class="table-secondary">Verification Message: </td>
+                <td>{{selected_report.VerificationMessage}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Building Condition:</td>
+                <td>{{selected_report.buildingCondition}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Building Color:</td>
+                <td>{{selected_report.buildingColor}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Building Type:</td>
+                <td>{{selected_report.buildingType}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Customer Relationship With Address:</td>
+                <td>{{selected_report.CustomerRelationshipWithaddress}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Address Residential:</td>
+                <td>{{selected_report.AddressResidential}}</td>
+            </tr>
+
+
+
+           
+            <tr>
+                <td  class="table-secondary">Name of individual Interviewed:</td>
+                <td>{{selected_report.NameofindividualInterviewed}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Relationship With Customer:</td>
+                <td>{{selected_report.RelationshipWithCustomer}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">More Comment:</td>
+                <td>{{selected_report.MoreComment}}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Landmark:</td>
+                <td>{{selected_report.Landmark}}</td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Photo1:</td>
+                
+                <td>   
+                    {% if selected_report.photo1 %}
+                    <img class="img-fluid rounded" src="{{selected_report.photo1.url }}"  alt="Address photo">
+                    {% endif %}           
+                </td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Photo2:</td>
+                
+                <td>   
+                    {% if selected_report.photo2 %}
+                    <img class="img-fluid rounded" src="{{selected_report.photo2.url }}"  alt="Address photo">
+                    {% endif %}           
+                </td>
+            </tr>
+            <tr>
+                <td  class="table-secondary">Report Status:</td>
+                <td>{% if selected_report.Reportstatus == '0' %}
+                    <span class="badge badge-warning ">Pending</span>
+                
+                    {% elif selected_report.Reportstatus == '1' %}
+                    <span class="badge badge-primary ">Approved</span>
+                
+                    {% elif selected_report.Reportstatus == '2' %}
+                    <span class="badge badge-danger ">Rejected</span>
+                
+                  {% else %}
+                  <span class="badge badge-warning ">Pending</span>
+                  {% endif %}</td>
+            </tr>
+
+            <tr>
+                <td  class="table-secondary">Approved By:</td>
+                <td>{{selected_report.approvedBy.first_name}} {{selected_report.approvedBy.last_name}}</td>
+            </tr>
+
+   
+
+         
+        </tbody>
+    </table>
+ 
+   
+              
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      Close
+    </button>
+ 
+  </div>
+</form>
+
