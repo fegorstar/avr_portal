@@ -8,7 +8,7 @@ from accounts.views import check_role_agent
 from staffs.models import Agent, Job, Report
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-
+from geopy.geocoders import Nominatim
 from staffs.forms import EditJobForm, ReportJobForm, JobForm, ImportReportForm,  uploadReportForm
 from .forms import AgentuserForm, AgentForm, EditReportForm
 from accounts.forms import UserProfileForm, UserProfileUpdateForm
@@ -200,58 +200,54 @@ def fetch_job_detailsagentsection(request):
 
 # ===============================Address Report===================================
 
-
 @login_required(login_url='login')
 @user_passes_test(check_role_agent)
 def Address_Report(request, pk):
     selected_job = get_object_or_404(Job, pk=pk)
-    nowseleted = selected_job.ref_no
-    print('job', nowseleted)
     agent = get_object_or_404(Agent, user=request.user)
+    nowseleted = selected_job.ref_no  # Store the job reference number for status update
 
     if request.method == 'POST':
+        # Process the form data and capture latitude and longitude
         Reportform = ReportJobForm(request.POST, request.FILES)
+
         try:
             if Reportform.is_valid():
-                # Fetch first_name and last_name from the Job instance
+                # Fetch first_name and last_name from the Job instance to build customer name
                 first_name = selected_job.first_name
                 last_name = selected_job.last_name
-                # Concatenate first and last names for customerName
                 full_name = f"{first_name} {last_name}"
 
-                # get the selected job refno
-                agent = request.POST['agent']
+                # Get latitude and longitude from the form
+                latitude = request.POST.get('latitude')
+                longitude = request.POST.get('longitude')
 
+                # Ensure that latitude and longitude are provided
+                if not latitude or not longitude:
+                    messages.error(request, 'Location verification is required. Please enable location services or enter the address manually.')
+                    return redirect('reportAddress', pk=pk)
+
+                # Date and time handling for job assigned and report creation
                 current_datetime = str(datetime.now())
-                date_format1 = parser.parse(str(current_datetime))
-                print("result", date_format1)
-
-                # Replace "midnight" with "12:00am" and "noon" with "12:00pm"
+                date_format1 = parser.parse(current_datetime)
                 whenJobAssigned_str = str(request.POST['whenJobAssigned'])
                 if 'midnight' in whenJobAssigned_str:
-                    whenJobAssigned_str = whenJobAssigned_str.replace(
-                        'midnight', '12:00am')
+                    whenJobAssigned_str = whenJobAssigned_str.replace('midnight', '12:00am')
                 elif 'noon' in whenJobAssigned_str:
-                    whenJobAssigned_str = whenJobAssigned_str.replace(
-                        'noon', '12:00pm')
+                    whenJobAssigned_str = whenJobAssigned_str.replace('noon', '12:00pm')
 
-                # Use dateutil.parser to parse the date string
                 date_format2 = date_parser.parse(whenJobAssigned_str)
-                print(date_format2)
-                print(date_format2)
+                diff = date_format1 - date_format2  # Calculate difference
+                total_TAT = diff.total_seconds() / 60 / 60  # TAT in hours
 
-                diff = date_format1 - date_format2
-                # Get interval between two timestamps in hours
-                total_TAT = diff.total_seconds()/60/60
-
+                # Get other fields from the form
                 JobRefNo = request.POST['JobRefNo']
                 clientJobrefID = request.POST['clientJobrefID']
                 client = request.POST['client']
                 buildingCondition = Reportform.cleaned_data['buildingCondition']
                 buildingColor = Reportform.cleaned_data['buildingColor']
                 buildingType = Reportform.cleaned_data['buildingType']
-                CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                    'CustomerRelationshipWithaddress']
+                CustomerRelationshipWithaddress = Reportform.cleaned_data['CustomerRelationshipWithaddress']
                 AddressResidential = Reportform.cleaned_data['AddressResidential']
                 NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
                 RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
@@ -261,30 +257,34 @@ def Address_Report(request, pk):
                 address = Reportform.cleaned_data['address']
                 photo1 = Reportform.cleaned_data['photo1']
 
-                reportjob = Reportform.save(commit=False)  # prepare to store
+                # Save the report object with captured geolocation data
+                reportjob = Reportform.save(commit=False)  # Prepare to save the report object
                 reportjob.customer = selected_job
                 reportjob.agent = agent
                 reportjob.TAT = total_TAT
-                reportjob.Reportstatus = 0
+                reportjob.Reportstatus = 0  # Default report status
                 reportjob.JobRefNo = JobRefNo
-                reportjob.address = address  # address
-                reportjob.clientJobrefID = clientJobrefID  # save the client ref ID
+                reportjob.address = address  # Save the address
+                reportjob.clientJobrefID = clientJobrefID  # Save client reference ID
                 reportjob.Client = client
                 reportjob.created_at = date_format1
                 reportjob.modified_at = date_format1
                 reportjob.customerName = full_name
+                reportjob.latitude = latitude  # Save the latitude
+                reportjob.longitude = longitude  # Save the longitude
                 reportjob.save()
 
-                # update the status field in Jobs table with report is sent for that Job
-                jobstatus = Job.objects.filter(
-                    ref_no=nowseleted).update(status=1)
-                print(jobstatus)
+                # After saving the report, update the job status
+                jobstatus = Job.objects.filter(ref_no=nowseleted).update(status=1)
 
+                # Success message
+                messages.success(request, 'Report successfully submitted!')
                 return redirect('agentassignedjobs')
+
         except IntegrityError:
-            messages.error(
-                request, 'Your have already Added a Report for this Job!')
+            messages.error(request, 'You have already added a report for this job!')
     else:
+        # If GET request, instantiate the empty form
         Reportform = ReportJobForm()
 
     context = {
@@ -292,6 +292,7 @@ def Address_Report(request, pk):
         'Reportform': Reportform,
         'agent': agent,
     }
+
     return render(request, 'agents/AddressreportForm.html', context)
 
 
@@ -443,11 +444,13 @@ def fetchagentreportdetails(request):
     if request.method == 'GET':
         product_id = request.GET.get('id')
         try:
+            # Fetch the report from the database
             job = Report.objects.get(id=product_id)
             firstname = job.customer.first_name
             lastname = job.customer.last_name
             customerName = f"{firstname or 'N/A'} {lastname or 'N/A'}"
 
+            # Prepare Approved By Full Name
             approvedByfirstname = ""
             approvedBylastname = ""
             approvedByfullname = ""
@@ -456,45 +459,31 @@ def fetchagentreportdetails(request):
                 approvedBylastname = job.approvedBy.last_name
                 approvedByfullname = approvedByfirstname + " " + approvedBylastname
 
+            # Verification Status Mapping
             verification_status = 'N/A'
-            if job.VerificationMessage == 'Incomplete Information':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'No Response at the Address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address Does Not Exist':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Security Agents prevented access to Address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address is an empty plot of Land':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer has relocated':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is not known at the address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is known but does not reside in the premises':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address exists and customer is known':
-                verification_status = 'Yes - Yes'
-            elif job.VerificationMessage == 'Customer does not live at the address but visits often':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is deceased':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Could not locate address':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'The Customer works at the address but does not reside there':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Customer was met at a different house number':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Address is customers family house and does not reside there':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Company is not known at the address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Incomplete address':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Company is known and operate from the address':
-                verification_status = 'Yes - Yes'
+            verification_mapping = {
+                'Incomplete Information': 'No - No',
+                'No Response at the Address': 'Yes - No',
+                'Address Does Not Exist': 'No - No',
+                'Security Agents prevented access to Address': 'Yes - No',
+                'Address is an empty plot of Land': 'Yes - No',
+                'The Customer has relocated': 'Yes - No',
+                'The Customer is not known at the address': 'Yes - No',
+                'The Customer is known but does not reside in the premises': 'Yes - No',
+                'Address exists and customer is known': 'Yes - Yes',
+                'Customer does not live at the address but visits often': 'Yes - No',
+                'The Customer is deceased': 'Yes - No',
+                'Could not locate address': 'No - No',
+                'The Customer works at the address but does not reside there': 'Yes - No',
+                'Customer was met at a different house number': 'No - No',
+                'Address is customers family house and does not reside there': 'Yes - No',
+                'Company is not known at the address': 'Yes - No',
+                'Incomplete address': 'No - No',
+                'Company is known and operate from the address': 'Yes - Yes'
+            }
+            verification_status = verification_mapping.get(job.VerificationMessage, 'N/A')
 
-                # Color-coded Reportstatus
+            # Color-coded Reportstatus
             report_status = 'N/A'
             if job.Reportstatus == '0':
                 report_status = '<span class="badge badge-warning">Pending</span>'
@@ -505,22 +494,26 @@ def fetchagentreportdetails(request):
             else:
                 report_status = '<span class="badge badge-warning">Pending</span>'
 
-            # In your view, convert the image field to its URL
+            # Image URLs
             photo1_url = job.photo1.url if job.photo1 else ''
             photo2_url = job.photo2.url if job.photo2 else ''
 
             # Get the URL for downloading the report PDF
             download_link = reverse('reportinPdf', kwargs={'pk': job.pk})
 
+          
+
+            # Prepare the data to send as JSON response
             data = {
                 'downloadLink': download_link,  # Include the download link
                 'id': job.pk,
                 'client': job.Client,
                 'agent': job.agent,
                 'clientrefNo': job.clientJobrefID,
-                'id': job.customer.ref_no,
                 'name': customerName,
                 'customeraddress': job.address,
+                'latitude': job.latitude,
+                'longitude': job.longitude,
                 'TAT': job.TAT,
                 'VerificationMessage': job.VerificationMessage,
                 'VerificationStatus': verification_status,

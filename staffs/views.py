@@ -10,7 +10,8 @@ from django.template.loader import render_to_string
 from django.utils.timesince import timesince
 from django.utils import timezone
 from django.conf import settings  # Import Django settings
-
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
 # Django Models and Database
 from django.db import transaction, models
 from django.db.models import Q, F, Value, Count, ExpressionWrapper, fields
@@ -1598,17 +1599,18 @@ def fetch_pendingreportdata(request):
 
     return JsonResponse(response)
 
-
 @login_required(login_url='login')
 def fetch_report_details(request):
     if request.method == 'GET':
         product_id = request.GET.get('id')
         try:
+            # Fetch the report from the database
             job = Report.objects.get(id=product_id)
             firstname = job.customer.first_name
             lastname = job.customer.last_name
             customerName = f"{firstname or 'N/A'} {lastname or 'N/A'}"
 
+            # Prepare Approved By Full Name
             approvedByfirstname = ""
             approvedBylastname = ""
             approvedByfullname = ""
@@ -1617,45 +1619,31 @@ def fetch_report_details(request):
                 approvedBylastname = job.approvedBy.last_name
                 approvedByfullname = approvedByfirstname + " " + approvedBylastname
 
+            # Verification Status Mapping
             verification_status = 'N/A'
-            if job.VerificationMessage == 'Incomplete Information':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'No Response at the Address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address Does Not Exist':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Security Agents prevented access to Address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address is an empty plot of Land':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer has relocated':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is not known at the address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is known but does not reside in the premises':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Address exists and customer is known':
-                verification_status = 'Yes - Yes'
-            elif job.VerificationMessage == 'Customer does not live at the address but visits often':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'The Customer is deceased':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Could not locate address':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'The Customer works at the address but does not reside there':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Customer was met at a different house number':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Address is customers family house and does not reside there':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Company is not known at the address':
-                verification_status = 'Yes - No'
-            elif job.VerificationMessage == 'Incomplete address':
-                verification_status = 'No - No'
-            elif job.VerificationMessage == 'Company is known and operate from the address':
-                verification_status = 'Yes - Yes'
+            verification_mapping = {
+                'Incomplete Information': 'No - No',
+                'No Response at the Address': 'Yes - No',
+                'Address Does Not Exist': 'No - No',
+                'Security Agents prevented access to Address': 'Yes - No',
+                'Address is an empty plot of Land': 'Yes - No',
+                'The Customer has relocated': 'Yes - No',
+                'The Customer is not known at the address': 'Yes - No',
+                'The Customer is known but does not reside in the premises': 'Yes - No',
+                'Address exists and customer is known': 'Yes - Yes',
+                'Customer does not live at the address but visits often': 'Yes - No',
+                'The Customer is deceased': 'Yes - No',
+                'Could not locate address': 'No - No',
+                'The Customer works at the address but does not reside there': 'Yes - No',
+                'Customer was met at a different house number': 'No - No',
+                'Address is customers family house and does not reside there': 'Yes - No',
+                'Company is not known at the address': 'Yes - No',
+                'Incomplete address': 'No - No',
+                'Company is known and operate from the address': 'Yes - Yes'
+            }
+            verification_status = verification_mapping.get(job.VerificationMessage, 'N/A')
 
-                # Color-coded Reportstatus
+            # Color-coded Reportstatus
             report_status = 'N/A'
             if job.Reportstatus == '0':
                 report_status = '<span class="badge badge-warning">Pending</span>'
@@ -1666,22 +1654,28 @@ def fetch_report_details(request):
             else:
                 report_status = '<span class="badge badge-warning">Pending</span>'
 
-            # In your view, convert the image field to its URL
+            # Image URLs
             photo1_url = job.photo1.url if job.photo1 else ''
             photo2_url = job.photo2.url if job.photo2 else ''
 
             # Get the URL for downloading the report PDF
             download_link = reverse('reportinPdf', kwargs={'pk': job.pk})
 
+            # Get latitude and longitude from the model
+            latitude = job.latitude
+            longitude = job.longitude
+
+            # Prepare the data to send as JSON response
             data = {
                 'downloadLink': download_link,  # Include the download link
                 'id': job.pk,
                 'client': job.Client,
                 'agent': job.agent,
                 'clientrefNo': job.clientJobrefID,
-                'id': job.customer.ref_no,
                 'name': customerName,
                 'customeraddress': job.address,
+                'latitude': latitude,
+                'longitude': longitude,
                 'TAT': job.TAT,
                 'VerificationMessage': job.VerificationMessage,
                 'VerificationStatus': verification_status,

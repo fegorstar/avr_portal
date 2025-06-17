@@ -6,132 +6,159 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
   <div class="modal-body">
-    <a class="btn btn-success" href="{% url 'reportinPdf' pk=selected_report.pk %}" style="margin-left:15px">  <i class="fa fa-download"></i> Download Report</a> 
-    <table class=" col-md-12 table text-left  table-responsive " width="100%">
-                      
-        <tbody style="width:100%">
+    <!-- Download Report Link -->
+    <div class="mb-3">
+      <a class="btn btn-success" target="_blank" href="{{ downloadLink }}" style="margin-left:15px">
+        <i class="fa fa-download"></i> Download Report
+      </a>
+    </div>
 
-            <tr>
-                <td  class="table-secondary">ID:</td>
-                <td> {{selected_report.customer.ref_no}}</td>
-            </tr>
+    <!-- Report Details Table -->
+    <table class="table table-bordered table-striped table-responsive">
+      <tbody>
 
-            <tr>
-                <td  class="table-secondary">Client Job Reference No:</td>
-                <td> {{selected_report.customer.clientJobrefID}}</td>
-            </tr>
+        <!-- Client Information -->
+        <tr>
+          <td class="table-secondary"><strong>ID:</strong></td>
+          <td id="id">{{ selected_report.customer.ref_no }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Client Job Reference No:</strong></td>
+          <td id="clientrefNo">{{ selected_report.customer.clientJobrefID }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Customer Name:</strong></td>
+          <td id="name">{{ selected_report.customer.first_name }} {{ selected_report.customer.last_name }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Client:</strong></td>
+          <td id="client">{{ selected_report.Client }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>TAT:</strong></td>
+          <td id="TAT">{{ selected_report.TAT }} hours</td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Customer Name:</td>
-                <td>{{selected_report.customer.first_name}} {{selected_report.customer.last_name}}</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">Client: </td>
-                <td>{{selected_report.Client}}</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">TAT: </td>
-                <td>{{selected_report.TAT}} hours</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">Verification Message: </td>
-                <td>{{selected_report.VerificationMessage}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Building Condition:</td>
-                <td>{{selected_report.buildingCondition}}</td>
-            </tr>
+        <!-- Verification Information -->
+        <tr>
+          <td class="table-secondary"><strong>Verification Message:</strong></td>
+          <td id="VerificationMessage">{{ selected_report.VerificationMessage }}</td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Building Color:</td>
-                <td>{{selected_report.buildingColor}}</td>
-            </tr>
+        <!-- Location and Geolocation -->
+        <tr>
+          <td class="table-secondary"><strong>Latitude:</strong></td>
+          <td id="latitude">{{ selected_report.latitude }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Longitude:</strong></td>
+          <td id="longitude">{{ selected_report.longitude }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Address of Verification:</strong></td>
+          <td id="formatted_address">{{ selected_report.formatted_address }}</td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Building Type:</td>
-                <td>{{selected_report.buildingType}}</td>
-            </tr>
+        <!-- Building Information -->
+        <tr>
+          <td class="table-secondary"><strong>Building Condition:</strong></td>
+          <td id="BuildingCondition">{{ selected_report.buildingCondition }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Building Color:</strong></td>
+          <td id="buildingColor">{{ selected_report.buildingColor }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Building Type:</strong></td>
+          <td id="buildingType">{{ selected_report.buildingType }}</td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Customer Relationship With Address:</td>
-                <td>{{selected_report.CustomerRelationshipWithaddress}}</td>
-            </tr>
+        <!-- Customer Information -->
+        <tr>
+          <td class="table-secondary"><strong>Customer Relationship With Address:</strong></td>
+          <td id="CustomerRelationshipWithaddress">{{ selected_report.CustomerRelationshipWithaddress }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Address Residential:</strong></td>
+          <td id="AddressResidential">{{ selected_report.AddressResidential }}</td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Address Residential:</td>
-                <td>{{selected_report.AddressResidential}}</td>
-            </tr>
+        <!-- Interview Information -->
+        <tr>
+          <td class="table-secondary"><strong>Name of Individual Interviewed:</strong></td>
+          <td id="NameofindividualInterviewed">{{ selected_report.NameofindividualInterviewed }}</td>
+        </tr>
+        <tr>
+          <td class="table-secondary"><strong>Relationship With Customer:</strong></td>
+          <td id="RelationshipWithCustomer">{{ selected_report.RelationshipWithCustomer }}</td>
+        </tr>
 
+        <!-- Comments -->
+        <tr>
+          <td class="table-secondary"><strong>More Comment:</strong></td>
+          <td id="MoreComment">{{ selected_report.MoreComment }}</td>
+        </tr>
 
+        <!-- Landmark -->
+        <tr>
+          <td class="table-secondary"><strong>Landmark:</strong></td>
+          <td id="Landmark">{{ selected_report.Landmark }}</td>
+        </tr>
 
-           
-            <tr>
-                <td  class="table-secondary">Name of individual Interviewed:</td>
-                <td>{{selected_report.NameofindividualInterviewed}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Relationship With Customer:</td>
-                <td>{{selected_report.RelationshipWithCustomer}}</td>
-            </tr>
+        <!-- Photos -->
+        <tr>
+          <td class="table-secondary"><strong>Photo1:</strong></td>
+          <td>
+            {% if selected_report.photo1 %}
+              <img class="img-fluid rounded" src="{{ selected_report.photo1.url }}" alt="Address photo" style="max-width: 150px;">
+            {% else %}
+              No photo available.
+            {% endif %}
+          </td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">More Comment:</td>
-                <td>{{selected_report.MoreComment}}</td>
-            </tr>
+        <tr>
+          <td class="table-secondary"><strong>Photo2:</strong></td>
+          <td>
+            {% if selected_report.photo2 %}
+              <img class="img-fluid rounded" src="{{ selected_report.photo2.url }}" alt="Address photo" style="max-width: 150px;">
+            {% else %}
+              No photo available.
+            {% endif %}
+          </td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Landmark:</td>
-                <td>{{selected_report.Landmark}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Photo1:</td>
-                
-                <td>   
-                    {% if selected_report.photo1 %}
-                    <img class="img-fluid rounded" src="{{selected_report.photo1.url }}"  alt="Address photo">
-                    {% endif %}           
-                </td>
-            </tr>
+        <!-- Report Status -->
+        <tr>
+          <td class="table-secondary"><strong>Report Status:</strong></td>
+          <td>
+            {% if selected_report.Reportstatus == '0' %}
+              <span class="badge badge-warning">Pending</span>
+            {% elif selected_report.Reportstatus == '1' %}
+              <span class="badge badge-primary">Approved</span>
+            {% elif selected_report.Reportstatus == '2' %}
+              <span class="badge badge-danger">Rejected</span>
+            {% else %}
+              <span class="badge badge-warning">Pending</span>
+            {% endif %}
+          </td>
+        </tr>
 
-            <tr>
-                <td  class="table-secondary">Photo2:</td>
-                
-                <td>   
-                    {% if selected_report.photo2 %}
-                    <img class="img-fluid rounded" src="{{selected_report.photo2.url }}"  alt="Address photo">
-                    {% endif %}           
-                </td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Report Status:</td>
-                <td>{% if selected_report.Reportstatus == '0' %}
-                    <span class="badge badge-warning ">Pending</span>
-                
-                    {% elif selected_report.Reportstatus == '1' %}
-                    <span class="badge badge-primary ">Approved</span>
-                
-                    {% elif selected_report.Reportstatus == '2' %}
-                    <span class="badge badge-danger ">Rejected</span>
-                
-                  {% else %}
-                  <span class="badge badge-warning ">Pending</span>
-                  {% endif %}</td>
-            </tr>
+        <!-- Approval Information -->
+        <tr>
+          <td class="table-secondary"><strong>Approved By:</strong></td>
+          <td id="approvedBy">{{ selected_report.approvedBy.first_name }} {{ selected_report.approvedBy.last_name }}</td>
+        </tr>
 
-   
-
-         
-        </tbody>
+      </tbody>
     </table>
- 
-   
-              
+
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
       Close
     </button>
- 
   </div>
 </form>
 
+{% endblock content %}

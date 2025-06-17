@@ -35,15 +35,18 @@ class AgentuserForm(forms.ModelForm):
 
 # editreport form
 class EditReportForm(forms.ModelForm):
-   # we are using validator to validate the file upload
+    # Adding fields for latitude, longitude, and formatted address
+    latitude = forms.DecimalField(max_digits=9, decimal_places=6, required=False)
+    longitude = forms.DecimalField(max_digits=9, decimal_places=6, required=False)
+ 
+    # File upload fields with validation
     photo1 = forms.FileField(widget=forms.FileInput(
-        attrs={'class': 'btn btn-info'}), validators=[allow_only_images_validator], required=False)  # i put required to false to make it optional
-    # we are using validator to validate the file upload
-
+        attrs={'class': 'btn btn-info'}), validators=[allow_only_images_validator], required=False)
     photo2 = forms.FileField(widget=forms.FileInput(
-        attrs={'class': 'btn btn-info'}), validators=[allow_only_images_validator], required=False)  # i put required to false to make it optional
+        attrs={'class': 'btn btn-info'}), validators=[allow_only_images_validator], required=False)
 
     class Meta:
         model = Report
-        fields = ['buildingCondition', 'buildingColor', 'buildingType', 'CustomerRelationshipWithaddress', 'AddressResidential',
-                  'NameofindividualInterviewed', 'RelationshipWithCustomer', 'VerificationMessage', 'MoreComment', 'Landmark', 'photo1', 'photo2']
+        fields = ['buildingCondition', 'buildingColor', 'buildingType', 'CustomerRelationshipWithaddress', 
+                  'AddressResidential', 'NameofindividualInterviewed', 'RelationshipWithCustomer', 
+                  'VerificationMessage', 'MoreComment', 'Landmark', 'photo1', 'photo2', 'latitude', 'longitude']

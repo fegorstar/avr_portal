@@ -1723,13 +1723,14 @@
       // View AgentsDetails
       $('#agentsDetailsrecorddatatable tbody').on('click', '.view-btn', function () {
         var agentId = $(this).data('id')
+      
         // Fetch agent details and populate the modal
         $.ajax({
-          url: '{% url "fetch_agent_details" %}',
-          data: { id: agentId },
+          url: '{% url "fetch_agent_details" %}', // URL to your Django view
+          data: { id: agentId }, // Send agent ID as data
           dataType: 'json',
           success: function (data) {
-            // Populate the modal with the agent details
+            // Populate the modal with agent details
             $('#fullname').text(data.fullname)
             $('#Agentemail').text(data.AgentEmail)
             $('#PhoneNumber').text(data.PhoneNumber)
@@ -1742,8 +1743,8 @@
             $('#guarantorName').text(data.guarantorName)
             $('#BankAccountDetails').text(data.BankAccountDetails)
             $('#created_at').text(data.created_at)
-            $('#profile_picture').attr('src', data.profile_picture) // Set the source attribute of the image tag
-            $('#proofOfId').attr('href', data.proofOfId) // Set the href attribute of the proof of ID link
+            $('#profile_picture').attr('src', data.profile_picture) // Set the profile picture
+            $('#proofOfId').attr('href', data.proofOfId) // Set the proof of ID link
       
             // Show the modal
             $('#agentdetailsModal').modal('show')
@@ -1751,9 +1752,27 @@
         })
       })
       
+      // Function to get formatted address using Google Geocoding API
+      function getFormattedAddress(latitude, longitude) {
+        var apiKey = 'YOUR_GOOGLE_API_KEY' // Replace with your Google API key
+        var geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+      
+        $.getJSON(geocodeUrl, function (response) {
+          if (response.status === 'OK') {
+            var formattedAddress = response.results[0].formatted_address
+            $('#formatted_address').text(formattedAddress) // Show formatted address
+          } else {
+            $('#formatted_address').text('Address not found')
+          }
+        }).fail(function () {
+          $('#formatted_address').text('Error fetching address')
+        })
+      }
+      
       // Add a click event listener to the "View" button
       $('#pendingreportsdatatable tbody').on('click', '.view-btn', function () {
         var productId = $(this).data('id')
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
@@ -1761,13 +1780,12 @@
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
             $('#name').text(data.name)
             $('#clientrefNo').text(data.clientrefNo)
-            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
             $('#TAT').text(data.TAT)
             $('#VerificationMessage').text(data.VerificationMessage)
             $('#VerificationStatus').text(data.VerificationStatus)
@@ -1783,9 +1801,19 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+            $('#photo1').attr('src', data.photo1) // Set the source attribute of photo1
+            $('#photo2').attr('src', data.photo2) // Set the source attribute of photo2
+            $('#downloadLink').attr('href', data.downloadLink) // Set download link
+      
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
       
             // Show the modal
             $('#reportdetailsModal').modal('show')
@@ -1829,6 +1857,16 @@
             $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
             $('#downloadLink').attr('href', data.downloadLink)
       
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
+      
             // Show the modal
             $('#reportdetailsModal').modal('show')
           }
@@ -1870,6 +1908,16 @@
             $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
             $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
             $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
       
             // Show the modal
             $('#reportdetailsModal').modal('show')
@@ -1913,6 +1961,15 @@
             $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
             $('#downloadLink').attr('href', data.downloadLink)
       
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
             // Show the modal
             $('#reportdetailsModal').modal('show')
           }
@@ -1954,6 +2011,15 @@
             $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
             $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
             $('#downloadLink').attr('href', data.downloadLink)
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
       
             // Show the modal
             $('#reportdetailsModal').modal('show')
@@ -1996,6 +2062,16 @@
             $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
             $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
             $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the formatted address from Nominatim (or Google Maps API)
+            $('#formatted_address').text('Loading...') // Placeholder text initially
+      
+            // Fetch and display the formatted address using the coordinates
+            getFormattedAddress(data.latitude, data.longitude)
       
             // Show the modal
             $('#reportdetailsModal').modal('show')

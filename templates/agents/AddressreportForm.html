@@ -1,25 +1,21 @@
-
 {% extends "base.html" %}
-{% load widget_tweaks %}  
+{% load widget_tweaks %}
 {% load static %}
 {% block title %} Agent Dashboard {% endblock %}
 {% block content %}
 
-
-  <!-- begin app -->
-  <div class="app">
+<!-- begin app -->
+<div class="app">
     <!-- begin app-wrap -->
     <div class="app-wrap">
 
         <!-- begin pre-loader -->
         {% include 'partials/preloader.html' %}
         <!-- end pre-loader -->
-       
-      
+
         <!-- begin app-header -->
         {% include 'partials/header.html' %}
         <!-- end app-header -->
-
 
         <!-- begin app-container -->
         <div class="app-container">
@@ -29,8 +25,6 @@
                 <!-- end sidebar-nav -->
             </aside>
             <!-- end app-navbar -->
-
-
 
             <div class="app-main" id="main">
                 <!-- begin container-fluid -->
@@ -44,15 +38,9 @@
                                         <div class="col-xl-5 pb-xl-0 pb-5 border-right">
                                             <div class="page-account-profil pt-5">
                                                 <div class="profile-img text-center">
-                                                  
                                                     <h3> Customer Details</h3>   
                                                         <div class="profile">
-                                                       
-                                                              
-                                                               
-                                                            <table class="table text-left  table-responsive">
-                                                
-                                                                                               
+                                                            <table class="table text-left table-responsive">
         <tbody style="width:100%">
             <tr>
                 <td class="table-secondary">Client: </td>
@@ -81,13 +69,11 @@
                 <td>{{selected_job.email}}</td>
             </tr>
 
-          
             <tr>
                 <td  class="table-secondary">Customer Address:</td>
                 <td>{{selected_job.address}}</td>
             </tr>
           
-         
             <tr>
                 <td  class="table-secondary">State:</td>
                 <td>{{selected_job.state}}</td>
@@ -107,188 +93,157 @@
                 <td>{{selected_job.created_at}}</td>
             </tr>
 
-        
-
             <tr>
                 <td  class="table-secondary">Added By:</td>
                 <td>{{selected_job.created_by.first_name}} {{selected_job.created_by.last_name}}</td>
             </tr>
 
-          
-    
-
             <tr>
-
-            <td  class="table-secondary">Status</td>
-            <td>{% if selected_job.status == '0' %}
-                <span class="badge badge-warning ">Undone</span>
-        
-                {% elif selected_job.status == '1' %}
-                <span class="badge badge-primary ">Done</span>
-        
-              {% else %}
-              <span class="badge badge-warning ">Undone</span>
-              {% endif %}</td>
-                                
+                <td  class="table-secondary">Status</td>
+                <td>{% if selected_job.status == '0' %}
+                    <span class="badge badge-warning">Undone</span>
+                    {% elif selected_job.status == '1' %}
+                    <span class="badge badge-primary">Done</span>
+                    {% else %}
+                    <span class="badge badge-warning">Undone</span>
+                    {% endif %}
+                </td>
             </tr>
 
-         
         </tbody>
                                                             </table>
-                                                           
                                                         </div>
                                                     </div>
                                               
-
-                                           
-
                                             </div>
                                         </div>
-                                        <div class="col-xl-7 col-md- col-12 border-t border-right">
+                                        <div class="col-xl-7 col-md-12 border-t border-right">
                                             <div class="page-account-form">
-                                                <div class="form-titel border-bottom p-3">
-                                                    <h5 class=" text-center mb-0 py-2 text-uppercase">REPORT ADDRESS VERIFICATION</h5>
+                                                <div class="form-title border-bottom p-3">
+                                                    <h5 class="text-center mb-0 py-2 text-uppercase">REPORT ADDRESS VERIFICATION</h5>
                                                 </div>
                                                 <div class="p-4">
-                                               
                                                     
-                                                    <form action="{% url 'reportAddress' selected_job.id %}" enctype='multipart/form-data'  method="POST">
 
+                                                    <form id="reportForm" action="{% url 'reportAddress' selected_job.id %}" enctype='multipart/form-data' method="POST">
                                                         {% csrf_token %}
-
                                                         {% include 'partials/alerts.html' %}
-
-
+                                                        
+                                                        <!-- Hidden Fields for Latitude and Longitude -->
+                                                        <input type="hidden" name="latitude" id="id_latitude">
+                                                        <input type="hidden" name="longitude" id="id_longitude">
 
                                                         <div class="form-row" style="margin-top:20px">
-
                                                             <div class="form-group col-md-12">
                                                                 <label for="inputAddress">Select Verification Message</label>
-                                                                {% render_field Reportform.VerificationMessage class="form-control form-select"  %}
+                                                                {% render_field Reportform.VerificationMessage class="form-control form-select" %}
                                                                 <label style="color:red" class="text-danger">{{ Reportform.VerificationMessage.errors }}</label>
                                                             </div>
-                                                            
-                                                            <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="JobRefNo"  value="{{selected_job.ref_no}}">
+
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="JobRefNo" value="{{selected_job.ref_no}}">
                                                             </div>
 
- 							 <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="address"  value="{{selected_job.address}}">
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="address" value="{{selected_job.address}}">
                                                             </div>
 
-                                                            
-
-
-
-                                                            <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="client"  value="{{selected_job.client}}">
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="client" value="{{selected_job.client}}">
                                                             </div>
 
-                                                            <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="clientJobrefID"  value="{{selected_job.clientJobrefID}}">
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="clientJobrefID" value="{{selected_job.clientJobrefID}}">
                                                             </div>
 
-
-
-                                                            <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="whenJobAssigned"  value="{{selected_job.whenAssigned}}">
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="whenJobAssigned" value="{{selected_job.whenAssigned}}">
                                                             </div>
 
-
-                                                            
-
-                                                            <div class="form-group col-md-6"  style="display:none">
-                                                                <input type="text" class="form-control"  name="agent"  value="{{selected_job.agent}}">
+                                                            <div class="form-group col-md-6" style="display:none">
+                                                                <input type="text" class="form-control" name="agent" value="{{selected_job.agent}}">
                                                             </div>
-                      
-                      
-                                                       
 
-                                                        
-                                                    
+                                                            <!-- Building Condition -->
                                                             <div class="form-group col-md-6">
                                                                 <label for="inputAddress">What is the Building Condition?</label>
-                                                                {% render_field Reportform.buildingCondition class="form-control form-select"  %}
+                                                                {% render_field Reportform.buildingCondition class="form-control form-select" %}
                                                             </div>
+
                                                             <div class="form-group col-md-6">
                                                                 <label for="inputAddress">What is the Building Color?</label>
-                                                                {% render_field Reportform.buildingColor class="form-control"  %}
+                                                                {% render_field Reportform.buildingColor class="form-control" %}
                                                             </div>
-                                                    
-                                                    
+
                                                             <div class="form-group col-md-12">
                                                                 <label for="inputAddress">What is the Building Type?</label>
-                                                                {% render_field Reportform.buildingType class="form-control form-select"  %}
+                                                                {% render_field Reportform.buildingType class="form-control form-select" %}
                                                             </div>
+
                                                             <div class="form-group col-md-12">
                                                                 <label for="inputAddress">What is the Customer Relationship with Address?</label>
-                                                                {% render_field Reportform.CustomerRelationshipWithaddress class="form-control form-select"  %}
+                                                                {% render_field Reportform.CustomerRelationshipWithaddress class="form-control form-select" %}
                                                             </div>
-                                                    
-                                                    
+
+                                                            <!-- Is Address Residential -->
                                                             <div class="form-group col-md-5">
                                                                 <label for="inputAddress">Is Address Residential?</label>
-                                                                {% render_field Reportform.AddressResidential class="form-control form-select"  %}
+                                                                {% render_field Reportform.AddressResidential class="form-control form-select" %}
                                                             </div>
                                                             <div class="form-group col-md-7">
                                                                 <label for="inputAddress">Name of Individual interviewed?</label>
-                                                                {% render_field Reportform.NameofindividualInterviewed class="form-control"  %}
-                                                            </div>
-                                                    
-                                                    
-                                                            <div class="form-group col-md-12">
-                                                                <label for="inputAddress">What is the Relationship with Customer?</label>
-                                                                {% render_field Reportform.RelationshipWithCustomer class="form-control"  %}
-                                                            </div>
-                                                         
-                                                    
-                                                    
-                                                            <div class="form-group col-md-12">
-                                                                <label for="inputAddress">More Comment (If Any)?</label>
-                                                                {% render_field Reportform.MoreComment class="form-control"  %}
-                                                            </div>
-                                                            <div class="form-group col-md-12">
-                                                                <label for="inputAddress">What is the Landmark</label>
-                                                                {% render_field Reportform.Landmark class="form-control"  %}
-                                                            </div>
-                                                    
-                                                    
-                                                            <div class="form-group col-md-6">
-                                                                <label for="inputAddress">Address Photo</label>
-                                                                {% render_field Reportform.photo1 class="form-control"  %}
-                                                            </div>
-                                                            <div class="form-group col-md-6">
-                                                                <label for="inputAddress">Address Photo 2 (Optional):</label>
-                                                                {% render_field Reportform.photo2 class="form-control"  %}
+                                                                {% render_field Reportform.NameofindividualInterviewed class="form-control" %}
                                                             </div>
 
-                                                            
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Relationship with Customer?</label>
+                                                                {% render_field Reportform.RelationshipWithCustomer class="form-control" %}
+                                                            </div>
+
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">More Comment (If Any)?</label>
+                                                                {% render_field Reportform.MoreComment class="form-control" %}
+                                                            </div>
+
+                                                            <!-- Landmark -->
+                                                            <div class="form-group col-md-12">
+                                                                <label for="inputAddress">What is the Landmark</label>
+                                                                {% render_field Reportform.Landmark class="form-control" %}
+                                                            </div>
+
+                                                            <!-- Address Photo 1 -->
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">Address Photo</label>
+                                                                {% render_field Reportform.photo1 class="form-control" %}
+                                                            </div>
+
+                                                            <!-- Address Photo 2 -->
+                                                            <div class="form-group col-md-6">
+                                                                <label for="inputAddress">Address Photo 2 (Optional):</label>
+                                                                {% render_field Reportform.photo2 class="form-control" %}
+                                                            </div>
+
+                                                            <!-- Form Errors -->
                                                             <span class="errorlist">
                                                                 {% for field in form %}
                                                                     {% if field.errors %}
-                                                                    <ul>
-                                                                        {% for error in field.errors %}
-                                                                            <span style="color: red;">{{error}}</span>
-                                                                        {% endfor %}
-                                                                    </ul>
+                                                                        <ul>
+                                                                            {% for error in field.errors %}
+                                                                                <span style="color: red;">{{error}}</span>
+                                                                            {% endfor %}
+                                                                        </ul>
                                                                     {% endif %}
                                                                 {% endfor %}
-                                                        
-                                                                <span style="color: red;">{{form.non_field_errors}}</span>
                                                             </span>
 
-                                                        <div class="text-right">
-                                                            <a  style="margin-right:10px" href="{% url 'agentassignedjobs' %}" class="btn btn-danger text-white"><i class="fa fa-long-arrow-left" data-toggle="tooltip" title="Go Back"></i>  Go Back</a>
-                       
-                                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                                           
+                                                            <div class="text-right">
+                                                                <a style="margin-right:10px" href="{% url 'agentassignedjobs' %}" class="btn btn-danger text-white"><i class="fa fa-long-arrow-left" data-toggle="tooltip" title="Go Back"></i> Go Back</a>
+                                                                <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                                                            </div>
                                                         </div>
-                                                     
-                                                          </form>
+                                                    </form>
                                                 </div>
                                             </div>
-                                        </div>
-                                      
                                         </div>
                                     </div>
                                 </div>
@@ -299,9 +254,36 @@
                 </div>
                 <!-- end container-fluid -->
             </div>
-    <!-- end app-wrap -->
-    {% include 'partials/footer.html' %}
+        </div>
+        {% include 'partials/footer.html' %}
+    </div>
 </div>
-<!-- end app -->
-    {% endblock content %}
 
+<!-- Loader for Form Submission -->
+<div id="loadingImage" style="display: none;" class="text-center">
+    <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Submitting Report...
+</div>
+
+<script>
+    // Automatically capture user's geolocation and set coordinates
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Set the coordinates in hidden fields
+            document.getElementById('id_latitude').value = latitude;
+            document.getElementById('id_longitude').value = longitude;
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+
+    // Show loader during form submission
+    document.getElementById('reportForm').onsubmit = function() {
+        document.getElementById('loadingImage').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'none';
+    };
+</script>
+
+{% endblock content %}

@@ -1,147 +1,208 @@
 {% load widget_tweaks %}
+<!-- Modal for Report Details -->
+<div class="modal fade" id="reportdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="productModalLabel">Report Details</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Download Report Link -->
+        <div class="mb-3 text-center">
+          <a class="btn btn-success" target="_blank" href="{{ downloadLink }}"><i class="fa fa-download"></i> Download Report</a>
+        </div>
 
-<form hx-post="{{ request.path }}" hx-headers='{"X-CSRFToken":"{{ csrf_token }}"}' class="modal-content">
-  <div class="modal-header">
-    <h5 class="modal-title text-center">Report Details</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Report Details Table -->
+        <table class="table table-bordered table-striped table-hover table-responsive">
+          <tbody>
+            <!-- Client Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>ID:</strong>
+              </td>
+              <td>{{ selected_report.customer.ref_no }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Client Job Reference No:</strong>
+              </td>
+              <td>{{ selected_report.customer.clientJobrefID }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Customer Name:</strong>
+              </td>
+              <td>{{ selected_report.customer.first_name }} {{ selected_report.customer.last_name }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Client:</strong>
+              </td>
+              <td>{{ selected_report.Client }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Agent:</strong>
+              </td>
+              <td>{{ selected_report.customer.agent }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>TAT:</strong>
+              </td>
+              <td>{{ selected_report.TAT }} hours</td>
+            </tr>
+
+            <!-- Verification Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Verification Message:</strong>
+              </td>
+              <td>{{ selected_report.VerificationMessage }}</td>
+            </tr>
+
+            <!-- Geolocation Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Latitude:</strong>
+              </td>
+              <td>{{ selected_report.latitude }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Longitude:</strong>
+              </td>
+              <td>{{ selected_report.longitude }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Address of Verification:</strong>
+              </td>
+              <td>{{ selected_report.formatted_address }}</td>
+            </tr>
+
+            <!-- Building Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Building Condition:</strong>
+              </td>
+              <td>{{ selected_report.buildingCondition }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Building Color:</strong>
+              </td>
+              <td>{{ selected_report.buildingColor }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Building Type:</strong>
+              </td>
+              <td>{{ selected_report.buildingType }}</td>
+            </tr>
+
+            <!-- Customer Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Customer Relationship With Address:</strong>
+              </td>
+              <td>{{ selected_report.CustomerRelationshipWithaddress }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Address Residential:</strong>
+              </td>
+              <td>{{ selected_report.AddressResidential }}</td>
+            </tr>
+
+            <!-- Interview Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Name of Individual Interviewed:</strong>
+              </td>
+              <td>{{ selected_report.NameofindividualInterviewed }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Relationship with Customer:</strong>
+              </td>
+              <td>{{ selected_report.RelationshipWithCustomer }}</td>
+            </tr>
+
+            <!-- Additional Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>More Comment:</strong>
+              </td>
+              <td>{{ selected_report.MoreComment }}</td>
+            </tr>
+            <tr>
+              <td class="table-secondary">
+                <strong>Landmark:</strong>
+              </td>
+              <td>{{ selected_report.Landmark }}</td>
+            </tr>
+
+            <!-- Photos -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Photo1:</strong>
+              </td>
+              <td>
+                {% if selected_report.photo1 %}
+                  <img class="img-fluid rounded" src="{{ selected_report.photo1.url }}" alt="Address photo" style="max-width: 150px;" />
+                {% else %}
+                  No photo available.
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td class="table-secondary">
+                <strong>Photo2:</strong>
+              </td>
+              <td>
+                {% if selected_report.photo2 %}
+                  <img class="img-fluid rounded" src="{{ selected_report.photo2.url }}" alt="Address photo" style="max-width: 150px;" />
+                {% else %}
+                  No photo available.
+                {% endif %}
+              </td>
+            </tr>
+
+            <!-- Report Status -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Report Status:</strong>
+              </td>
+              <td>
+                {% if selected_report.Reportstatus == '0' %}
+                  <span class="badge badge-warning">Pending</span>
+                {% elif selected_report.Reportstatus == '1' %}
+                  <span class="badge badge-primary">Approved</span>
+                {% elif selected_report.Reportstatus == '2' %}
+                  <span class="badge badge-danger">Rejected</span>
+                {% else %}
+                  <span class="badge badge-warning">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+
+            <!-- Approval Information -->
+            <tr>
+              <td class="table-secondary">
+                <strong>Approved By:</strong>
+              </td>
+              <td>{{ selected_report.approvedBy.first_name }} {{ selected_report.approvedBy.last_name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
-  <div class="modal-body">
-    <a class="btn btn-success" target="_blank" href="{% url 'reportinPdf' pk=selected_report.pk %}" style="margin-left:15px">  <i class="fa fa-download"></i> Download Report</a> 
-    <table class=" col-md-12 table text-left  table-responsive " width="100%">
-                      
-        <tbody style="width:100%">
-
-            <tr>
-                <td  class="table-secondary">ID:</td>
-                <td> {{selected_report.customer.ref_no}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Client Job Reference No:</td>
-                <td> {{selected_report.customer.clientJobrefID}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Customer Name:</td>
-                <td>{{selected_report.customer.first_name}} {{selected_report.customer.last_name}}</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">Client: </td>
-                <td>{{selected_report.Client}}</td>
-            </tr>
-
-            <tr>
-                <td class="table-secondary">Agent: </td>
-                <td>{{selected_report.customer.agent}}</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">TAT: </td>
-                <td>{{selected_report.TAT}} hours</td>
-            </tr>
-            <tr>
-                <td class="table-secondary">Verification Message: </td>
-                <td>{{selected_report.VerificationMessage}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Building Condition:</td>
-                <td>{{selected_report.buildingCondition}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Building Color:</td>
-                <td>{{selected_report.buildingColor}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Building Type:</td>
-                <td>{{selected_report.buildingType}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Customer Relationship With Address:</td>
-                <td>{{selected_report.CustomerRelationshipWithaddress}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Address Residential:</td>
-                <td>{{selected_report.AddressResidential}}</td>
-            </tr>
-
-
-
-           
-            <tr>
-                <td  class="table-secondary">Name of individual Interviewed:</td>
-                <td>{{selected_report.NameofindividualInterviewed}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Relationship With Customer:</td>
-                <td>{{selected_report.RelationshipWithCustomer}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">More Comment:</td>
-                <td>{{selected_report.MoreComment}}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Landmark:</td>
-                <td>{{selected_report.Landmark}}</td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Photo1:</td>
-                
-                <td>   
-                    {% if selected_report.photo1 %}
-                    <img class="img-fluid rounded" src="{{selected_report.photo1.url }}"  alt="Address photo">
-                    {% endif %}           
-                </td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Photo2:</td>
-                
-                <td>   
-                    {% if selected_report.photo2 %}
-                    <img class="img-fluid rounded" src="{{selected_report.photo2.url }}"  alt="Address photo">
-                    {% endif %}           
-                </td>
-            </tr>
-            <tr>
-                <td  class="table-secondary">Report Status:</td>
-                <td>{% if selected_report.Reportstatus == '0' %}
-                    <span class="badge badge-warning ">Pending</span>
-                
-                    {% elif selected_report.Reportstatus == '1' %}
-                    <span class="badge badge-primary ">Approved</span>
-                
-                    {% elif selected_report.Reportstatus == '2' %}
-                    <span class="badge badge-danger ">Rejected</span>
-                
-                  {% else %}
-                  <span class="badge badge-warning ">Pending</span>
-                  {% endif %}</td>
-            </tr>
-
-            <tr>
-                <td  class="table-secondary">Approved By:</td>
-                <td>{{selected_report.approvedBy.first_name}} {{selected_report.approvedBy.last_name}}</td>
-            </tr>
-
-   
-
-         
-        </tbody>
-    </table>
- 
-   
-              
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-      Close
-    </button>
- 
-  </div>
-</form>
-
+</div>
+<!-- End of Modal for Report Details -->

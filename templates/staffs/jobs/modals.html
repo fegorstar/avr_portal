@@ -1,300 +1,491 @@
 {% load widget_tweaks %}
-    <!-- Bulk Assign Jobs to Agents Modal -->
+<!-- Bulk Assign Jobs to Agents Modal -->
 <div class="modal fade" id="bulkassignModal" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
-      <div class="modal-content modal-xl">
-          <div class="modal-header">
-              <h5 class="modal-title text-uppercase">Assign Bulk Jobs</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <form id="assign-form">
-                  {% csrf_token %}
-                  
-                  <label class="form-label">Select Agent:</label>
-                  {% render_field form.agent class="form-control form-select"  %}
-              </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" id="bulkassign_btn" class="btn btn-primary">Assign</button>
-          </div>
+    <div class="modal-content modal-xl">
+      <div class="modal-header">
+        <h5 class="modal-title text-uppercase">Assign Bulk Jobs</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <div class="modal-body">
+        <form id="assign-form">
+          {% csrf_token %}
+
+          <label class="form-label">Select Agent:</label>
+          {% render_field form.agent class='form-control form-select' %}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="bulkassign_btn" class="btn btn-primary">Assign</button>
+      </div>
+    </div>
   </div>
 </div>
-  <!-- End Bulk Assign Jobs to Agents Modal -->
+<!-- End Bulk Assign Jobs to Agents Modal -->
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="confirmation-modal-label">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="confirmation-modal-label">Confirmation</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to delete the selected records?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="confirm-delete" type="button" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Delete Confirmation Modal -->
 
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="confirmation-modal" tabindex="-1" role="dialog" aria-labelledby="confirmation-modal-label">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="confirmation-modal-label">Confirmation</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Are you sure you want to delete the selected records?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button id="confirm-delete" type="button" class="btn btn-danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-              <!-- End Delete Confirmation Modal -->
-            
-
-
-            <!-- Modal for Job Details  -->
-            <div class="modal fade" id="jobdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="productModalLabel">Job Details</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="jobDetails">
-                                <!-- Job details will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-              <!--End of Modal for Job Details  -->
-            
+<!-- Modal for Job Details -->
+<div class="modal fade" id="jobdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="productModalLabel">Job Details</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="jobDetails">
+          <!-- Job details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Modal for Job Details -->
 
 <!-- Edit Modal for Job -->
 <div class="modal fade" id="editJobModal" tabindex="-1" role="dialog" aria-labelledby="editJobModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="editJobForm">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="editJobModalLabel">Edit Job</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {% csrf_token %}
-                    <input type="hidden" name="job_id" id="job_id" value="">
-                    
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="first_name">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" value="">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="last_name">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" value="">
-                        </div>
-                        
-                        <div class="form-group col-md-6">
-                            <label for="phone_number">Phone Number</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="email">Email</label>
-                            <input type="text" class="form-control" id="email" name="email" value="">
-                        </div>
-                        
-                        <div class="form-group col-md-6">
-                            <label for="state">State</label>
-                            <input type="text" class="form-control" id="state" name="state" value="">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="city">City</label>
-                            <input type="text" class="form-control" id="city" name="city" value="">
-                        </div>
-                        
-                     
-                        <div class="form-group col-md-3">
-                            <label for="BATCH_NO">Batch No</label>
-                            <input type="text" class="form-control" id="BATCH_NO" name="BATCH_NO" value="">
-                        </div>
-                        <div class="form-group col-md-9">
-                            <label for="address">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" value="">
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="status">Status</label>
-                            <select class="form-control form-select" id="status" name="status">
-                                <option value="0">Undone</option>
-                                <option value="1">Done</option>
-                                <option value="2">Rejected</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group col-md-6">
-                            <label for="published">Published</label>
-                            <select class="form-control form-select" id="published" name="published">
-                                <option value="0">No</option>
-                                <option value="1">Yes</option>
-                            </select>
-                        </div>
-
-
-
-                    </div>
-
-                    
-
-
-                
-                </div>
-
-              
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-            </form>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="editJobForm">
+        <div class="modal-header">
+          <h4 class="modal-title" id="editJobModalLabel">Edit Job</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          <input type="hidden" name="job_id" id="job_id" value="" />
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="first_name">First Name</label>
+              <input type="text" class="form-control" id="first_name" name="first_name" value="" />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="last_name">Last Name</label>
+              <input type="text" class="form-control" id="last_name" name="last_name" value="" />
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="phone_number">Phone Number</label>
+              <input type="text" class="form-control" id="phone_number" name="phone_number" value="" />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="email">Email</label>
+              <input type="text" class="form-control" id="email" name="email" value="" />
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="state">State</label>
+              <input type="text" class="form-control" id="state" name="state" value="" />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="city">City</label>
+              <input type="text" class="form-control" id="city" name="city" value="" />
+            </div>
+
+            <div class="form-group col-md-3">
+              <label for="BATCH_NO">Batch No</label>
+              <input type="text" class="form-control" id="BATCH_NO" name="BATCH_NO" value="" />
+            </div>
+            <div class="form-group col-md-9">
+              <label for="address">Address</label>
+              <input type="text" class="form-control" id="address" name="address" value="" />
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="status">Status</label>
+              <select class="form-control form-select" id="status" name="status">
+                <option value="0">Undone</option>
+                <option value="1">Done</option>
+                <option value="2">Rejected</option>
+              </select>
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="published">Published</label>
+              <select class="form-control form-select" id="published" name="published">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
+<!-- Create Job Placeholder for the modal I used the Boostrap modal so it can work -->
+<div id="modal" class="modal fade">
+  <div id="dialog" class="modal-dialog" hx-target="this"></div>
+</div>
 
-
-   <!-- Create Job Placeholder for the modal  I used the Boostrap modal so it can work--> 
-   <div id="modal" class="modal fade">
-    <div id="dialog" class="modal-dialog" hx-target="this"></div>
-  </div>
-
-  <!-- Empty toast to show the message -->
-  <div class="toast-container position-absolute top-0 end-0 p-3" style="margin-top:60px">
-    <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div id="toast-body" class="toast-body">
-            </div>
-            <b style="margin-left:100px; margin-top:10px"> <button  type="button" class="btn-close btn-close-white me-2 m-auto text-end" data-bs-dismiss="toast" aria-label="Close"></button>
-            </b>       
-        </div>
-      
+<!-- Empty toast to show the message -->
+<div class="toast-container position-absolute top-0 end-0 p-3" style="margin-top:60px">
+  <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="toast-body" class="toast-body"></div>
+      <b style="margin-left:100px; margin-top:10px"><button type="button" class="btn-close btn-close-white me-2 m-auto text-end" data-bs-dismiss="toast" aria-label="Close"></button></b>
     </div>
   </div>
-
-
-  
+</div>
+<!-- Modal for Report Details -->
+<!-- Modal for Report Details -->
 <!-- Modal for Report Details -->
 <div class="modal fade" id="reportdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="productModalLabel">Report Details</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="reportDetails">
-                    <!-- Report details will be loaded here -->
-                    <p><strong>Download Report:</strong> <a id="downloadLink" class="btn btn-success" href="" target="_blank"><i class="fa fa-download"></i></a></p>
-                    <p><strong>ID:</strong> <span id="id"></span></p>
-                    <p><strong>Client:</strong> <span id="client"></span></p>
-                    <p><strong>Agent:</strong> <span id="agent"></span></p>
-                    <p><strong>Customer Name:</strong> <span id="name"></span></p>
-                    <p><strong>Client RefID:</strong> <span id="clientrefNo"></span></p>
-                    <p><strong>Customer Address:</strong> <span id="customeraddress"></span></p>
-                    <p><strong>TAT:</strong> <span id="TAT"></span></p>
-                    <p><strong>VerificationMessage:</strong> <span id="VerificationMessage"></span></p>
-                    <p><strong>VerificationStatus:</strong> <span id="VerificationStatus"></span></p>
-                    <p><strong>Building Condition:</strong> <span id="BuildingCondition"></span></p>
-                    <p><strong>Building Color:</strong> <span id="buildingColor"></span></p>
-                    <p><strong>Building Type:</strong> <span id="buildingType"></span></p>
-                    <p><strong>Customer Relationship With address:</strong> <span id="CustomerRelationshipWithaddress"></span></p>
-                    <p><strong>Address Residential:</strong> <span id="AddressResidential"></span></p>
-                    <p><strong>Name of individual Interviewed:</strong> <span id="NameofindividualInterviewed"></span></p>
-                    <p><strong>Relationship With Customer:</strong> <span id="RelationshipWithCustomer"></span></p>
-                    <p><strong>More Comment:</strong> <span id="MoreComment"></span></p>
-                    <p><strong>Landmark:</strong> <span id="Landmark"></span></p>
-                    <p><strong>Photo1:</strong> <img id="photo1" src="" alt="Photo1" style="max-width: 200px; max-height: 200px;"></p>
-                    <p><strong>Photo2:</strong> <img id="photo2" src="" alt="Photo2" style="max-width: 200px; max-height: 200px;"></p>
-                    <p><strong>Date Added:</strong> <span id="dateAdded"></span></p>
-                    <p><strong>ApprovedBy:</strong> <span id="approvedBy"></span></p>
-                    <p><strong>Report Status:</strong> <span id="Reportstatus"></span></p>
-                </div>
-            </div>
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="productModalLabel">Report Details</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="reportDetails">
+          <!-- Download Report Link -->
+          <div class="mb-3 text-center">
+            <a id="downloadLink" class="btn btn-success" href="" target="_blank"><i class="fa fa-download"></i> Download Report</a>
+          </div>
+
+          <!-- Client Information Section -->
+          <h5 class="mb-3">Client Information</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>ID:</strong></td>
+                  <td id="id"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Client Job Reference No:</strong></td>
+                  <td id="clientrefNo"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Customer Name:</strong></td>
+                  <td id="name"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Client:</strong></td>
+                  <td id="client"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Agent:</strong></td>
+                  <td id="agent"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Job and Verification Section -->
+          <h5 class="mb-3">Job and Verification</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>TAT:</strong></td>
+                  <td id="TAT"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Verification Message:</strong></td>
+                  <td id="VerificationMessage"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Verification Status:</strong></td>
+                  <td id="VerificationStatus"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Building and Customer Details Section -->
+          <h5 class="mb-3">Building and Customer Details</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>Building Condition:</strong></td>
+                  <td id="BuildingCondition"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Building Color:</strong></td>
+                  <td id="buildingColor"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Building Type:</strong></td>
+                  <td id="buildingType"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Customer Relationship With Address:</strong></td>
+                  <td id="CustomerRelationshipWithaddress"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Address Residential:</strong></td>
+                  <td id="AddressResidential"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Interview Information Section -->
+          <h5 class="mb-3">Interview Information</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>Name of Individual Interviewed:</strong></td>
+                  <td id="NameofindividualInterviewed"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Relationship With Customer:</strong></td>
+                  <td id="RelationshipWithCustomer"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Additional Comments Section -->
+          <h5 class="mb-3">Additional Information</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>More Comment:</strong></td>
+                  <td id="MoreComment"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Landmark:</strong></td>
+                  <td id="Landmark"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Location Section -->
+          <h5 class="mb-3">Location</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>Latitude:</strong></td>
+                  <td id="latitude"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Longitude:</strong></td>
+                  <td id="longitude"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Photos Section -->
+          <h5 class="mb-3">Photos</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>Photo 1:</strong></td>
+                  <td><img id="photo1" src="" alt="Photo1" class="img-fluid" style="max-width: 150px; max-height: 150px;" /></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Photo 2:</strong></td>
+                  <td><img id="photo2" src="" alt="Photo2" class="img-fluid" style="max-width: 150px; max-height: 150px;" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Date and Approval Information Section -->
+          <h5 class="mb-3">Date and Approval</h5>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <tbody>
+                <tr>
+                  <td class="table-secondary"><strong>Date Added:</strong></td>
+                  <td id="dateAdded"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Approved By:</strong></td>
+                  <td id="approvedBy"></td>
+                </tr>
+                <tr>
+                  <td class="table-secondary"><strong>Report Status:</strong></td>
+                  <td id="Reportstatus"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
+  </div>
 </div>
+<!-- End Modal for Report Details -->
+
+<!-- End Modal for Report Details -->
+
+<!-- End Modal for Report Details -->
+
 <!-- End of Modal for Report Details -->
 
+<!-- End of Modal for Report Details -->
 
-<!-- Modal to Reject Jobs-->
+<!-- Modal to Reject Jobs -->
 <div class="modal fade" id="rejectJobModal" tabindex="-1" role="dialog" aria-labelledby="rejectJobModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rejectJobModalLabel">Reject Job</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      
-            </div>
-            <div class="modal-body">
-                Are you sure you want to reject this job?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" id="confirmRejectJob">Reject</button>
-            </div>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectJobModalLabel">Reject Job</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to reject this job?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="confirmRejectJob">Reject</button>
+      </div>
     </div>
+  </div>
 </div>
 
-
-
-<!-- Modal to Delete Report-->
+<!-- Modal to Delete Report -->
 <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this report?
-                You will be able to reassign the Job when deleted. See the unassigned Jobs table.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
-            </div>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to delete this report? You will be able to reassign the Job when deleted. See the unassigned Jobs table.</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+      </div>
     </div>
+  </div>
 </div>
-
-
-
 
 <!-- Modal for Agent Details -->
-<div class="modal fade" id="agentdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="productModalLabel">Agent Details</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="agentDetails">
-                    <!-- Agent details will be loaded here -->
-                    <p><img id="profile_picture" src="" alt="Profile Picture" style="max-width: 200px; max-height: 200px;"></p>
-                    <p style="margin-top:10px"><strong>Proof of ID:</strong> <a id="proofOfId" class="btn btn-primary" href="" target="_blank">Download</a></p>
-                    <p><strong>Full Name:</strong> <span id="fullname"></span></p>
-                    <p><strong>Email:</strong> <span id="Agentemail"></span></p>
-                    <p><strong>Phone Number:</strong> <span id="PhoneNumber"></span></p>
-                    <p><strong>Address:</strong> <span id="Agentaddress"></span></p>
-                    <p><strong>State:</strong> <span id="Agentstate"></span></p>
-                    <p><strong>City:</strong> <span id="Agentcity"></span></p>
-                    <p><strong>Status:</strong> <span id="AgentStatus"></span></p>
-                     <p><strong>Guarantor Phone Number:</strong> <span id="guarantorPhoneNumber"></span></p>
-                    <p><strong>Guarantor Name:</strong> <span id="guarantorName"></span></p>
-                    <p><strong>Bank Account Details:</strong> <span id="BankAccountDetails"></span></p>
-                    <p><strong>Last Login:</strong> <span id="last_login"></span></p>
-                    
-                    <p><strong>Created At:</strong> <span id="created_at"></span></p>
-                         </div>
-            </div>
+<!-- Modal for Agent Details -->
+<!-- Modal for Agent Details -->
+<div class="modal fade" id="agentdetailsModal" tabindex="-1" role="dialog" aria-labelledby="agentDetailsModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="agentDetailsModalLabel">Agent Details</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="agentDetails">
+          <!-- Agent Profile Picture -->
+          <div class="text-center mb-4">
+            <img id="profile_picture" src="" alt="Profile Picture" class="img-fluid rounded-circle" style="max-width: 150px; max-height: 150px;" />
+          </div>
+
+          <!-- Proof of ID Link -->
+          <div class="mb-3 text-center">
+            <strong>Proof of ID:</strong> 
+            <a id="proofOfId" class="btn btn-primary" href="" target="_blank">Download</a>
+          </div>
+
+          <!-- Agent Information Table -->
+          <table class="table table-bordered table-striped table-hover table-responsive">
+            <tbody>
+              <tr>
+                <td class="table-secondary"><strong>Full Name:</strong></td>
+                <td id="fullname"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Email:</strong></td>
+                <td id="Agentemail"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Phone Number:</strong></td>
+                <td id="PhoneNumber"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Status:</strong></td>
+                <td id="AgentStatus"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Address:</strong></td>
+                <td id="Agentaddress"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>State:</strong></td>
+                <td id="Agentstate"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>City:</strong></td>
+                <td id="Agentcity"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Guarantor Name:</strong></td>
+                <td id="guarantorName"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Guarantor Phone Number:</strong></td>
+                <td id="guarantorPhoneNumber"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Bank Account Details:</strong></td>
+                <td id="BankAccountDetails"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Last Login:</strong></td>
+                <td id="last_login"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Created At:</strong></td>
+                <td id="created_at"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Latitude:</strong></td>
+                <td id="latitude"></td>
+              </tr>
+              <tr>
+                <td class="table-secondary"><strong>Longitude:</strong></td>
+                <td id="longitude"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Address of Verification (using Google Maps API) -->
+          <p><strong>Address of Verification:</strong> <span id="formatted_address">Loading...</span></p>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
     </div>
+  </div>
 </div>
+<!-- End Modal for Agent Details -->
+
+
+<!-- End of Modal for Agent Details -->
+
 <!-- End of Modal for Agent Details -->
