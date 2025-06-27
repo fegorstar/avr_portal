@@ -153,8 +153,6 @@
   </div>
 </div>
 <!-- Modal for Report Details -->
-<!-- Modal for Report Details -->
-<!-- Modal for Report Details -->
 <div class="modal fade" id="reportdetailsModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -164,173 +162,180 @@
       </div>
       <div class="modal-body">
         <div id="reportDetails">
-          <!-- Download Report Link -->
-          <div class="mb-3 text-center">
-            <a id="downloadLink" class="btn btn-success" href="" target="_blank"><i class="fa fa-download"></i> Download Report</a>
-          </div>
-
-          <!-- Client Information Section -->
-          <h5 class="mb-3">Client Information</h5>
           <div class="table-responsive">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered">
               <tbody>
+                <!-- Client Information Section -->
                 <tr>
-                  <td class="table-secondary"><strong>ID:</strong></td>
+                  <td>
+                    <strong>ID:</strong>
+                  </td>
                   <td id="id"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Client Job Reference No:</strong></td>
+                  <td>
+                    <strong>Client Job Reference No:</strong>
+                  </td>
                   <td id="clientrefNo"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Customer Name:</strong></td>
+                  <td>
+                    <strong>Customer Name:</strong>
+                  </td>
                   <td id="name"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Client:</strong></td>
+                  <td>
+                    <strong>Client:</strong>
+                  </td>
                   <td id="client"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Agent:</strong></td>
+                  <td>
+                    <strong>Agent:</strong>
+                  </td>
                   <td id="agent"></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Job and Verification Section -->
-          <h5 class="mb-3">Job and Verification</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Job and Verification Section -->
                 <tr>
-                  <td class="table-secondary"><strong>TAT:</strong></td>
+                  <td>
+                    <strong>TAT:</strong>
+                  </td>
                   <td id="TAT"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Verification Message:</strong></td>
+                  <td>
+                    <strong>Verification Message:</strong>
+                  </td>
                   <td id="VerificationMessage"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Verification Status:</strong></td>
+                  <td>
+                    <strong>Verification Status:</strong>
+                  </td>
                   <td id="VerificationStatus"></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Building and Customer Details Section -->
-          <h5 class="mb-3">Building and Customer Details</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Building and Customer Details Section -->
                 <tr>
-                  <td class="table-secondary"><strong>Building Condition:</strong></td>
+                  <td>
+                    <strong>Building Condition:</strong>
+                  </td>
                   <td id="BuildingCondition"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Building Color:</strong></td>
+                  <td>
+                    <strong>Building Color:</strong>
+                  </td>
                   <td id="buildingColor"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Building Type:</strong></td>
+                  <td>
+                    <strong>Building Type:</strong>
+                  </td>
                   <td id="buildingType"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Customer Relationship With Address:</strong></td>
+                  <td>
+                    <strong>Customer Relationship With Address:</strong>
+                  </td>
                   <td id="CustomerRelationshipWithaddress"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Address Residential:</strong></td>
+                  <td>
+                    <strong>Address Residential:</strong>
+                  </td>
                   <td id="AddressResidential"></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Interview Information Section -->
-          <h5 class="mb-3">Interview Information</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Interview Information Section -->
                 <tr>
-                  <td class="table-secondary"><strong>Name of Individual Interviewed:</strong></td>
+                  <td>
+                    <strong>Name of Individual Interviewed:</strong>
+                  </td>
                   <td id="NameofindividualInterviewed"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Relationship With Customer:</strong></td>
+                  <td>
+                    <strong>Relationship With Customer:</strong>
+                  </td>
                   <td id="RelationshipWithCustomer"></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Additional Comments Section -->
-          <h5 class="mb-3">Additional Information</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Additional Comments Section -->
                 <tr>
-                  <td class="table-secondary"><strong>More Comment:</strong></td>
+                  <td>
+                    <strong>More Comment:</strong>
+                  </td>
                   <td id="MoreComment"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Landmark:</strong></td>
+                  <td>
+                    <strong>Landmark:</strong>
+                  </td>
                   <td id="Landmark"></td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Location Section -->
-          <h5 class="mb-3">Location</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Location Section with GPS Coordinates and Map Button -->
                 <tr>
-                  <td class="table-secondary"><strong>Latitude:</strong></td>
-                  <td id="latitude"></td>
+                  <td>
+                    <strong>GPS Coordinates Tracked:</strong>
+                  </td>
+                  <td>
+                    Latitude: <span id="latitude"></span>, Longitude: <span id="longitude"></span><br />
+                    <button class="btn btn-outline-primary btn-sm mt-2" id="viewMapBtn">View on Map</button>
+                  </td>
                 </tr>
-                <tr>
-                  <td class="table-secondary"><strong>Longitude:</strong></td>
-                  <td id="longitude"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Photos Section -->
-          <h5 class="mb-3">Photos</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Customer Address with Directions Button -->
                 <tr>
-                  <td class="table-secondary"><strong>Photo 1:</strong></td>
-                  <td><img id="photo1" src="" alt="Photo1" class="img-fluid" style="max-width: 150px; max-height: 150px;" /></td>
+                  <td>
+                    <strong>Customer Address:</strong>
+                  </td>
+                  <td>
+                    <span id="customeraddress"></span><br />
+                    <button class="btn btn-outline-info btn-sm mt-2" id="checkDirectionBtn">Check Directions</button>
+                  </td>
                 </tr>
-                <tr>
-                  <td class="table-secondary"><strong>Photo 2:</strong></td>
-                  <td><img id="photo2" src="" alt="Photo2" class="img-fluid" style="max-width: 150px; max-height: 150px;" /></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
 
-          <!-- Date and Approval Information Section -->
-          <h5 class="mb-3">Date and Approval</h5>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-              <tbody>
+                <!-- Photos Section with Default Icon if Not Found -->
                 <tr>
-                  <td class="table-secondary"><strong>Date Added:</strong></td>
+                  <td>
+                    <strong>Photo 1:</strong>
+                  </td>
+                  <td>
+                    <i class="fa fa-image fa-3x text-muted" id="photo1Icon"></i>
+                    <img id="photo1" src="" alt="No Image Available" class="img-fluid d-none" style="max-width: 500px; max-height: 500px;" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Photo 2:</strong>
+                  </td>
+                  <td>
+                    <i class="fa fa-image fa-3x text-muted" id="photo2Icon"></i>
+                    <img id="photo2" src="" alt="No Image Available" class="img-fluid d-none" style="max-width: 500px; max-height: 500px;" />
+                  </td>
+                </tr>
+
+                <!-- Date and Approval Information Section -->
+                <tr>
+                  <td>
+                    <strong>Date Added:</strong>
+                  </td>
                   <td id="dateAdded"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Approved By:</strong></td>
+                  <td>
+                    <strong>Approved By:</strong>
+                  </td>
                   <td id="approvedBy"></td>
                 </tr>
                 <tr>
-                  <td class="table-secondary"><strong>Report Status:</strong></td>
+                  <td>
+                    <strong>Report Status:</strong>
+                  </td>
                   <td id="Reportstatus"></td>
                 </tr>
               </tbody>
@@ -338,21 +343,15 @@
           </div>
         </div>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-<!-- End Modal for Report Details -->
 
 <!-- End Modal for Report Details -->
-
-<!-- End Modal for Report Details -->
-
-<!-- End of Modal for Report Details -->
-
-<!-- End of Modal for Report Details -->
 
 <!-- Modal to Reject Jobs -->
 <div class="modal fade" id="rejectJobModal" tabindex="-1" role="dialog" aria-labelledby="rejectJobModalLabel">
@@ -389,8 +388,7 @@
 </div>
 
 <!-- Modal for Agent Details -->
-<!-- Modal for Agent Details -->
-<!-- Modal for Agent Details -->
+
 <div class="modal fade" id="agentdetailsModal" tabindex="-1" role="dialog" aria-labelledby="agentDetailsModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -407,74 +405,105 @@
 
           <!-- Proof of ID Link -->
           <div class="mb-3 text-center">
-            <strong>Proof of ID:</strong> 
+            <strong>Proof of ID:</strong>
             <a id="proofOfId" class="btn btn-primary" href="" target="_blank">Download</a>
           </div>
 
-          <!-- Agent Information Table -->
+          <!-- 
+             Information Table -->
           <table class="table table-bordered table-striped table-hover table-responsive">
             <tbody>
               <tr>
-                <td class="table-secondary"><strong>Full Name:</strong></td>
+                <td class="table-secondary">
+                  <strong>Full Name:</strong>
+                </td>
                 <td id="fullname"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Email:</strong></td>
+                <td class="table-secondary">
+                  <strong>Email:</strong>
+                </td>
                 <td id="Agentemail"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Phone Number:</strong></td>
+                <td class="table-secondary">
+                  <strong>Phone Number:</strong>
+                </td>
                 <td id="PhoneNumber"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Status:</strong></td>
+                <td class="table-secondary">
+                  <strong>Status:</strong>
+                </td>
                 <td id="AgentStatus"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Address:</strong></td>
+                <td class="table-secondary">
+                  <strong>Address:</strong>
+                </td>
                 <td id="Agentaddress"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>State:</strong></td>
+                <td class="table-secondary">
+                  <strong>State:</strong>
+                </td>
                 <td id="Agentstate"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>City:</strong></td>
+                <td class="table-secondary">
+                  <strong>City:</strong>
+                </td>
                 <td id="Agentcity"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Guarantor Name:</strong></td>
+                <td class="table-secondary">
+                  <strong>Guarantor Name:</strong>
+                </td>
                 <td id="guarantorName"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Guarantor Phone Number:</strong></td>
+                <td class="table-secondary">
+                  <strong>Guarantor Phone Number:</strong>
+                </td>
                 <td id="guarantorPhoneNumber"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Bank Account Details:</strong></td>
+                <td class="table-secondary">
+                  <strong>Bank Account Details:</strong>
+                </td>
                 <td id="BankAccountDetails"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Last Login:</strong></td>
+                <td class="table-secondary">
+                  <strong>Last Login:</strong>
+                </td>
                 <td id="last_login"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Created At:</strong></td>
+                <td class="table-secondary">
+                  <strong>Created At:</strong>
+                </td>
                 <td id="created_at"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Latitude:</strong></td>
+                <td class="table-secondary">
+                  <strong>Latitude:</strong>
+                </td>
                 <td id="latitude"></td>
               </tr>
               <tr>
-                <td class="table-secondary"><strong>Longitude:</strong></td>
+                <td class="table-secondary">
+                  <strong>Longitude:</strong>
+                </td>
                 <td id="longitude"></td>
               </tr>
             </tbody>
           </table>
 
           <!-- Address of Verification (using Google Maps API) -->
-          <p><strong>Address of Verification:</strong> <span id="formatted_address">Loading...</span></p>
+          <p>
+            <strong>Address of Verification:</strong> <span id="formatted_address">Loading...</span>
+          </p>
         </div>
       </div>
       <div class="modal-footer">
@@ -485,7 +514,475 @@
 </div>
 <!-- End Modal for Agent Details -->
 
+<!-- Confirmation Modal for Save Location -->
+<div class="modal fade" id="confirmSaveLocationModal" tabindex="-1" role="dialog" aria-labelledby="confirmSaveLocationModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmSaveLocationModalLabel">
+          <i class="fa fa-map-pin"></i> Confirm Save Location
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Start Form -->
+        <form id="saveLocationForm" method="POST">
+          {% csrf_token %}
+          
+          <!-- Hidden fields for latitude and longitude -->
+          <input type="hidden" name="latitude" id="id_latitude">
+          <input type="hidden" name="longitude" id="id_longitude">
 
-<!-- End of Modal for Agent Details -->
+          <!-- Modal content will be updated here -->
+          <div id="modalContent">
+            <p><i class="fa fa-spinner fa-spin"></i> <strong>Fetching your location...</strong></p>
+          </div>
 
-<!-- End of Modal for Agent Details -->
+          <!-- Submit Button (disabled initially) -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="confirmSaveLocationBtn" class="btn btn-secondary" disabled>
+              <i class="fa fa-save"></i> Yes, Save Location
+            </button>
+          </div>
+        </form>
+        <!-- End Form -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- End Confirmation Modal for Save Location -->
+
+<!-- Confirmation Modal for Full Report Save with Location -->
+<div class="modal fade" id="confirmFullReportSaveModal" tabindex="-1" role="dialog" aria-labelledby="confirmFullReportSaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmFullReportSaveModalLabel">
+          <i class="fa fa-map-pin"></i> Confirm Full Report Save with Location
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Start Form -->
+        
+        <form id="saveFullReportForm" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- Hidden fields for latitude and longitude -->
+          <input type="hidden" name="latitude" id="id_latitude_full">
+          <input type="hidden" name="longitude" id="id_longitude_full">
+
+          <!-- Modal content will be dynamically updated here -->
+          <div id="modalContent_full">
+            <p><i class="fa fa-spinner fa-spin"></i> <strong>Fetching your location...</strong></p>
+          </div>
+
+          <!-- Form fields for full report -->
+          <div class="form-group">
+            <label for="inputAddress">Verification Message:</label>
+            <select class="form-control form-select" id="id_VerificationMessage_full" name="VerificationMessage" required>
+              <option value="">-- Select Verification Message --</option>
+              <option value="Incomplete Information">Incomplete Information</option>
+              <option value="No Response at the Address">No Response at the Address</option>
+              <option value="Address Does Not Exist">Address Does Not Exist</option>
+              <option value="Security Agents prevented access to Address">Security Agents prevented access to Address</option>
+              <option value="Address is an empty plot of Land">Address is an empty plot of Land</option>
+              <option value="The Customer has relocated">The Customer has relocated</option>
+              <option value="The Customer is not known at the address">The Customer is not known at the address</option>
+              <option value="The Customer is known but does not reside in the premises">The Customer is known but does not reside in the premises</option>
+              <option value="Address exists and customer is known">Address exists and customer is known</option>
+              <option value="Customer does not live at the address but visits often">Customer does not live at the address but visits often</option>
+              <option value="The Customer is deceased">The Customer is deceased</option>
+              <option value="The Customer works at the address but does not reside there">The Customer works at the address but does not reside there</option>
+              <option value="Customer was met at a different house number">Customer was met at a different house number</option>
+              <option value="Address is customers family house and does not reside there">Address is customers family house and does not reside there</option>
+              <option value="Company is not known at the address">Company is not known at the address</option>
+              <option value="Company is known and operates from the address">Company is known and operates from the address</option>
+              <option value="Could not locate address">Could not locate address</option>
+              <option value="Incomplete address">Incomplete address</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Condition:</label>
+            <select class="form-control form-select" id="id_buildingCondition_full" name="buildingCondition" required>
+              <option value="">-- Select Building Condition --</option>
+              <option value="Uncompleted">Uncompleted</option>
+              <option value="Completed">Completed</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Color:</label>
+            <input type="text" class="form-control" id="id_buildingColor_full" name="buildingColor" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Type:</label>
+            <select class="form-control form-select" id="id_buildingType_full" name="buildingType" required>
+              <option value="">-- Select Building Type --</option>
+              <option value="Bungalow">Bungalow</option>
+              <option value="Storey Building">Storey Building</option>
+              <option value="Duplex">Duplex</option>
+              <option value="Block of flat">Block of flat</option>
+              <option value="BQ">BQ</option>
+              <option value="Multiple Floors">Multiple Floors</option>
+              <option value="Terrace">Terrace</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Customer Relationship With Address:</label>
+            <select class="form-control form-select" id="id_CustomerRelationshipWithaddress_full" name="CustomerRelationshipWithaddress" required>
+              <option value="">-- Select Customer Relationship --</option>
+              <option value="Landlord">Landlord</option>
+              <option value="Tenant">Tenant</option>
+              <option value="None">None</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Address Residential:</label>
+            <select class="form-control form-select" id="id_AddressResidential_full" name="AddressResidential" required>
+              <option value="">-- Select Address Residential Status --</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Name of Individual Interviewed:</label>
+            <input type="text" class="form-control" id="id_NameofindividualInterviewed_full" name="NameofindividualInterviewed" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Relationship With Customer:</label>
+            <input type="text" class="form-control" id="id_RelationshipWithCustomer_full" name="RelationshipWithCustomer" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">More Comment (Optional):</label>
+            <textarea class="form-control" id="id_MoreComment_full" name="MoreComment"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Landmark:</label>
+            <input type="text" class="form-control" id="id_Landmark_full" name="Landmark">
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Photo 1:</label>
+            <input type="file" class="form-control" id="id_photo1_full" name="photo1" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Photo 2 (optional):</label>
+            <input type="file" class="form-control" id="id_photo2_full" name="photo2">
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="confirmSaveFullReportBtn" class="btn btn-secondary" disabled>
+              <i class="fa fa-save"></i> Submit
+            </button>
+          </div>
+        </form>
+        <!-- End Form -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Confirmation Modal for Full Report Save with Location -->
+
+<!-- Confirmation Modal for Edit Report -->
+<div class="modal fade" id="confirmEditReportModal" tabindex="-1" role="dialog" aria-labelledby="confirmEditReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmEditReportModalLabel">
+          <i class="fa fa-edit"></i> Edit Report
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Start Form -->
+        <form id="editReportForm" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- Hidden fields for latitude and longitude -->
+          <input type="hidden" name="latitude" id="id_latitude_edit">
+          <input type="hidden" name="longitude" id="id_longitude_edit">
+
+          <!-- Modal content will be dynamically updated here -->
+          <div id="modalContent_edit">
+            <p><i class="fa fa-spinner fa-spin"></i> <strong>Fetching report details...</strong></p>
+          </div>
+
+          <!-- Form fields for editing the report -->
+          <div class="form-group">
+            <label for="inputAddress">Verification Message:</label>
+            <select class="form-control form-select" id="id_VerificationMessage_edit" name="VerificationMessage" required>
+              <option value="">-- Select Verification Message --</option>
+              <option value="Incomplete Information">Incomplete Information</option>
+              <option value="No Response at the Address">No Response at the Address</option>
+              <option value="Address Does Not Exist">Address Does Not Exist</option>
+              <option value="Security Agents prevented access to Address">Security Agents prevented access to Address</option>
+              <option value="Address is an empty plot of Land">Address is an empty plot of Land</option>
+              <option value="The Customer has relocated">The Customer has relocated</option>
+              <option value="The Customer is not known at the address">The Customer is not known at the address</option>
+              <option value="The Customer is known but does not reside in the premises">The Customer is known but does not reside in the premises</option>
+              <option value="Address exists and customer is known">Address exists and customer is known</option>
+              <option value="Customer does not live at the address but visits often">Customer does not live at the address but visits often</option>
+              <option value="The Customer is deceased">The Customer is deceased</option>
+              <option value="The Customer works at the address but does not reside there">The Customer works at the address but does not reside there</option>
+              <option value="Customer was met at a different house number">Customer was met at a different house number</option>
+              <option value="Address is customer's family house and does not reside there">Address is customer's family house and does not reside there</option>
+              <option value="Company is not known at the address">Company is not known at the address</option>
+              <option value="Company is known and operates from the address">Company is known and operates from the address</option>
+              <option value="Could not locate address">Could not locate address</option>
+              <option value="Incomplete address">Incomplete address</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Condition:</label>
+            <select class="form-control form-select" id="id_buildingCondition_edit" name="buildingCondition" required>
+              <option value="">-- Select Building Condition --</option>
+              <option value="Uncompleted">Uncompleted</option>
+              <option value="Completed">Completed</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Color:</label>
+            <input type="text" class="form-control" id="id_buildingColor_edit" name="buildingColor" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Type:</label>
+            <select class="form-control form-select" id="id_buildingType_edit" name="buildingType" required>
+              <option value="">-- Select Building Type --</option>
+              <option value="Bungalow">Bungalow</option>
+              <option value="Storey Building">Storey Building</option>
+              <option value="Duplex">Duplex</option>
+              <option value="Block of flat">Block of flat</option>
+              <option value="BQ">BQ</option>
+              <option value="Multiple Floors">Multiple Floors</option>
+              <option value="Terrace">Terrace</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Customer Relationship With Address:</label>
+            <select class="form-control form-select" id="id_CustomerRelationshipWithaddress_edit" name="CustomerRelationshipWithaddress" required>
+              <option value="">-- Select Customer Relationship --</option>
+              <option value="Landlord">Landlord</option>
+              <option value="Tenant">Tenant</option>
+              <option value="None">None</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Address Residential:</label>
+            <select class="form-control form-select" id="id_AddressResidential_edit" name="AddressResidential" required>
+              <option value="">-- Select Address Residential Status --</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Name of Individual Interviewed:</label>
+            <input type="text" class="form-control" id="id_NameofindividualInterviewed_edit" name="NameofindividualInterviewed" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Relationship With Customer:</label>
+            <input type="text" class="form-control" id="id_RelationshipWithCustomer_edit" name="RelationshipWithCustomer" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">More Comment (Optional):</label>
+            <textarea class="form-control" id="id_MoreComment_edit" name="MoreComment"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Landmark:</label>
+            <input type="text" class="form-control" id="id_Landmark_edit" name="Landmark">
+          </div>
+
+          <!-- Small Image Preview and File Uploads -->
+          <div class="form-group">
+            <label for="inputAddress">Photo 1:</label>
+            <input type="file" class="form-control" id="id_photo1_edit" name="photo1">
+            <div class="text-left">
+              <label>Preview:</label>
+              <img id="photo1-preview" src="" style="max-width: 50px; display: none;" alt="Photo 1 Preview">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Photo 2 (optional):</label>
+            <input type="file" class="form-control" id="id_photo2_edit" name="photo2">
+            <div class="text-left">
+              <label>Preview:</label>
+              <img id="photo2-preview" src="" style="max-width: 50px; display: none;" alt="Photo 2 Preview">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="confirmEditReportBtn" class="btn btn-secondary" disabled>
+              <i class="fa fa-save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+        <!-- End Form -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Confirmation Modal for Edit Report -->
+
+
+
+
+<!-- Staff Confirmation Modal for Edit Report -->
+<!-- Confirmation Modal for Edit Report -->
+<div class="modal fade" id="staffEditReportModal" tabindex="-1" role="dialog" aria-labelledby="staffEditReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staffEditReportModalLabel">
+          <i class="fa fa-edit"></i> Edit Report
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Start Form -->
+        <form id="staffEditReportForm" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Hidden fields for latitude and longitude -->
+          <input type="hidden" name="latitude" id="id_latitude_edit">
+          <input type="hidden" name="longitude" id="id_longitude_edit">
+
+          <!-- Modal content will be dynamically updated here -->
+          <div id="modalContentEdit">
+            <p><i class="fa fa-spinner fa-spin"></i> <strong>Fetching report details...</strong></p>
+          </div>
+
+          <!-- Form fields for editing the report -->
+          <div class="form-group">
+            <label for="inputAddress">Verification Message:</label>
+            <select class="form-control form-select" id="id_VerificationMessage" name="VerificationMessage" required>
+              <option value="">-- Select Verification Message --</option>
+              <option value="Incomplete Information">Incomplete Information</option>
+              <option value="No Response at the Address">No Response at the Address</option>
+              <option value="Address Does Not Exist">Address Does Not Exist</option>
+              <option value="Security Agents prevented access to Address">Security Agents prevented access to Address</option>
+              <option value="Address is an empty plot of Land">Address is an empty plot of Land</option>
+              <option value="The Customer has relocated">The Customer has relocated</option>
+              <option value="The Customer is not known at the address">The Customer is not known at the address</option>
+              <option value="The Customer is known but does not reside in the premises">The Customer is known but does not reside in the premises</option>
+              <option value="Address exists and customer is known">Address exists and customer is known</option>
+              <option value="Customer does not live at the address but visits often">Customer does not live at the address but visits often</option>
+              <option value="The Customer is deceased">The Customer is deceased</option>
+              <option value="The Customer works at the address but does not reside there">The Customer works at the address but does not reside there</option>
+              <option value="Customer was met at a different house number">Customer was met at a different house number</option>
+              <option value="Address is customer's family house and does not reside there">Address is customer's family house and does not reside there</option>
+              <option value="Company is not known at the address">Company is not known at the address</option>
+              <option value="Company is known and operates from the address">Company is known and operates from the address</option>
+              <option value="Could not locate address">Could not locate address</option>
+              <option value="Incomplete address">Incomplete address</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Condition:</label>
+            <select class="form-control form-select" id="id_buildingCondition" name="buildingCondition" required>
+              <option value="">-- Select Building Condition --</option>
+              <option value="Uncompleted">Uncompleted</option>
+              <option value="Completed">Completed</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Color:</label>
+            <input type="text" class="form-control" id="id_buildingColor" name="buildingColor" required>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Building Type:</label>
+            <select class="form-control form-select" id="id_buildingType" name="buildingType" required>
+              <option value="">-- Select Building Type --</option>
+              <option value="Bungalow">Bungalow</option>
+              <option value="Storey Building">Storey Building</option>
+              <option value="Duplex">Duplex</option>
+              <option value="Block of flat">Block of flat</option>
+              <option value="BQ">BQ</option>
+              <option value="Multiple Floors">Multiple Floors</option>
+              <option value="Terrace">Terrace</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+
+        
+
+          <!-- Small Image Preview and File Uploads -->
+          <div class="form-group">
+            <label for="inputAddress">Photo 1:</label>
+            <input type="file" class="form-control" id="id_photo1" name="photo1">
+            <div class="text-left">
+              <label>Preview:</label>
+              <img id="photo1-preview_edit" src="" style="max-width: 50px; display: none;" alt="Photo 1 Preview">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Photo 2 (optional):</label>
+            <input type="file" class="form-control" id="id_photo2" name="photo2">
+            <div class="text-left">
+              <label>Preview:</label>
+              <img id="photo2-preview_edit" src="" style="max-width: 50px; display: none;" alt="Photo 2 Preview">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Report Status:</label>
+            <select class="form-control form-select" id="id_ReportStatus" name="ReportStatus" required>
+              <option value="0">Pending</option>
+              <option value="1">Approved</option>
+              <option value="2">Rejected</option>
+            </select>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="saveReportBtn" class="btn btn-secondary" disabled>
+              <i class="fa fa-save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+        <!-- End Form -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Confirmation Modal for Edit Report -->
+
+<!-- End of Confirmation Modal for Edit Report -->
+
+
+<!-- End of Confirmation Modal for Edit Report -->

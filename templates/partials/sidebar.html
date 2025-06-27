@@ -1,161 +1,164 @@
 {% load static %}
 
-  <aside class="app-navbar">
-    <!-- begin sidebar-nav -->
-    <div class="sidebar-nav scrollbar scroll_light">
-        <ul class="metismenu " id="sidebarNav">
- 
-        <!-- Agent sidebar-nav -->
-        {% if user.is_authenticated and user.get_role == 'Agent'  %}
+<aside class="app-navbar">
+  <!-- begin sidebar-nav -->
+  <div class="sidebar-nav scrollbar scroll_light">
+    <ul class="metismenu" id="sidebarNav">
+      <!-- Agent sidebar-nav -->
+      {% if user.is_authenticated and user.get_role == 'Agent' %}
         <li class="{% if '/agentDashboard/' == request.path or '/staff/' == request.path %}active{% endif %}">
-            <a
-    
-              href="{% url 'agentDashboard' %}" aria-expanded="false">
-              <i class="nav-icon ti ti-rocket"></i>
-              <span class="nav-title">Dashboard</span>
-            
-          </a></li>
-          <li>
-            <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Jobs</span></a>
-            <ul aria-expanded="false">
-                <li class="{% if 'agentassignedjobs' in request.path %}active{% endif %}"> <a href="{% url 'agentassignedjobs' %}">My Assigned Jobs</a> </li>
-         
-        
-                
-                
-                                               </ul>
+          <a href="{% url 'agentDashboard' %}" aria-expanded="false">
+            <i class="nav-icon ti ti-rocket"></i>
+            <span class="nav-title">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Jobs</span></a>
+          <ul aria-expanded="false">
+            <li class="{% if 'agentassignedjobs' in request.path %}active{% endif %}">
+              <a href="{% url 'agentassignedjobs' %}">My Assigned Jobs</a>
+            </li>
+          </ul>
         </li>
 
         <li>
-          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Reports</span></a>    <ul aria-expanded="false">
-  
-
-            <li class="{% if 'myreport' in request.path %}active{% endif %}"> <a href="{% url 'myreport' %}">My Reports</a> </li>
-       
-            <li class="{% if 'agentrejectedreports' in request.path %}active{% endif %}"><a   href="{% url 'agentrejectedreports' %}" aria-expanded="false"><span class="nav-title">Rejected Reports</span> </a></li>
-                     
-     
-    
-                                             </ul>
-      </li>
-
-
-      
-       
-        <li class="{% if 'agentprofile' in request.path %}active{% endif %}"><a   href="{% url 'agentprofile' %}" aria-expanded="false"> <i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span> </a></li>  
-
-                           <li>
-            <a class="" href="{% url 'logout' %}" aria-expanded="false"> <i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span> </a>
-        
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Reports</span></a> <ul aria-expanded="false">
+            <li class="{% if 'myreport' in request.path %}active{% endif %}">
+              <a href="{% url 'myreport' %}">My Reports</a>
+            </li>
+            <li class="{% if 'savedreports' in request.path %}active{% endif %}">
+              <a href="{% url 'savedreports' %}">Saved Reports</a>
+            </li>
+            <li class="{% if 'agentrejectedreports' in request.path %}active{% endif %}">
+              <a href="{% url 'agentrejectedreports' %}" aria-expanded="false"><span class="nav-title">Rejected Reports</span></a>
+            </li>
+          </ul>
         </li>
 
+        <li class="{% if 'agentprofile' in request.path %}active{% endif %}">
+          <a href="{% url 'agentprofile' %}" aria-expanded="false"><i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span></a>
+        </li>
 
+        <li>
+          <a class="" href="{% url 'logout' %}" aria-expanded="false"><i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span></a>
+        </li>
 
         <!-- client sidebar-nav -->
-        {% elif user.is_authenticated and user.get_role == 'Client'  %}
+      {% elif user.is_authenticated and user.get_role == 'Client' %}
         <li class="active">
-            <a class="" href="{% url 'clientDashboard' %}" aria-expanded="false">
-                <i class="nav-icon ti ti-rocket"></i>
-                <span class="nav-title">Dashboard</span>
-              
-            </a>
-                                        </li>
-
-
- <li class="{% if 'clientjobs' in request.path %}active{% endif %}"> <a href="{% url 'clientjobs' %}"><i class="nav-icon ti ti-layers"></i>Jobs</a> </li>
-               
-
-        
-        <li class="{% if 'clientreports' in request.path %}active{% endif %}"> <a href="{% url 'clientreports' %}"><i class="nav-icon ti ti-layers"></i>Reports</a> </li>
-               
-
-      
-        <li class="nav-static-title">Account Settings</li>
-        <!-- <li> <a class="" href="javascript:void(0)" aria-expanded="false"> <i class="nav-icon fa fa-users"></i> <span class="nav-title">Branches</span> </a>  </li> -->
-
-        <li class="{% if 'clientprofile' in request.path %}active{% endif %}"><a   href="{% url 'clientprofile' %}" aria-expanded="false"> <i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span> </a></li> 
-                           <li>
-            <a class="" href="{% url 'logout' %}" aria-expanded="false"> <i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span> </a>
-        
+          <a class="" href="{% url 'clientDashboard' %}" aria-expanded="false">
+            <i class="nav-icon ti ti-rocket"></i>
+            <span class="nav-title">Dashboard</span>
+          </a>
         </li>
 
+        <li class="{% if 'clientjobs' in request.path %}active{% endif %}">
+          <a href="{% url 'clientjobs' %}"><i class="nav-icon ti ti-layers"></i>Jobs</a>
+        </li>
 
+        <li class="{% if 'clientreports' in request.path %}active{% endif %}">
+          <a href="{% url 'clientreports' %}"><i class="nav-icon ti ti-layers"></i>Reports</a>
+        </li>
 
-   <!-- Staff sidebar-nav -->
-        {% else %}
-            <!-- applying Dynamic Navigation Link -->
+        <li class="nav-static-title">Account Settings</li>
+        <!-- <li> <a class="" href="javascript:void(0)" aria-expanded="false"> <i class="nav-icon fa fa-users"></i> <span class="nav-title">Branches</span> </a> </li> -->
+
+        <li class="{% if 'clientprofile' in request.path %}active{% endif %}">
+          <a href="{% url 'clientprofile' %}" aria-expanded="false"><i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span></a>
+        </li>
+        <li>
+          <a class="" href="{% url 'logout' %}" aria-expanded="false"><i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span></a>
+        </li>
+
+        <!-- Staff sidebar-nav -->
+      {% else %}
+        <!-- applying Dynamic Navigation Link -->
         <li class="{% if '/staffDashboard/' == request.path or '/staff/' == request.path %}active{% endif %}">
-            <a
-    
-              href="{% url 'staffDashboard' %}" aria-expanded="false">
-              <i class="nav-icon ti ti-rocket"></i>
-              <span class="nav-title">Dashboard</span>
-            
-          </a></li>
-
-
-          <li>
-            <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Jobs</span></a>
-            <ul aria-expanded="false">
-                   <li class="{% if 'jobs' in request.path %}active{% endif %}"><a   href="{% url 'jobs' %}" aria-expanded="false"><span class="nav-title">All Jobs</span> </a></li>  
-                   <li class="{% if 'unassignedjobs' in request.path %}active{% endif %}"><a   href="{% url 'unassignedjobs' %}" aria-expanded="false"><span class="nav-title">Unassigned Jobs</span> </a></li>  
-                   <li class="{% if 'rejectedjobs' in request.path %}active{% endif %}"><a   href="{% url 'rejectedjobs' %}" aria-expanded="false"><span class="nav-title">Rejected Jobs</span> </a></li>
-                   <li class="{% if 'agentpendingjobs' in request.path %}active{% endif %}"><a   href="{% url 'agentpendingjobs' %}" aria-expanded="false"><span class="nav-title">Agents Pending Jobs</span> </a></li>  
-       
-      
-                                               </ul>
+          <a href="{% url 'staffDashboard' %}" aria-expanded="false">
+            <i class="nav-icon ti ti-rocket"></i>
+            <span class="nav-title">Dashboard</span>
+          </a>
         </li>
 
         <li>
-          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Reports</span></a>    <ul aria-expanded="false">
-            <li class="{% if 'pendingreports' in request.path %}active{% endif %}"><a   href="{% url 'pendingreports' %}" aria-expanded="false"><span class="nav-title">Pending reports</span> </a></li>
-            <li class="{% if 'approvedreports' in request.path %}active{% endif %}"><a   href="{% url 'approvedreports' %}" aria-expanded="false"><span class="nav-title">Approved reports</span> </a></li>
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Jobs</span></a>
+          <ul aria-expanded="false">
+            <li class="{% if 'jobs' in request.path %}active{% endif %}">
+              <a href="{% url 'jobs' %}" aria-expanded="false"><span class="nav-title">All Jobs</span></a>
+            </li>
+            <li class="{% if 'unassignedjobs' in request.path %}active{% endif %}">
+              <a href="{% url 'unassignedjobs' %}" aria-expanded="false"><span class="nav-title">Unassigned Jobs</span></a>
+            </li>
+            <li class="{% if 'rejectedjobs' in request.path %}active{% endif %}">
+              <a href="{% url 'rejectedjobs' %}" aria-expanded="false"><span class="nav-title">Rejected Jobs</span></a>
+            </li>
+            <li class="{% if 'agentpendingjobs' in request.path %}active{% endif %}">
+              <a href="{% url 'agentpendingjobs' %}" aria-expanded="false"><span class="nav-title">Agents Pending Jobs</span></a>
+            </li>
+          </ul>
+        </li>
 
- <li class="{% if 'allreports' in request.path %}active{% endif %}"> <a href="{% url 'allreports' %}">All Reports</a> </li>
- <li class="{% if 'rejectedreports' in request.path %}active{% endif %}"><a   href="{% url 'rejectedreports' %}" aria-expanded="false"><span class="nav-title">Rejected Reports</span> </a></li>
-                     
-     
-    
-                                             </ul>
-      </li>
+        <li>
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Reports</span></a> <ul aria-expanded="false">
+            <li class="{% if 'pendingreports' in request.path %}active{% endif %}">
+              <a href="{% url 'pendingreports' %}" aria-expanded="false"><span class="nav-title">Pending reports</span></a>
+            </li>
 
+            <li class="{% if 'allsavedreports' in request.path %}active{% endif %}">
+              <a href="{% url 'allsavedreports' %}">Saved Reports</a>
+            </li>
+            <li class="{% if 'approvedreports' in request.path %}active{% endif %}">
+              <a href="{% url 'approvedreports' %}" aria-expanded="false"><span class="nav-title">Approved reports</span></a>
+            </li>
 
+            <li class="{% if 'allreports' in request.path %}active{% endif %}">
+              <a href="{% url 'allreports' %}">All Reports</a>
+            </li>
+            <li class="{% if 'rejectedreports' in request.path %}active{% endif %}">
+              <a href="{% url 'rejectedreports' %}" aria-expanded="false"><span class="nav-title">Rejected Reports</span></a>
+            </li>
+          </ul>
+        </li>
 
-      
-      <li>
-        <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Statistics</span></a>    <ul aria-expanded="false">
-          <li class="{% if 'job-statistics' in request.path %}active{% endif %}"><a   href="{% url 'job-statistics' %}" aria-expanded="false"><span class="nav-title">Job</span> </a></li>
-          <li class="{% if 'report-statistics' in request.path %}active{% endif %}"><a   href="{% url 'report_statistics' %}" aria-expanded="false"><span class="nav-title">Report</span> </a></li>
+        <li>
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Statistics</span></a> <ul aria-expanded="false">
+            <li class="{% if 'job-statistics' in request.path %}active{% endif %}">
+              <a href="{% url 'job-statistics' %}" aria-expanded="false"><span class="nav-title">Job</span></a>
+            </li>
+            <li class="{% if 'report-statistics' in request.path %}active{% endif %}">
+              <a href="{% url 'report_statistics' %}" aria-expanded="false"><span class="nav-title">Report</span></a>
+            </li>
+          </ul>
+        </li>
 
-             
-   
-  
-                                           </ul>
-    </li>
-             
+        <li>
+          <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Feedback Retrieval</span></a> <ul aria-expanded="false">
+            <li class="{% if 'OutstandingReports' in request.path %}active{% endif %}">
+              <a href="{% url 'OutstandingReports' %}" aria-expanded="false"><span class="nav-title">Oustanding Reports</span></a>
+            </li>
+            <li class="{% if 'UrgentReports' in request.path %}active{% endif %}">
+              <a href="{% url 'UrgentReports' %}" aria-expanded="false"><span class="nav-title">Urgent Reports</span></a>
+            </li>
+            <li class="{% if 'NotFoundjobs' in request.path %}active{% endif %}">
+              <a href="{% url 'NotFoundjobs' %}" aria-expanded="false"><span class="nav-title">Missing Portal jobs</span></a>
+            </li>
+            <li class="{% if 'search_reports' in request.path %}active{% endif %}">
+              <a href="{% url 'search_reports' %}" aria-expanded="false"><span class="nav-title">Search by Options</span></a>
+            </li>
+            <li class="{% if 'approve_and_send' in request.path %}active{% endif %}">
+              <a href="{% url 'approve_and_send' %}" aria-expanded="false"><span class="nav-title">Send Feedback</span></a>
+            </li>
+          </ul>
+        </li>
 
-        
-    <li>
-      <a class="has-arrow" href="javascript:void(0)" aria-expanded="false"><i class="nav-icon ti ti-bag"></i> <span class="nav-title">Feedback Retrieval</span></a>    <ul aria-expanded="false">
-        <li class="{% if 'OutstandingReports' in request.path %}active{% endif %}"><a   href="{% url 'OutstandingReports' %}" aria-expanded="false"><span class="nav-title">Oustanding Reports</span> </a></li>
-        <li class="{% if 'UrgentReports' in request.path %}active{% endif %}"><a   href="{% url 'UrgentReports' %}" aria-expanded="false"><span class="nav-title">Urgent Reports</span> </a></li>
-        <li class="{% if 'NotFoundjobs' in request.path %}active{% endif %}"><a   href="{% url 'NotFoundjobs' %}" aria-expanded="false"><span class="nav-title">Missing Portal jobs</span> </a></li>
-        <li class="{% if 'search_reports' in request.path %}active{% endif %}"><a   href="{% url 'search_reports' %}" aria-expanded="false"><span class="nav-title">Search by Options</span> </a></li>
-        <li class="{% if 'approve_and_send' in request.path %}active{% endif %}"><a   href="{% url 'approve_and_send' %}" aria-expanded="false"><span class="nav-title">Send Feedback</span> </a></li>
-
-           
-           
- 
-
-                                         </ul>
-  </li>
-  
-<!-- applying Dynamic Navigation Link -->
-  <li class="{% if 'staffprofile' in request.path %}active{% endif %}"><a   href="{% url 'staffprofile' %}" aria-expanded="false"> <i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span> </a></li>  
-  <li> <a class="" href="{% url 'logout' %}" aria-expanded="false"> <i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span> </a>  </li>
-        {% endif %}
-
-       
-          
-        </ul>
-    </div>
+        <!-- applying Dynamic Navigation Link -->
+        <li class="{% if 'staffprofile' in request.path %}active{% endif %}">
+          <a href="{% url 'staffprofile' %}" aria-expanded="false"><i class="nav-icon fa fa-user-circle-o"></i> <span class="nav-title">Profile</span></a>
+        </li>
+        <li>
+          <a class="" href="{% url 'logout' %}" aria-expanded="false"><i class="nav-icon fa fa-sign-out"></i> <span class="nav-title">Logout</span></a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</aside>

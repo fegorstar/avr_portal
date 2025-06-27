@@ -18,8 +18,8 @@ import csv
 import requests
 import json
 from django.views.decorators.http import require_POST
-
-
+from dateutil import parser as date_parser
+from django.utils.dateparse import parse_datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.db.models import Q
@@ -39,7 +39,8 @@ from django.utils.timesince import timesince
 
 from staffs.views import reportinPdf
 from django.core.files.base import ContentFile
-
+from django.contrib import messages
+from dateutil.parser import ParserError
 
 # get the agent that is loggedin
 def get_agent(request):
@@ -198,103 +199,233 @@ def fetch_job_detailsagentsection(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
+
 # ===============================Address Report===================================
+@login_required(login_url='login')
+@user_passes_test(check_role_agent)
+def Address_Report(request, report_id):
+    # Fetch the job object based on report_id
+    selected_job = get_object_or_404(Job, pk=report_id)
+    
+    # Get the agent associated with the current user (the logged-in agent)
+    agent = get_object_or_404(Agent, user=request.user)
+
+    if request.method == 'POST':
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        # Ensure that latitude and longitude are provided
+        if not latitude or not longitude:
+            return JsonResponse({'status': 'error', 'message': 'Location data is required.'}, status=400)
+
+        # Step 2: Create or get the report associated with the selected job and agent
+        selected_report, created = Report.objects.get_or_create(
+            customer=selected_job,  # This links the report to the selected job
+            agent=agent  # This ensures the report is associated with the current agent
+        )
+
+        # Ensure the report is created before updating the job status
+        if created:
+            print("New report created for the job.")
+
+        # Step 3: Extract additional details and update the report
+        first_name = selected_job.first_name
+        last_name = selected_job.last_name
+        full_name = f"{first_name} {last_name}"
+
+        # Date and time handling for job assigned and report creation
+        current_datetime = timezone.now()  # Use timezone-aware current time
+
+        # Step 4: Get `whenAssigned` directly from the `selected_job`
+        whenJobAssigned = selected_job.whenAssigned
+
+        # Default value for total_TAT (Turnaround Time)
+        total_TAT = 0
+
+        if whenJobAssigned:
+            try:
+                # Ensure that `whenJobAssigned` is aware (timezone-aware)
+                if whenJobAssigned.tzinfo is None:
+                    whenJobAssigned = timezone.make_aware(whenJobAssigned)
+
+                # Calculate the difference in time (TAT)
+                diff = current_datetime - whenJobAssigned  # Calculate difference
+                total_TAT = diff.total_seconds() / 60 / 60  # TAT in hours
+
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': f"Error in calculating TAT: {str(e)}"}, status=400)
+
+        # Step 5: Retrieve other fields from the selected job (directly from `selected_job`)
+        JobRefNo = selected_job.ref_no  # Extract from the selected job
+        clientJobrefID = selected_job.clientJobrefID  # Extract from the selected job
+        customer = selected_job  # Here we assign the actual `Job` instance as the `customer`
+        client = selected_job.client.client_name if selected_job.client else ''  # Extract the client name
+        address = selected_job.address  # Get the address from the selected job
+
+        # Step 6: Get full report fields from the POST request (sent via AJAX)
+        buildingCondition = request.POST.get('buildingCondition', '')
+        buildingColor = request.POST.get('buildingColor', '')  # Get building color
+        buildingType = request.POST.get('buildingType', '')
+        CustomerRelationshipWithaddress = request.POST.get('CustomerRelationshipWithaddress', '')
+        AddressResidential = request.POST.get('AddressResidential', '')
+        NameofindividualInterviewed = request.POST.get('NameofindividualInterviewed', '')
+        RelationshipWithCustomer = request.POST.get('RelationshipWithCustomer', '')
+        VerificationMessage = request.POST.get('VerificationMessage', '')
+        MoreComment = request.POST.get('MoreComment', '')
+        Landmark = request.POST.get('Landmark', '')
+        report_address = request.POST.get('address', '')
+
+        # Step 7: Handle photo uploads (photo1 and photo2)
+        photo1 = request.FILES.get('photo1')  # Photo 1
+        photo2 = request.FILES.get('photo2')  # Photo 2 (optional)
+
+        # Step 8: Update the report fields with the values
+        selected_report.latitude = latitude
+        selected_report.longitude = longitude
+        selected_report.saved = True  # Mark the report as partially saved
+        selected_report.TAT = total_TAT
+        selected_report.Reportstatus = 0  # Default report status
+        selected_report.JobRefNo = JobRefNo
+        selected_report.clientJobrefID = clientJobrefID
+        selected_report.Client = client
+        selected_report.address = address  # Save the address from the job
+        selected_report.buildingCondition = buildingCondition
+        selected_report.buildingColor = buildingColor  # Save the Building Color
+        selected_report.buildingType = buildingType
+        selected_report.CustomerRelationshipWithaddress = CustomerRelationshipWithaddress
+        selected_report.AddressResidential = AddressResidential
+        selected_report.NameofindividualInterviewed = NameofindividualInterviewed
+        selected_report.RelationshipWithCustomer = RelationshipWithCustomer
+        selected_report.VerificationMessage = VerificationMessage
+        selected_report.MoreComment = MoreComment
+        selected_report.Landmark = Landmark
+        selected_report.report_address = report_address
+
+        # Save the photos (if any)
+        if photo1:
+            selected_report.photo1 = photo1
+        if photo2:
+            selected_report.photo2 = photo2
+
+        # Store the agent's name or ID as a string in the `agent` CharField
+        selected_report.agent = agent.fullname  # Store the agent's full name (a string, not the model instance)
+        
+        selected_report.created_at = current_datetime
+        selected_report.modified_at = current_datetime
+        selected_report.customerName = full_name
+        selected_report.customer = customer  # Here we assign the `selected_job` (the Job instance) to the customer field
+        selected_report.save()  # Save the report object
+
+        # Step 9: Once the report is saved, update the associated job's status to "done" (or partially completed)
+        selected_job.status = 1  # Assuming status 1 means "done" or partially done
+        selected_job.save()  # Save the updated job status
+
+        # Step 10: Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Full report saved with location successfully.'})
+
+    # If the request method is not POST, return an error response
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+
+######################
+
+###################################################################################################
 
 @login_required(login_url='login')
 @user_passes_test(check_role_agent)
-def Address_Report(request, pk):
-    selected_job = get_object_or_404(Job, pk=pk)
+def partial_report_save(request, report_id):
+    # Fetch the job object based on report_id
+    selected_job = get_object_or_404(Job, pk=report_id)
+    
+    # Get the agent associated with the current user (the logged-in agent)
     agent = get_object_or_404(Agent, user=request.user)
-    nowseleted = selected_job.ref_no  # Store the job reference number for status update
-
+    
     if request.method == 'POST':
-        # Process the form data and capture latitude and longitude
-        Reportform = ReportJobForm(request.POST, request.FILES)
+        # Step 1: Get latitude and longitude from the form data (sent via AJAX)
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
 
-        try:
-            if Reportform.is_valid():
-                # Fetch first_name and last_name from the Job instance to build customer name
-                first_name = selected_job.first_name
-                last_name = selected_job.last_name
-                full_name = f"{first_name} {last_name}"
+        # Debugging: Print latitude and longitude to verify
+        print(f"Latitude received: {latitude}")
+        print(f"Longitude received: {longitude}")
 
-                # Get latitude and longitude from the form
-                latitude = request.POST.get('latitude')
-                longitude = request.POST.get('longitude')
+        # Step 2: Ensure that latitude and longitude are provided
+        if not latitude or not longitude:
+            return JsonResponse({'status': 'error', 'message': 'Location data is required.'}, status=400)
 
-                # Ensure that latitude and longitude are provided
-                if not latitude or not longitude:
-                    messages.error(request, 'Location verification is required. Please enable location services or enter the address manually.')
-                    return redirect('reportAddress', pk=pk)
+        # Step 3: Create the report if it doesn't already exist
+        selected_report, created = Report.objects.get_or_create(
+            customer=selected_job,  # This links the report to the selected job
+            agent=agent  # This ensures the report is associated with the current agent
+        )
 
-                # Date and time handling for job assigned and report creation
-                current_datetime = str(datetime.now())
-                date_format1 = parser.parse(current_datetime)
-                whenJobAssigned_str = str(request.POST['whenJobAssigned'])
-                if 'midnight' in whenJobAssigned_str:
-                    whenJobAssigned_str = whenJobAssigned_str.replace('midnight', '12:00am')
-                elif 'noon' in whenJobAssigned_str:
-                    whenJobAssigned_str = whenJobAssigned_str.replace('noon', '12:00pm')
+        # Ensure the report is created before updating the job status
+        if created:
+            print("New report created for the job.")
 
-                date_format2 = date_parser.parse(whenJobAssigned_str)
-                diff = date_format1 - date_format2  # Calculate difference
+        # Step 4: Extract additional details and update the report
+        first_name = selected_job.first_name
+        last_name = selected_job.last_name
+        full_name = f"{first_name} {last_name}"
+
+        # Date and time handling for job assigned and report creation
+        current_datetime = timezone.now()  # Use timezone-aware current time
+
+        # Step 5: Get `whenAssigned` directly from the `selected_job`
+        whenJobAssigned = selected_job.whenAssigned
+
+        # Default value for total_TAT
+        total_TAT = 0
+
+        if whenJobAssigned:
+            try:
+                # Ensure that `whenJobAssigned` is aware (timezone-aware)
+                if whenJobAssigned.tzinfo is None:
+                    whenJobAssigned = timezone.make_aware(whenJobAssigned)
+
+                # Calculate the difference in time (TAT)
+                diff = current_datetime - whenJobAssigned  # Calculate difference
                 total_TAT = diff.total_seconds() / 60 / 60  # TAT in hours
 
-                # Get other fields from the form
-                JobRefNo = request.POST['JobRefNo']
-                clientJobrefID = request.POST['clientJobrefID']
-                client = request.POST['client']
-                buildingCondition = Reportform.cleaned_data['buildingCondition']
-                buildingColor = Reportform.cleaned_data['buildingColor']
-                buildingType = Reportform.cleaned_data['buildingType']
-                CustomerRelationshipWithaddress = Reportform.cleaned_data['CustomerRelationshipWithaddress']
-                AddressResidential = Reportform.cleaned_data['AddressResidential']
-                NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-                RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-                VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-                MoreComment = Reportform.cleaned_data['MoreComment']
-                Landmark = Reportform.cleaned_data['Landmark']
-                address = Reportform.cleaned_data['address']
-                photo1 = Reportform.cleaned_data['photo1']
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': f"Error in calculating TAT: {str(e)}"}, status=400)
 
-                # Save the report object with captured geolocation data
-                reportjob = Reportform.save(commit=False)  # Prepare to save the report object
-                reportjob.customer = selected_job
-                reportjob.agent = agent
-                reportjob.TAT = total_TAT
-                reportjob.Reportstatus = 0  # Default report status
-                reportjob.JobRefNo = JobRefNo
-                reportjob.address = address  # Save the address
-                reportjob.clientJobrefID = clientJobrefID  # Save client reference ID
-                reportjob.Client = client
-                reportjob.created_at = date_format1
-                reportjob.modified_at = date_format1
-                reportjob.customerName = full_name
-                reportjob.latitude = latitude  # Save the latitude
-                reportjob.longitude = longitude  # Save the longitude
-                reportjob.save()
+        # Step 6: Retrieve other fields from the selected job
+        JobRefNo = selected_job.ref_no  # Extract from the selected job
+        clientJobrefID = selected_job.clientJobrefID  # Extract from the selected job
+        customer = selected_job  # Here we assign the actual `Job` instance as the `customer`
+        client = selected_job.client.client_name if selected_job.client else ''  # Extract the client name
+        address = selected_job.address  # Get the address from the selected job
 
-                # After saving the report, update the job status
-                jobstatus = Job.objects.filter(ref_no=nowseleted).update(status=1)
+        # Step 7: Update the report fields
+        selected_report.latitude = latitude
+        selected_report.longitude = longitude
+        selected_report.saved = True  # Mark the report as partially saved
+        selected_report.TAT = total_TAT
+        selected_report.Reportstatus = 0  # Default report status
+        selected_report.JobRefNo = JobRefNo
+        selected_report.clientJobrefID = clientJobrefID
+        selected_report.Client = client
+        selected_report.address = address  # Save the address from the job
+        
+        # Store the agent's name or ID as a string in the `agent` CharField
+        selected_report.agent = agent.fullname  # Store the agent's full name (a string, not the model instance)
+        
+        selected_report.created_at = current_datetime
+        selected_report.modified_at = current_datetime
+        selected_report.customerName = full_name
+        selected_report.customer = customer  # Here we assign the `selected_job` (the Job instance) to the customer field
+        selected_report.save()  # Save the report object
 
-                # Success message
-                messages.success(request, 'Report successfully submitted!')
-                return redirect('agentassignedjobs')
+        # Step 8: Once the report is saved, update the associated job's status to "done" (or partially completed)
+        selected_job.status = 1  # Assuming status 1 means "done" or partially done
+        selected_job.save()  # Save the updated job status
 
-        except IntegrityError:
-            messages.error(request, 'You have already added a report for this job!')
-    else:
-        # If GET request, instantiate the empty form
-        Reportform = ReportJobForm()
+        # Step 9: Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Location saved successfully.'})
 
-    context = {
-        'selected_job': selected_job,
-        'Reportform': Reportform,
-        'agent': agent,
-    }
-
-    return render(request, 'agents/AddressreportForm.html', context)
-
+    # If the request method is not POST, return an error response
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+########################################################################################################
 
 @login_required(login_url='login')
 @user_passes_test(check_role_agent)
@@ -308,6 +439,7 @@ def reject_job(request, job_id):
         except Job.DoesNotExist:
             return JsonResponse({'message': 'Job not found'}, status=404)
     return JsonResponse({'message': 'Invalid request method'}, status=400)
+
 
 
 # ================================Reports section=================================
@@ -329,7 +461,42 @@ def agentreport(request):
     return render(request, 'agents/my_reports.html', context)
 
 
-# ------------------fetch all reportdata-------------------------
+
+# ================================ Saved Reports Section =================================
+@login_required(login_url='login')
+@user_passes_test(check_role_agent)
+def agentsavedreports(request):
+    # To show logged-in Userprofile - who is adding job
+    profile = get_object_or_404(UserProfile, user=request.user)
+    agent = get_agent(request)
+
+    # Get all agent's saved reports (saved=True) where specified fields are empty
+    # Filter for reports where fields are empty
+    filter_criteria = Q(agent=agent, saved=True) & (
+        Q(VerificationMessage='') |
+        Q(buildingCondition='') |
+        Q(buildingColor='') |
+        Q(buildingType='') 
+    )
+
+    # Count the total number of saved reports with the specified criteria
+    Mytotal_no_of_saved_reports = Report.objects.filter(filter_criteria).count()
+
+    # Fetch the filtered reports (saved=True and specified fields empty)
+    reports = Report.objects.filter(filter_criteria).order_by('created_at')
+
+    context = {
+        'profile': profile,
+        'agent': agent,
+        'Mytotal_no_of_saved_reports': Mytotal_no_of_saved_reports,
+        'reports': reports,  # Pass the reports to the template
+    }
+    return render(request, 'agents/savedreports.html', context)
+
+########################################################################################################
+
+
+################################### fetch all reportdata ####################################################
 @login_required(login_url='login')
 @user_passes_test(check_role_agent)
 def fetchagentreportdata(request):
@@ -436,6 +603,128 @@ def fetchagentreportdata(request):
     }
 
     return JsonResponse(response)
+#############################################################################
+
+
+# =============================== Fetch Reports That Are Saved ==========================
+@login_required(login_url='login')
+@user_passes_test(check_role_agent)
+def fetchagentsavedreportdata(request):
+    agent = get_agent(request)
+    draw = request.GET.get('draw', 1)
+    start = int(request.GET.get('start', 0))
+    length = int(request.GET.get('length', 10))
+    search_value = request.GET.get('search[value]')
+
+    columns = ['customer__ref_no', 'customer__first_name', 'customer__last_name', 'clientJobrefID', 'address', 'Reportstatus',
+               'VerificationMessage', 'TAT', 'Client', 'agent', 'created_at']
+
+    # Filtering reports where saved=True and specific fields are empty
+    filter_criteria = Q(agent=agent, saved=True)
+
+    # We will filter for records where these fields are empty ('')
+    filter_criteria &= (
+        Q(VerificationMessage='') |
+        Q(buildingCondition='') |
+        Q(buildingType='') |
+        Q(buildingColor='') 
+    )
+
+    if search_value:
+        search_filter = Q()
+        for column in columns:
+            search_filter |= Q(**{f'{column}__icontains': search_value})
+        filter_criteria &= search_filter
+
+    data = Report.objects.filter(filter_criteria).order_by('-created_at')
+
+    records_total = Report.objects.filter(saved=True).count()  # Total records with saved=True
+    records_filtered = data.count()
+
+    paginator = Paginator(data, length)
+    page_number = (start // length) + 1
+    data_page = paginator.page(page_number)
+
+    data = []
+
+    for item in data_page:
+        # Determine VerificationStatus based on VerificationMessage
+        verification_status = 'N/A'
+        if item.VerificationMessage == 'Incomplete Information':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'No Response at the Address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address Does Not Exist':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Security Agents prevented access to Address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address is an empty plot of Land':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer has relocated':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is not known at the address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is known but does not reside in the premises':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address exists and customer is known':
+            verification_status = 'Yes - Yes'
+        elif item.VerificationMessage == 'Customer does not live at the address but visits often':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is deceased':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Could not locate address':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'The Customer works at the address but does not reside there':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Customer was met at a different house number':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Address is customers family house and does not reside there':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Company is not known at the address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Incomplete address':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Company is known and operates from the address':
+            verification_status = 'Yes - Yes'
+
+        # Color-coded Reportstatus
+        if item.Reportstatus == '0':
+            report_status = '<span class="badge badge-warning">Pending</span>'
+        elif item.Reportstatus == '1':
+            report_status = '<span class="badge badge-primary">Approved</span>'
+        elif item.Reportstatus == '2':
+            report_status = '<span class="badge badge-danger">Rejected</span>'
+        else:
+            report_status = '<span class="badge badge-warning">Pending</span>'
+
+        data.append({
+            'id': item.id,
+            'clientJobrefID': item.clientJobrefID,
+            'customerName': f"{item.customerName or 'N/A'}",
+            'address': item.address if item.address else 'N/A',
+            'client': item.Client if item.Client else 'N/A',
+            'agent': item.agent if item.agent else 'N/A',
+            'VerificationMessage': item.VerificationMessage if item.VerificationMessage else 'N/A',
+            'VerificationStatus': verification_status,
+            'Reportstatus': report_status,
+            'buildingCondition': item.buildingCondition,
+            'buildingColor': item.buildingColor,
+            'buildingType': item.buildingType,
+            'TAT': item.TAT if item.TAT else 'N/A',
+            'created_at': timezone.localtime(item.created_at).strftime('%Y-%m-%d %I:%M:%S %p') if item.created_at else 'N/A',
+        })
+
+    response = {
+        'draw': draw,
+        'recordsTotal': records_total,
+        'recordsFiltered': records_filtered,
+        'data': data,
+    }
+
+    return JsonResponse(response)
+
+####################################################################################
+
 
 
 @login_required(login_url='login')
@@ -501,7 +790,8 @@ def fetchagentreportdetails(request):
             # Get the URL for downloading the report PDF
             download_link = reverse('reportinPdf', kwargs={'pk': job.pk})
 
-          
+            # Handle created_at field being None
+            date_added = job.created_at.strftime('%Y-%m-%d %H:%M:%S %p') if job.created_at else 'N/A'
 
             # Prepare the data to send as JSON response
             data = {
@@ -530,7 +820,7 @@ def fetchagentreportdetails(request):
                 'photo2': photo2_url,  # Use the URL of the image
                 'approvedBy': approvedByfullname,
                 'Reportstatus': report_status,  # Use the badge HTML
-                'dateAdded': job.created_at.strftime('%Y-%m-%d %H:%M:%S %p'),
+                'dateAdded': date_added,  # Handle None for created_at
             }
             return JsonResponse(data)
         except Report.DoesNotExist:
@@ -539,46 +829,78 @@ def fetchagentreportdetails(request):
 
 
 # ==========================Agent Edit Report====================
+# =============================== Fetch Report Details for Editing ==========================
 @login_required(login_url='login')
 @user_passes_test(check_role_agent)
-def EditReport(request, pk=None):
-    selected_report = get_object_or_404(Report, pk=pk)
+def fetch_edit_report_details(request, report_id):
+    # Fetch the report object by report_id
+    report = get_object_or_404(Report, pk=report_id)
 
-    if request.method == 'POST':
-        Reportform = EditReportForm(
-            request.POST, request.FILES, instance=selected_report)
-
-        if Reportform.is_valid():
-            buildingCondition = Reportform.cleaned_data['buildingCondition']
-            buildingColor = Reportform.cleaned_data['buildingColor']
-            buildingType = Reportform.cleaned_data['buildingType']
-            CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                'CustomerRelationshipWithaddress']
-            AddressResidential = Reportform.cleaned_data['AddressResidential']
-            NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-            RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-            VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-            MoreComment = Reportform.cleaned_data['MoreComment']
-            Landmark = Reportform.cleaned_data['Landmark']
-            photo1 = Reportform.cleaned_data['photo1']
-            photo2 = Reportform.cleaned_data['photo2']
-
-            reportjob = Reportform.save(commit=False)  # prepare to store
-            reportjob.save()
-            return redirect('myreport')
-
-        else:
-            print('invalid form')
-            print(Reportform.errors)
-
-    else:
-        Reportform = EditReportForm(instance=selected_report)
-
-    context = {
-        'selected_report': selected_report,
-        'Reportform': Reportform,
+    # Prepare the data to return as JSON
+    data = {
+        'VerificationMessage': report.VerificationMessage,
+        'buildingCondition': report.buildingCondition,
+        'buildingColor': report.buildingColor,
+        'buildingType': report.buildingType,
+        'TAT': report.TAT,
+        'AddressResidential': report.AddressResidential,
+        'MoreComment': report.MoreComment,
+        'Landmark': report.Landmark,
+        'photo1': report.photo1.url if report.photo1 else None,  # Fetch the URL for photo1
+        'photo2': report.photo2.url if report.photo2 else None,  # Fetch the URL for photo2
+        'NameofindividualInterviewed': report.NameofindividualInterviewed,
+        'RelationshipWithCustomer': report.RelationshipWithCustomer,
+        'CustomerRelationshipWithaddress': report.CustomerRelationshipWithaddress,
     }
-    return render(request, 'agents/EditReportForm.html', context)
+    
+    return JsonResponse(data)
+#########################################################################################
+
+
+# =============================== Update Report ==============================
+@login_required(login_url='login')
+@user_passes_test(check_role_agent)
+def update_report(request, report_id):
+    # Fetch the report object by report_id
+    report = get_object_or_404(Report, pk=report_id)
+    
+    if request.method == 'POST':
+        # Get the updated data from the request
+        verification_message = request.POST.get('VerificationMessage')
+        building_condition = request.POST.get('buildingCondition')
+        building_color = request.POST.get('buildingColor')
+        building_type = request.POST.get('buildingType')
+        tat = request.POST.get('TAT')
+        address_residential = request.POST.get('AddressResidential')
+        more_comment = request.POST.get('MoreComment')
+
+        # Update the report object with the new data
+        report.VerificationMessage = verification_message
+        report.buildingCondition = building_condition
+        report.buildingColor = building_color
+        report.buildingType = building_type
+        report.TAT = tat
+        report.AddressResidential = address_residential
+        report.MoreComment = more_comment
+
+        # Handle the file uploads (photo1 and photo2)
+        photo1 = request.FILES.get('photo1')
+        photo2 = request.FILES.get('photo2')
+
+        if photo1:
+            report.photo1 = photo1
+        if photo2:
+            report.photo2 = photo2
+
+        # Save the updated report
+        report.save()
+
+        # Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Report updated successfully.'})
+    
+    # If the request method is not POST, return an error response
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+
 # ======================================EXPORT TO CSV REPORTS=================================
 
 
@@ -707,47 +1029,6 @@ def fetch_agentrejectedreportdata(request):
 # ===========================END OF REJECTED REPORTS------------------------------
 
 
-# ===============================EditRejectedReport===================================
-@login_required(login_url='login')
-@user_passes_test(check_role_agent)
-def EditagentRejectedReport(request, pk=None):
-    selected_report = get_object_or_404(Report, pk=pk)
-
-    if request.method == 'POST':
-        Reportform = EditReportForm(
-            request.POST, request.FILES, instance=selected_report)
-
-        if Reportform.is_valid():
-            buildingCondition = Reportform.cleaned_data['buildingCondition']
-            buildingColor = Reportform.cleaned_data['buildingColor']
-            buildingType = Reportform.cleaned_data['buildingType']
-            CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                'CustomerRelationshipWithaddress']
-            AddressResidential = Reportform.cleaned_data['AddressResidential']
-            NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-            RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-            VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-            MoreComment = Reportform.cleaned_data['MoreComment']
-            Landmark = Reportform.cleaned_data['Landmark']
-            photo1 = Reportform.cleaned_data['photo1']
-            photo2 = Reportform.cleaned_data['photo2']
-
-            reportjob = Reportform.save(commit=False)  # prepare to store
-            reportjob.save()
-            return redirect('agentrejectedreports')
-
-        else:
-            print('invalid form')
-            print(Reportform.errors)
-
-    else:
-        Reportform = EditReportForm(instance=selected_report)
-
-    context = {
-        'selected_report': selected_report,
-        'Reportform': Reportform,
-    }
-    return render(request, 'agents/EditRejectedform.html', context)
 # ==================================End of EditRejectedReport=============================
 
 
