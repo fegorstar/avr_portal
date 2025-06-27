@@ -1297,50 +1297,83 @@ def fetch_allreportdata(request):
 
 
 # ============================ Edit all Report==========================
-
-
+# =============================== Fetch Report Details for Editing ==========================
 @login_required(login_url='login')
 @user_passes_test(check_role_staff)
-def EditallReport(request, pk=None):
-    selected_report = get_object_or_404(Report, pk=pk)
+def fetch_report_details_staff(request, report_id):
+    # Fetch the report object by report_id
+    report = get_object_or_404(Report, pk=report_id)
 
-    if request.method == 'POST':
-        Reportform = EditReportForm(
-            request.POST, request.FILES, instance=selected_report)
-
-        if Reportform.is_valid():
-            buildingCondition = Reportform.cleaned_data['buildingCondition']
-            buildingColor = Reportform.cleaned_data['buildingColor']
-            buildingType = Reportform.cleaned_data['buildingType']
-            CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                'CustomerRelationshipWithaddress']
-            AddressResidential = Reportform.cleaned_data['AddressResidential']
-            NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-            RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-            VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-            MoreComment = Reportform.cleaned_data['MoreComment']
-            Landmark = Reportform.cleaned_data['Landmark']
-            photo1 = Reportform.cleaned_data['photo1']
-            photo2 = Reportform.cleaned_data['photo2']
-
-            reportjob = Reportform.save(commit=False)  # prepare to store
-            reportjob.save()
-            return redirect('allreports')
-
-        else:
-            print('invalid form')
-            print(Reportform.errors)
-
-    else:
-        Reportform = EditReportForm(instance=selected_report)
-
-    context = {
-        'selected_report': selected_report,
-        'Reportform': Reportform,
+    # Prepare the data to return as JSON, including ReportStatus
+    data = {
+        'VerificationMessage': report.VerificationMessage,
+        'buildingCondition': report.buildingCondition,
+        'buildingColor': report.buildingColor,
+        'buildingType': report.buildingType,
+        'TAT': report.TAT,
+        'AddressResidential': report.AddressResidential,
+        'MoreComment': report.MoreComment,
+        'Landmark': report.Landmark,
+        'photo1': report.photo1.url if report.photo1 else None,  # Fetch the URL for photo1
+        'photo2': report.photo2.url if report.photo2 else None,  # Fetch the URL for photo2
+        'NameofindividualInterviewed': report.NameofindividualInterviewed,
+        'RelationshipWithCustomer': report.RelationshipWithCustomer,
+        'CustomerRelationshipWithaddress': report.CustomerRelationshipWithaddress,
+        'ReportStatus': report.Reportstatus,  # Fetch ReportStatus to allow staff to update it
     }
-    return render(request, 'staffs/reports/EditallReportForm.html', context)
+    
+    return JsonResponse(data)
+#########################################################################################
+
+# =============================== Update Report ==============================
+@login_required(login_url='login')
+@user_passes_test(check_role_staff)
+def update_reportdetails_staff(request, report_id):
+    # Fetch the report object by report_id
+    report = get_object_or_404(Report, pk=report_id)
+    
+    if request.method == 'POST':
+        # Get the updated data from the request
+        verification_message = request.POST.get('VerificationMessage')
+        building_condition = request.POST.get('buildingCondition')
+        building_color = request.POST.get('buildingColor')
+        building_type = request.POST.get('buildingType')
+        tat = request.POST.get('TAT')
+        address_residential = request.POST.get('AddressResidential')
+        more_comment = request.POST.get('MoreComment')
+        report_status = request.POST.get('ReportStatus')  # Get the ReportStatus value
+
+        # Update the report object with the new data
+        report.VerificationMessage = verification_message
+        report.buildingCondition = building_condition
+        report.buildingColor = building_color
+        report.buildingType = building_type
+        report.TAT = tat
+        report.AddressResidential = address_residential
+        report.MoreComment = more_comment
+        report.Reportstatus = report_status  # Update the ReportStatus field
+
+        # Handle the file uploads (photo1 and photo2)
+        photo1 = request.FILES.get('photo1')
+        photo2 = request.FILES.get('photo2')
+
+        if photo1:
+            report.photo1 = photo1
+        if photo2:
+            report.photo2 = photo2
+
+        # Save the updated report
+        report.save()
+
+        # Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Report updated successfully.'})
+    
+    # If the request method is not POST, return an error response
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=400)
+##########################################################################################################
 
 
+#######################################################################################################
 class allreportbulk_approvalView(View):
     def post(self, request, *args, **kwargs):
         if request.method == "POST":
@@ -1486,6 +1519,168 @@ def Pendingreports(request):
     }
     return render(request, 'staffs/reports/pendingreports.html', context)
 
+
+
+# ---------------------- SAVED REPORTS SECTION ----------------
+# Saved Reports
+# ---------------------- SAVED REPORTS SECTION ----------------
+# Saved Reports
+@login_required(login_url='login')
+@user_passes_test(check_role_staff)  # Adjust for the role as needed (staff in this case)
+def Savedreports(request):
+    # To show logged-in User profile
+    profile = get_object_or_404(UserProfile, user=request.user)
+
+    # Filter criteria for reports where fields are empty and saved is True
+    filter_criteria = (
+        Q(saved=True) & (
+            Q(VerificationMessage='') |
+            Q(buildingCondition='') |
+            Q(buildingColor='') |
+            Q(buildingType='') 
+        )
+    )
+
+    # Filter the reports based on the criteria
+    saved_reports_filter = ReportFilter(request.GET, queryset=Report.objects.filter(filter_criteria).order_by('created_at'))
+
+    # Count the total number of saved reports that match the filter
+    total_no_of_saved_reports = saved_reports_filter.qs.count()
+
+    # Pass the filtered reports and the total count to the context
+    context = {
+        'profile': profile,
+        'total_no_of_saved_reports': total_no_of_saved_reports,
+        'my_Filter': saved_reports_filter,  # Use the filtered reports for pagination, etc.
+    }
+
+    # Return the rendered page
+    return render(request, 'staffs/reports/allsavedreports.html', context)
+#################################################################################################
+
+#################################################################################################
+
+# =============================== Fetch Reports That Are Saved (For All Users) ==========================
+# =============================== Fetch Saved Reports (For All Users) ==========================
+@login_required(login_url='login')
+@user_passes_test(check_role_staff)  # Use the appropriate role check for your needs
+def fetch_savedreportdata(request):
+    draw = request.GET.get('draw', 1)
+    start = int(request.GET.get('start', 0))
+    length = int(request.GET.get('length', 10))
+    search_value = request.GET.get('search[value]')
+
+    # Filter criteria for saved reports where saved=True and certain fields are empty
+    filter_criteria = Q(saved=True)
+
+    # We will filter for records where these fields are empty ('')
+    filter_criteria &= (
+        Q(VerificationMessage='') |
+        Q(buildingCondition='') |
+        Q(buildingType='') |
+        Q(buildingColor='')
+    )
+
+    # If there's a search value, add it to the filter criteria
+    if search_value:
+        columns = ['clientJobrefID', 'customerName', 'address', 'client', 'VerificationMessage', 'TAT', 'created_at']
+        search_filter = Q()
+        for column in columns:
+            search_filter |= Q(**{f'{column}__icontains': search_value})
+        filter_criteria &= search_filter
+
+    # Apply the filter criteria to fetch the reports
+    data = Report.objects.filter(filter_criteria).order_by('-created_at')
+
+    records_total = Report.objects.filter(saved=True).count()  # Total saved reports
+    records_filtered = data.count()  # Filtered reports
+
+    paginator = Paginator(data, length)
+    page_number = (start // length) + 1
+    data_page = paginator.page(page_number)
+
+    data = []
+
+    for item in data_page:
+        # Determine VerificationStatus
+        verification_status = 'N/A'
+        if item.VerificationMessage == 'Incomplete Information':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'No Response at the Address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address Does Not Exist':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Security Agents prevented access to Address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address is an empty plot of Land':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer has relocated':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is not known at the address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is known but does not reside in the premises':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Address exists and customer is known':
+            verification_status = 'Yes - Yes'
+        elif item.VerificationMessage == 'Customer does not live at the address but visits often':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'The Customer is deceased':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Could not locate address':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'The Customer works at the address but does not reside there':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Customer was met at a different house number':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Address is customers family house and does not reside there':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Company is not known at the address':
+            verification_status = 'Yes - No'
+        elif item.VerificationMessage == 'Incomplete address':
+            verification_status = 'No - No'
+        elif item.VerificationMessage == 'Company is known and operates from the address':
+            verification_status = 'Yes - Yes'
+
+        # Color-coded Reportstatus
+        if item.Reportstatus == '0':
+            report_status = '<span class="badge badge-warning">Pending</span>'
+        elif item.Reportstatus == '1':
+            report_status = '<span class="badge badge-primary">Approved</span>'
+        elif item.Reportstatus == '2':
+            report_status = '<span class="badge badge-danger">Rejected</span>'
+        else:
+            report_status = '<span class="badge badge-warning">Pending</span>'
+
+        # Append the report details
+        data.append({
+            'id': item.id,
+            'clientJobrefID': item.clientJobrefID,
+            'customerName': f"{item.customerName or 'N/A'}",
+            'address': item.address if item.address else 'N/A',
+            'client': item.Client if item.Client else 'N/A',
+            'VerificationMessage': item.VerificationMessage if item.VerificationMessage else 'N/A',
+            'VerificationStatus': verification_status,
+            'Reportstatus': report_status,
+            'buildingCondition': item.buildingCondition,
+            'buildingColor': item.buildingColor,
+            'buildingType': item.buildingType,
+            'TAT': item.TAT if item.TAT else 'N/A',
+            'created_at': timezone.localtime(item.created_at).strftime('%Y-%m-%d %I:%M:%S %p') if item.created_at else 'N/A',
+        })
+
+    response = {
+        'draw': draw,
+        'recordsTotal': records_total,
+        'recordsFiltered': records_filtered,
+        'data': data,
+    }
+
+    return JsonResponse(response)
+
+
+#################################################################################################
+
+
 # ----------------------FETCH REPORT DATA INTO THE DATATABLE IN REPORTS PAGE
 
 
@@ -1599,6 +1794,8 @@ def fetch_pendingreportdata(request):
 
     return JsonResponse(response)
 
+
+
 @login_required(login_url='login')
 def fetch_report_details(request):
     if request.method == 'GET':
@@ -1666,6 +1863,9 @@ def fetch_report_details(request):
             longitude = job.longitude
 
             # Prepare the data to send as JSON response
+            # Check if created_at is None before formatting
+            date_added = job.created_at.strftime('%Y-%m-%d %H:%M:%S %p') if job.created_at else 'N/A'
+
             data = {
                 'downloadLink': download_link,  # Include the download link
                 'id': job.pk,
@@ -1692,7 +1892,7 @@ def fetch_report_details(request):
                 'photo2': photo2_url,  # Use the URL of the image
                 'approvedBy': approvedByfullname,
                 'Reportstatus': report_status,  # Use the badge HTML
-                'dateAdded': job.created_at.strftime('%Y-%m-%d %H:%M:%S %p'),
+                'dateAdded': date_added,  # Safely format created_at or return 'N/A'
             }
             return JsonResponse(data)
         except Report.DoesNotExist:
@@ -1700,48 +1900,6 @@ def fetch_report_details(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
-# ------------------View for rendering the report job form---------------------
-# ===========================Edit Pending Report=========================
-@login_required(login_url='login')
-@user_passes_test(check_role_staff)
-def EditPendingReport(request, pk=None):
-    selected_report = get_object_or_404(Report, pk=pk)
-
-    if request.method == 'POST':
-        Reportform = EditReportForm(
-            request.POST, request.FILES, instance=selected_report)
-
-        if Reportform.is_valid():
-            buildingCondition = Reportform.cleaned_data['buildingCondition']
-            buildingColor = Reportform.cleaned_data['buildingColor']
-            buildingType = Reportform.cleaned_data['buildingType']
-            CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                'CustomerRelationshipWithaddress']
-            AddressResidential = Reportform.cleaned_data['AddressResidential']
-            NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-            RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-            VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-            MoreComment = Reportform.cleaned_data['MoreComment']
-            Landmark = Reportform.cleaned_data['Landmark']
-            photo1 = Reportform.cleaned_data['photo1']
-            photo2 = Reportform.cleaned_data['photo2']
-
-            reportjob = Reportform.save(commit=False)  # prepare to store
-            reportjob.save()
-            return redirect('pendingreports')
-
-        else:
-            print('invalid form')
-            print(Reportform.errors)
-
-    else:
-        Reportform = EditReportForm(instance=selected_report)
-
-    context = {
-        'selected_report': selected_report,
-        'Reportform': Reportform,
-    }
-    return render(request, 'staffs/reports/PendingEditreportform.html', context)
 # ===========================End of Edit Pending Report=========================
 
 
@@ -2021,51 +2179,6 @@ def fetch_rejectedreportdata(request):
 
     return JsonResponse(response)
 # ===========================END OF REJECTED REPORTS------------------------------
-
-
-# ===============================EditRejectedReport===================================
-@login_required(login_url='login')
-@user_passes_test(check_role_staff)
-def EditRejectedReport(request, pk=None):
-    selected_report = get_object_or_404(Report, pk=pk)
-
-    if request.method == 'POST':
-        Reportform = EditReportForm(
-            request.POST, request.FILES, instance=selected_report)
-
-        if Reportform.is_valid():
-            buildingCondition = Reportform.cleaned_data['buildingCondition']
-            buildingColor = Reportform.cleaned_data['buildingColor']
-            buildingType = Reportform.cleaned_data['buildingType']
-            CustomerRelationshipWithaddress = Reportform.cleaned_data[
-                'CustomerRelationshipWithaddress']
-            AddressResidential = Reportform.cleaned_data['AddressResidential']
-            NameofindividualInterviewed = Reportform.cleaned_data['NameofindividualInterviewed']
-            RelationshipWithCustomer = Reportform.cleaned_data['RelationshipWithCustomer']
-            VerificationMessage = Reportform.cleaned_data['VerificationMessage']
-            MoreComment = Reportform.cleaned_data['MoreComment']
-            Landmark = Reportform.cleaned_data['Landmark']
-            photo1 = Reportform.cleaned_data['photo1']
-            photo2 = Reportform.cleaned_data['photo2']
-
-            reportjob = Reportform.save(commit=False)  # prepare to store
-            reportjob.save()
-            return redirect('rejectedreports')
-
-        else:
-            print('invalid form')
-            print(Reportform.errors)
-
-    else:
-        Reportform = EditReportForm(instance=selected_report)
-
-    context = {
-        'selected_report': selected_report,
-        'Reportform': Reportform,
-    }
-    return render(request, 'staffs/reports/EditRejectedform.html', context)
-# ==================================End of EditRejectedReport=============================
-
 
 # ========================== Approve Rejected Bulk Report=============================
 class RejectedBulkReportApprovalView(View):

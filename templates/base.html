@@ -15,6 +15,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" />
     <!-- plugin stylesheets -->
     <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
 
@@ -519,7 +521,7 @@
             },
             {
               render: function (data, type, row) {
-                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="edit-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="staff-edit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#staffEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
               }
             },
             {
@@ -757,7 +759,7 @@
       
             {
               render: function (data, type, row) {
-                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="allreportedit-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="staff-edit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#staffEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
               }
             },
       
@@ -981,6 +983,269 @@
           ]
         })
       
+        //================ agentsavedreportdatatable ========================
+        //================ agentsavedreportdatatable ========================
+        var dataTable = $('#agentsavedreportdatatable').DataTable({
+          serverSide: true, // Enable server-side processing
+          processing: true, // Show a loading indicator
+          searching: true, // Enable the search bar
+          dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+          buttons: ['csv', 'pdf', 'print'],
+          lengthMenu: [
+            [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+            [10, 25, 50, 100, 5000, 10000, 20000]
+          ],
+          dataType: 'text',
+          charset: 'UTF-8', // Specify the character encoding
+          language: {
+            paging: true,
+            lengthMenu: 'Display _MENU_ rows per page',
+            zeroRecords: 'No records were found, sorry!',
+            info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+            infoFiltered: 'Filtered from _MAX_ records',
+            paginate: {
+              first: 'First',
+              last: 'Last',
+              next: 'Next',
+              previous: 'Previous'
+            },
+            search: 'Search from records:'
+          },
+      
+          // AJAX request to fetch only saved reports (saved=True)
+          ajax: '{% url "fetchagentsavedreportdata" %}', // URL pointing to the view that fetches saved reports
+          columns: [
+            {
+              render: function (data, type, row) {
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="agentedit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#confirmEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+              }
+            },
+            {
+              data: 'clientJobrefID',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'customerName',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'address',
+              render: function (data, type, row) {
+                return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+              }
+            },
+      
+            {
+              data: 'client',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'agent',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationStatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'VerificationMessage',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'Reportstatus',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingCondition',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingColor',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'buildingType',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'TAT',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            },
+      
+            {
+              data: 'created_at',
+              render: function (data, type, row) {
+                return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+              }
+            }
+          ]
+        })
+      
+//#################################################################################################################//#####################################
+
+// =========================== Function for savedreportsdatatable ========================
+var dataTable = $('#savedreportsdatatable').DataTable({
+  serverSide: true, // Enable server-side processing
+  processing: true, // Show a loading indicator
+  searching: true, // Enable the search bar
+  dom: 'lBrftip', // Separate lines for dom, buttons, and lengthMenu
+  buttons: ['csv', 'pdf', 'print'],
+  lengthMenu: [
+    [10, 25, 50, 100, 5000, 10000, 20000], // Specify your length options
+    [10, 25, 50, 100, 5000, 10000, 20000]
+  ],
+  dataType: 'text',
+  charset: 'UTF-8', // Specify the character encoding
+  language: {
+    paging: true,
+    lengthMenu: 'Display _MENU_ rows per page',
+    zeroRecords: 'No records were found, sorry!',
+    info: 'Page _PAGE_ of _PAGES_, _TOTAL_ records',
+    infoFiltered: 'Filtered from _MAX_ records',
+    paginate: {
+      first: 'First',
+      last: 'Last',
+      next: 'Next',
+      previous: 'Previous'
+    },
+    search: 'Search from records:'
+  },
+  ajax: {
+    url: '{% url "fetchallsavedreportdata" %}',
+    type: 'GET',
+    data: function (d) {
+      // Include the search value in the AJAX request
+      d.searchValue = $('#savedreportsdatatable_filter input').val()
+      // Collect form data and include it in the AJAX request
+      var formData = $('#ReportFilterForm').serializeArray()
+      $.each(formData, function (index, element) {
+        d[element.name] = element.value
+      })
+    }
+  },
+  columns: [
+    {
+      data: null,
+      orderable: false,
+      render: function (data, type, row) {
+        return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="staff-edit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#staffEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+      }
+    },
+    
+    {
+      data: 'clientJobrefID',
+      render: function (data, type, row) {
+        return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+      }
+    },
+    {
+      data: 'customerName',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+    {
+      data: 'address',
+      render: function (data, type, row) {
+        return '<div style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</div>'
+      }
+    },
+    {
+      data: 'client',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+   
+  
+    {
+      data: 'VerificationStatus',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+    {
+      data: 'VerificationMessage',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+    {
+      data: 'Reportstatus',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+
+    {
+      data: 'buildingCondition',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+
+    {
+      data: 'buildingColor',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+
+    {
+      data: 'buildingType',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+    {
+      data: 'TAT',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    },
+    {
+      data: 'created_at',
+      render: function (data, type, row) {
+        return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
+      }
+    }
+  ]
+})
+
+
+
         //================unassignedjobsdatatable========================
         var dataTable = $('#agentunassignedjobsdatatable').DataTable({
           serverSide: true, // Enable server-side processing
@@ -1013,10 +1278,24 @@
           columns: [
             {
               render: function (data, type, row) {
-                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="agentreportjob-btn btn-success" data-id="' + row.id + '"> <i data-toggle="tooltip" data-placement="top" title="Verify and send Job Report" data-original-title="View" class="fa fa-send"></i> </button> ' + '<button class="reject-job-btn btn-danger" data-id="' + row.id + '"> <i data-toggle="tooltip" data-placement="top" title="Reject Job" data-original-title="Reject" class="fa fa-times"></i> </button>'
+                // Ensuring Save Job button is consistent with "Verify and send Job Report" button
+                return (
+                  '<button class="view-btn btn-primary" data-id="' +
+                  row.id +
+                  '" style="margin-right: 8px;"><i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="View Job Details"></i></button>' +
+                  '<button class="agentreportjob-btn btn-success" data-id="' +
+                  row.id +
+                  '" style="margin-right: 8px;"><i class="fa fa-paperclip" data-toggle="tooltip" data-placement="top" title="Verify and send Job Report"></i></button>' +
+                  '<button class="reject-job-btn btn-danger" data-id="' +
+                  row.id +
+                  '" style="margin-right: 8px;"><i class="fa fa-times-circle" data-toggle="tooltip" data-placement="top" title="Reject Job"></i></button>' +
+                  // "Save Job" button styled similarly to other buttons
+                  '<button class="save-job-btn btn-warning" data-id="' +
+                  row.id +
+                  '" style="margin-right: 8px;"><i class="fa fa-save" data-toggle="tooltip" data-placement="top" title="Save Job"></i></button>'
+                )
               }
             },
-      
             {
               data: 'jobrefno',
               render: function (data, type, row) {
@@ -1047,37 +1326,31 @@
                 return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
               }
             },
-      
             {
               data: 'city',
               render: function (data, type, row) {
                 return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
               }
             },
-      
             {
               data: 'client',
               render: function (data, type, row) {
                 return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
               }
             },
-      
             {
               data: 'agent',
               render: function (data, type, row) {
                 return '<span style="word-wrap: break-word; white-space: pre-wrap; font-size: 12px;">' + data + '</span>'
               }
             },
-      
             {
               data: 'whenAssigned',
               render: function (data, type, row) {
-                // Clean the data (remove special characters)
                 var cleanedData = data.replace(/[^\x00-\x7F]/g, '')
                 return cleanedData
               }
             },
-      
             {
               data: 'created_at',
               render: function (data, type, row) {
@@ -1352,7 +1625,7 @@
       
             {
               render: function (data, type, row) {
-                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Job Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="editrejectedreport-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button> ' + '<button class="delete-report btn-danger" data-id="' + row.id + '"><i class="fe fe-trash" data-toggle="tooltip" data-placement="top" title="Delete Report to reassign Job" data-original-title="Delete"></i></button> '
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="staff-edit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#staffEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button> ' + '<button class="delete-report btn-danger" data-id="' + row.id + '"><i class="fe fe-trash" data-toggle="tooltip" data-placement="top" title="Delete Report to reassign Job" data-original-title="Delete"></i></button> '
               }
             },
             {
@@ -1458,7 +1731,7 @@
           columns: [
             {
               render: function (data, type, row) {
-                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i  data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="editagentrejectedreport-btn btn-primary" data-id="' + row.id + '"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
+                return '<button class="view-btn btn-primary" data-id="' + row.id + '"><i data-toggle="tooltip" data-placement="top" title="View Report Details" data-original-title="View" class="fa fa-eye"></i> </button> ' + '<button class="agentedit-btn btn-primary" data-id="' + row.id + '" data-bs-toggle="modal" data-bs-target="#confirmEditReportModal"><i class="fe fe-edit" data-toggle="tooltip" data-placement="top" title="Edit Report" data-original-title="Edit"></i> </button>'
               }
             },
       
@@ -1752,23 +2025,7 @@
         })
       })
       
-      // Function to get formatted address using Google Geocoding API
-      function getFormattedAddress(latitude, longitude) {
-        var apiKey = 'YOUR_GOOGLE_API_KEY' // Replace with your Google API key
-        var geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
-      
-        $.getJSON(geocodeUrl, function (response) {
-          if (response.status === 'OK') {
-            var formattedAddress = response.results[0].formatted_address
-            $('#formatted_address').text(formattedAddress) // Show formatted address
-          } else {
-            $('#formatted_address').text('Address not found')
-          }
-        }).fail(function () {
-          $('#formatted_address').text('Error fetching address')
-        })
-      }
-      
+      // Add a click event listener to the "View" button
       // Add a click event listener to the "View" button
       $('#pendingreportsdatatable tbody').on('click', '.view-btn', function () {
         var productId = $(this).data('id')
@@ -1801,29 +2058,57 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of photo1
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of photo2
-            $('#downloadLink').attr('href', data.downloadLink) // Set download link
+      
+            // Set default image if not available
+            $('#photo1').attr('src', data.photo1 || '')
+            $('#photo2').attr('src', data.photo2 || '')
+      
+            // If image is not available, show icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none')
+              $('#photo1Icon').removeClass('d-none')
+            } else {
+              $('#photo1').removeClass('d-none')
+              $('#photo1Icon').addClass('d-none')
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none')
+              $('#photo2Icon').removeClass('d-none')
+            } else {
+              $('#photo2').removeClass('d-none')
+              $('#photo2Icon').addClass('d-none')
+            }
       
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
-      
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
-      
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
       
-      // Add a click event listener to the "View" button
-      $('#rejectedreportsdatatable tbody').on('click', '.view-btn', function () {
+
+
+      $('#savedreportsdatatable tbody').on('click', '.view-btn', function () {
         var productId = $(this).data('id')
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
@@ -1831,13 +2116,12 @@
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
             $('#name').text(data.name)
             $('#clientrefNo').text(data.clientrefNo)
-            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
             $('#TAT').text(data.TAT)
             $('#VerificationMessage').text(data.VerificationMessage)
             $('#VerificationStatus').text(data.VerificationStatus)
@@ -1853,43 +2137,244 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Set default image if not available
+            $('#photo1').attr('src', data.photo1 || '')
+            $('#photo2').attr('src', data.photo2 || '')
+      
+            // If image is not available, show icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none')
+              $('#photo1Icon').removeClass('d-none')
+            } else {
+              $('#photo1').removeClass('d-none')
+              $('#photo1Icon').addClass('d-none')
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none')
+              $('#photo2Icon').removeClass('d-none')
+            } else {
+              $('#photo2').removeClass('d-none')
+              $('#photo2Icon').addClass('d-none')
+            }
       
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
       
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
+          }
+        })
+      })
+      // agentsavedreportdatatable  view details
+      $('#agentsavedreportdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id')
+      
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId },
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+      
+            // Set default image if not available
+            $('#photo1').attr('src', data.photo1 || '')
+            $('#photo2').attr('src', data.photo2 || '')
+      
+            // If image is not available, show icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none')
+              $('#photo1Icon').removeClass('d-none')
+            } else {
+              $('#photo1').removeClass('d-none')
+              $('#photo1Icon').addClass('d-none')
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none')
+              $('#photo2Icon').removeClass('d-none')
+            } else {
+              $('#photo2').removeClass('d-none')
+              $('#photo2Icon').addClass('d-none')
+            }
+      
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
       
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
+          }
+        })
+      })
+      
+      // Function to open Google Map with coordinates
+      function openGoogleMap(lat, lng) {
+        if (lat && lng) {
+          const mapURL = `http://maps.google.com/maps?q=loc:${lat},${lng}`
+          window.open(mapURL, '_blank')
+        } else {
+          alert('Latitude or Longitude is missing.')
+        }
+      }
+      
+      // Function to check directions to the address
+      function checkDirections() {
+        const address = $('#customeraddress').text().trim()
+        if (address) {
+          const directionsURL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
+          window.open(directionsURL, '_blank')
+        } else {
+          alert('Customer address is missing.')
+        }
+      }
+      // Add a click event listener to the "View" button
+      $('#rejectedreportsdatatable tbody').on('click', '.view-btn', function () {
+        var productId = $(this).data('id') // Get the product ID when the button is clicked
+      
+        // Fetch product details and populate the modal
+        $.ajax({
+          url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
+          data: { id: productId }, // Pass the product ID as a parameter
+          dataType: 'json',
+          success: function (data) {
+            // Populate the modal with the product details
+            $('#id').text(data.id)
+            $('#client').text(data.client)
+            $('#agent').text(data.agent)
+            $('#name').text(data.name)
+            $('#clientrefNo').text(data.clientrefNo)
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
+            $('#TAT').text(data.TAT)
+            $('#VerificationMessage').text(data.VerificationMessage)
+            $('#VerificationStatus').text(data.VerificationStatus)
+            $('#BuildingCondition').text(data.BuildingCondition)
+            $('#buildingColor').text(data.buildingColor)
+            $('#buildingType').text(data.buildingType)
+            $('#CustomerRelationshipWithaddress').text(data.CustomerRelationshipWithaddress)
+            $('#AddressResidential').text(data.AddressResidential)
+            $('#NameofindividualInterviewed').text(data.NameofindividualInterviewed)
+            $('#RelationshipWithCustomer').text(data.RelationshipWithCustomer)
+            $('#MoreComment').text(data.MoreComment)
+            $('#Landmark').text(data.Landmark)
+            $('#dateAdded').text(data.dateAdded)
+            $('#approvedBy').text(data.approvedBy)
+            $('#Reportstatus').html(data.Reportstatus)
+      
+            // Set the source of the photos or display an icon if photos are unavailable
+            $('#photo1').attr('src', data.photo1 || '') // If photo1 doesn't exist, it will set it to an empty string
+            $('#photo2').attr('src', data.photo2 || '') // If photo2 doesn't exist, it will set it to an empty string
+      
+            // If image is not available, show an icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none') // Hide the photo if not available
+              $('#photo1Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo1').removeClass('d-none') // Show the photo if available
+              $('#photo1Icon').addClass('d-none') // Hide the icon
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none') // Hide the photo if not available
+              $('#photo2Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo2').removeClass('d-none') // Show the photo if available
+              $('#photo2Icon').addClass('d-none') // Hide the icon
+            }
+      
+            // Display the Latitude and Longitude
+            $('#latitude').text(data.latitude) // Show latitude
+            $('#longitude').text(data.longitude) // Show longitude
+      
+            // Show the modal
+            $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
       
       // Add a click event listener to the "View" button
       $('#approvedreportsdatatable tbody').on('click', '.view-btn', function () {
-        var productId = $(this).data('id')
+        var productId = $(this).data('id') // Get the product ID when the button is clicked
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
-          data: { id: productId },
+          data: { id: productId }, // Pass the product ID as a parameter
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
             $('#name').text(data.name)
             $('#clientrefNo').text(data.clientrefNo)
-            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
             $('#TAT').text(data.TAT)
             $('#VerificationMessage').text(data.VerificationMessage)
             $('#VerificationStatus').text(data.VerificationStatus)
@@ -1905,43 +2390,68 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Set the source of the photos or display an icon if photos are unavailable
+            $('#photo1').attr('src', data.photo1 || '') // If photo1 doesn't exist, it will set it to an empty string
+            $('#photo2').attr('src', data.photo2 || '') // If photo2 doesn't exist, it will set it to an empty string
+      
+            // If image is not available, show an icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none') // Hide the photo if not available
+              $('#photo1Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo1').removeClass('d-none') // Show the photo if available
+              $('#photo1Icon').addClass('d-none') // Hide the icon
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none') // Hide the photo if not available
+              $('#photo2Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo2').removeClass('d-none') // Show the photo if available
+              $('#photo2Icon').addClass('d-none') // Hide the icon
+            }
       
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
-      
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
-      
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
-      
       // Add a click event listener to the "View" button
       $('#allreportsdatatable tbody').on('click', '.view-btn', function () {
-        var productId = $(this).data('id')
+        var productId = $(this).data('id') // Get the product ID when the button is clicked
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetch_report_details" %}', // Replace with the URL to your Django view
-          data: { id: productId },
+          data: { id: productId }, // Pass the product ID as a parameter
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
             $('#name').text(data.name)
             $('#clientrefNo').text(data.clientrefNo)
-            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
             $('#TAT').text(data.TAT)
             $('#VerificationMessage').text(data.VerificationMessage)
             $('#VerificationStatus').text(data.VerificationStatus)
@@ -1957,36 +2467,64 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Set the source of the photos or display an icon if photos are unavailable
+            $('#photo1').attr('src', data.photo1 || '') // If photo1 doesn't exist, it will set it to an empty string
+            $('#photo2').attr('src', data.photo2 || '') // If photo2 doesn't exist, it will set it to an empty string
+      
+            // If image is not available, show an icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none') // Hide the photo if not available
+              $('#photo1Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo1').removeClass('d-none') // Show the photo if available
+              $('#photo1Icon').addClass('d-none') // Hide the icon
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none') // Hide the photo if not available
+              $('#photo2Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo2').removeClass('d-none') // Show the photo if available
+              $('#photo2Icon').addClass('d-none') // Hide the icon
+            }
       
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
-      
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
       
       // Add a click event listener to the "View" button
+      // Add a click event listener to the "View" button
       $('#allagentsreportsdatatable tbody').on('click', '.view-btn', function () {
-        var productId = $(this).data('id')
+        var productId = $(this).data('id') // Get the product ID when the button is clicked
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetchagentreportdetails" %}', // Replace with the URL to your Django view
-          data: { id: productId },
+          data: { id: productId }, // Pass the product ID as a parameter
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
@@ -2008,42 +2546,69 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Set the source of the photos or display an icon if photos are unavailable
+            $('#photo1').attr('src', data.photo1 || '') // If photo1 doesn't exist, it will set it to an empty string
+            $('#photo2').attr('src', data.photo2 || '') // If photo2 doesn't exist, it will set it to an empty string
+      
+            // If image is not available, show an icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none') // Hide the photo if not available
+              $('#photo1Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo1').removeClass('d-none') // Show the photo if available
+              $('#photo1Icon').addClass('d-none') // Hide the icon
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none') // Hide the photo if not available
+              $('#photo2Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo2').removeClass('d-none') // Show the photo if available
+              $('#photo2Icon').addClass('d-none') // Hide the icon
+            }
+      
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
-      
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
-      
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
       
       // view details of agent rejected reports
       $('#agentsrejectedreportsdatatable tbody').on('click', '.view-btn', function () {
-        var productId = $(this).data('id')
+        var productId = $(this).data('id') // Get the product ID when the button is clicked
+      
         // Fetch product details and populate the modal
         $.ajax({
           url: '{% url "fetchagentreportdetails" %}', // Replace with the URL to your Django view
-          data: { id: productId },
+          data: { id: productId }, // Pass the product ID as a parameter
           dataType: 'json',
           success: function (data) {
             // Populate the modal with the product details
-            // Inside your success function:
             $('#id').text(data.id)
             $('#client').text(data.client)
             $('#agent').text(data.agent)
             $('#name').text(data.name)
             $('#clientrefNo').text(data.clientrefNo)
-            $('#customeraddress').text(data.customeraddress) // Populate address
+            $('#customeraddress').text(data.customeraddress) // Populate customer address
             $('#TAT').text(data.TAT)
             $('#VerificationMessage').text(data.VerificationMessage)
             $('#VerificationStatus').text(data.VerificationStatus)
@@ -2059,22 +2624,48 @@
             $('#dateAdded').text(data.dateAdded)
             $('#approvedBy').text(data.approvedBy)
             $('#Reportstatus').html(data.Reportstatus)
-            $('#photo1').attr('src', data.photo1) // Set the source attribute of the image tag
-            $('#photo2').attr('src', data.photo2) // Set the source attribute of the image tag
-            $('#downloadLink').attr('href', data.downloadLink)
+      
+            // Set the source of the photos or display an icon if photos are unavailable
+            $('#photo1').attr('src', data.photo1 || '') // If photo1 doesn't exist, it will set it to an empty string
+            $('#photo2').attr('src', data.photo2 || '') // If photo2 doesn't exist, it will set it to an empty string
+      
+            // If image is not available, show an icon
+            if (!data.photo1) {
+              $('#photo1').addClass('d-none') // Hide the photo if not available
+              $('#photo1Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo1').removeClass('d-none') // Show the photo if available
+              $('#photo1Icon').addClass('d-none') // Hide the icon
+            }
+      
+            if (!data.photo2) {
+              $('#photo2').addClass('d-none') // Hide the photo if not available
+              $('#photo2Icon').removeClass('d-none') // Show the default icon
+            } else {
+              $('#photo2').removeClass('d-none') // Show the photo if available
+              $('#photo2Icon').addClass('d-none') // Hide the icon
+            }
       
             // Display the Latitude and Longitude
             $('#latitude').text(data.latitude) // Show latitude
             $('#longitude').text(data.longitude) // Show longitude
       
-            // Show the formatted address from Nominatim (or Google Maps API)
-            $('#formatted_address').text('Loading...') // Placeholder text initially
-      
-            // Fetch and display the formatted address using the coordinates
-            getFormattedAddress(data.latitude, data.longitude)
-      
             // Show the modal
             $('#reportdetailsModal').modal('show')
+      
+            // Add "Check Directions" functionality
+            $('#checkDirectionBtn')
+              .off('click')
+              .on('click', function () {
+                checkDirections(data.customeraddress) // Call checkDirections with the customer address
+              })
+      
+            // Add "View on Map" functionality
+            $('#viewMapBtn')
+              .off('click')
+              .on('click', function () {
+                openGoogleMap(data.latitude, data.longitude) // Call openGoogleMap with lat and lng
+              })
           }
         })
       })
@@ -2570,31 +3161,505 @@
       
       //========================== Function to open the edit report modal============================
       $(document).on('click', '.agentedit-btn', function () {
-        var reportId = $(this).data('id')
-        // Redirect to the Edit Report page with the report ID
-        window.location.href = '/editagentreport/' + reportId + '/'
+        var reportId = $(this).data('id') // Get the report ID from the data attribute
+      
+        // Show the confirmation modal immediately
+        $('#confirmEditReportModal').modal('show')
+        $('#confirmEditReportBtn').data('id', reportId) // Pass reportId to the confirmation button
+      
+        // Change modal content to show loading image while report data is being fetched
+        $('#modalContent_edit').html(`
+            <div class="text-left">
+                <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." />
+                <span style="color: red; font-family: Arial, sans-serif; font-weight: transform: skew(-10deg);">
+                    Fetching report details...
+                </span>
+            </div>
+        `)
+      
+        // Start fetching report details
+        fetchReportDetails(reportId)
       })
       
-      //========================== Function to open the edit report modal============================
-      $(document).on('click', '.editrejectedreport-btn', function () {
-        var reportId = $(this).data('id')
-        // Redirect to the Edit Report page with the report ID
-        window.location.href = '/EditRejectedReport/' + reportId + '/'
+      // Fetch the report details using the report ID
+      function fetchReportDetails(reportId) {
+        $.ajax({
+          url: '/fetch-edit-report-details/' + reportId + '/', // URL for fetching the report details
+          method: 'GET',
+          success: function (data) {
+            // Populate the modal with the fetched report details
+            $('#id_VerificationMessage_edit').val(data.VerificationMessage)
+            $('#id_buildingCondition_edit').val(data.buildingCondition)
+            $('#id_buildingColor_edit').val(data.buildingColor)
+            $('#id_buildingType_edit').val(data.buildingType)
+            $('#id_TAT_edit').val(data.TAT)
+            $('#id_AddressResidential_edit').val(data.AddressResidential)
+            $('#id_MoreComment_edit').val(data.MoreComment)
+            $('#id_Landmark_edit').val(data.Landmark)
+            $('#id_NameofindividualInterviewed_edit').val(data.NameofindividualInterviewed)
+            $('#id_RelationshipWithCustomer_edit').val(data.RelationshipWithCustomer)
+            $('#id_CustomerRelationshipWithaddress_edit').val(data.CustomerRelationshipWithaddress)
+      
+            // If photos exist, display them in the modal
+            if (data.photo1) {
+              $('#photo1-preview').attr('src', data.photo1).show() // Show photo1 preview
+            } else {
+              $('#photo1-preview').hide() // Hide photo1 preview if not available
+            }
+      
+            if (data.photo2) {
+              $('#photo2-preview').attr('src', data.photo2).show() // Show photo2 preview
+            } else {
+              $('#photo2-preview').hide() // Hide photo2 preview if not available
+            }
+      
+            // Enable the "Save Report" button after data is fetched
+            $('#confirmEditReportBtn').prop('disabled', false).removeClass('btn-primary').addClass('btn-success')
+      
+            // Update the modal content with the fetched data
+            $('#modalContent_edit').html(`
+                
+            `)
+          },
+          error: function () {
+            alert('Error occurred while fetching the report details. Please try again.')
+          }
+        })
+      }
+      
+      // Handle the form submission inside the confirmation modal for editing the report
+      $('#editReportForm').on('submit', function (e) {
+        e.preventDefault() // Prevent the form from submitting the default way
+      
+        var reportId = $('#confirmEditReportBtn').data('id') // Get the report ID from the button's data attribute
+      
+        // Create FormData to handle file uploads and other form data
+        var formData = new FormData(this)
+      
+        // Show loading image while processing
+        $('#loadingImage').show()
+      
+        // Make an AJAX request to update the report details
+        $.ajax({
+          url: '/update-report/' + reportId + '/', // URL to handle the report update
+          method: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+            $('#loadingImage').hide()
+            $('#modalContent_edit').html(`
+                <div style="text-align: center;">
+                    <p style="color: green; font-weight: bold;">
+                        <i class="fa fa-check-circle" style="color: green;"></i> Report details updated successfully.
+                    </p>
+                </div>
+            `)
+      
+            // Reload the table and refresh the page after a short delay
+            reloadPage()
+          },
+          error: function () {
+            $('#loadingImage').hide()
+            alert('An error occurred while updating the report. Please try again.')
+          }
+        })
       })
       
-      //========================== Function to open the edit report modal edit agent rejected report agent section============================
-      $(document).on('click', '.editagentrejectedreport-btn', function () {
-        var reportId = $(this).data('id')
-        // Redirect to the Edit Report page with the report ID
-        window.location.href = '/EditagentRejectedReport/' + reportId + '/'
-      })
+      // Reload the table and the page after successful submission
+      function reloadPage() {
+        $('#agentsavedreportdatatable').DataTable().ajax.reload(null, false) // Reload without resetting pagination
       
-      //========================== Function to open the report Job page============================
+        // Optionally, close the modal after a brief delay (2 seconds)
+        setTimeout(function () {
+          window.location.reload() // Refresh the entire page
+        }, 2000) // Delay of 3 seconds before reloading the page
+      }
+      
+      //########################################################################################################//
+      
+//========================== Function to open the edit report modal for staff ============================
+// =========================== Function to open the edit report modal for staff ============================
+$(document).on('click', '.staff-edit-btn', function () {
+  var reportId = $(this).data('id');  // Get the report ID from the data attribute
+
+  // Show the confirmation modal immediately
+  $('#staffEditReportModal').modal('show');
+  $('#saveReportBtn').data('id', reportId);  // Pass reportId to the confirmation button
+
+  // Change modal content to show loading image while report data is being fetched
+  $('#modalContentEdit').html(`
+      <div class="text-left">
+          <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." />
+          <span style="color: red; font-family: Arial, sans-serif; font-weight: transform: skew(-10deg);">
+              Fetching report details...
+          </span>
+      </div>
+  `);
+
+  // Start fetching report details
+  fetchReportDetailsStaff(reportId);
+});
+
+// Fetch the report details using the report ID for staff
+function fetchReportDetailsStaff(reportId) {
+  $.ajax({
+    url: '/fetch-report-details-staff/' + reportId + '/', // URL for fetching the report details
+    method: 'GET',
+    success: function (data) {
+      // Populate the modal with the fetched report details
+      $('#id_VerificationMessage').val(data.VerificationMessage);
+      $('#id_buildingCondition').val(data.buildingCondition);
+      $('#id_buildingColor').val(data.buildingColor);
+      $('#id_buildingType').val(data.buildingType);
+      $('#id_TAT').val(data.TAT);
+      $('#id_AddressResidential').val(data.AddressResidential);
+      $('#id_MoreComment').val(data.MoreComment);
+      $('#id_Landmark').val(data.Landmark);
+      $('#id_NameofindividualInterviewed').val(data.NameofindividualInterviewed);
+      $('#id_RelationshipWithCustomer').val(data.RelationshipWithCustomer);
+      $('#id_CustomerRelationshipWithaddress').val(data.CustomerRelationshipWithaddress);
+
+      // Report Status
+      $('#id_ReportStatus').val(data.ReportStatus); // Populate Report Status dropdown
+
+      // If photos exist, display them in the modal
+      if (data.photo1) {
+        $('#photo1-preview_edit').attr('src', data.photo1).show(); // Show photo1 preview
+      } else {
+        $('#photo1-preview_edit').hide(); // Hide photo1 preview if not available
+      }
+
+      if (data.photo2) {
+        $('#photo2-preview_edit').attr('src', data.photo2).show(); // Show photo2 preview
+      } else {
+        $('#photo2-preview_edit').hide(); // Hide photo2 preview if not available
+      }
+
+      // Enable the "Save Report" button after data is fetched
+      $('#saveReportBtn').prop('disabled', false).removeClass('btn-primary').addClass('btn-success');
+
+      // Update the modal content with the fetched data
+      $('#modalContentEdit').html(`
+        
+      `);
+    },
+    error: function () {
+      alert('Error occurred while fetching the report details. Please try again.');
+    }
+  });
+}
+
+// Handle the form submission inside the confirmation modal for editing the report
+$('#staffEditReportForm').on('submit', function (e) {
+  e.preventDefault();  // Prevent the form from submitting the default way
+
+  var reportId = $('#saveReportBtn').data('id');  // Get the report ID from the button's data attribute
+
+  // Create FormData to handle file uploads and other form data
+  var formData = new FormData(this);
+
+  // Show loading image while processing
+  $('#loadingImage').show();
+
+  // Make an AJAX request to update the report details
+  $.ajax({
+    url: '/update_reportdetails_staff/' + reportId + '/', // URL to handle the report update
+    method: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function (data) {
+      $('#loadingImage').hide();
+      $('#modalContentEdit').html(`
+          <div style="text-align: center;">
+              <p style="color: green; font-weight: bold;">
+                  <i class="fa fa-check-circle" style="color: green;"></i> Report details updated successfully.
+              </p>
+          </div>
+      `);
+
+      // Reload the table and refresh the page after a short delay
+      reloadPendingReportsTable();
+    },
+    error: function () {
+      $('#loadingImage').hide();
+      alert('An error occurred while updating the report. Please try again.');
+    }
+  });
+});
+
+// Reload the pending reports table after successful submission
+function reloadPendingReportsTable() {
+  $('#pendingreportsdatatable').DataTable().ajax.reload(null, false); // Reload without resetting pagination
+
+  // Optionally, close the modal after a brief delay (2 seconds)
+  setTimeout(function () {
+    window.location.reload(); // Refresh the entire page
+  }, 2000); // Delay of 2 seconds before reloading the page
+}
+//########################################################################################################
+     
+
+//##################################### Function to open the report submit modal################################### //
       $(document).on('click', '.agentreportjob-btn', function () {
-        var reportId = $(this).data('id')
-        // Redirect to the Edit Report page with the report ID
-        window.location.href = '/reportAddress/' + reportId + '/'
+        var reportId = $(this).data('id') // Get the report ID from the data attribute
+      
+        // Show the confirmation modal immediately
+        $('#confirmFullReportSaveModal').modal('show')
+        $('#confirmSaveFullReportBtn').data('id', reportId) // Pass reportId to the confirmation button
+      
+        // Change modal content to show loading image while location is being fetched
+        $('#modalContent_full').html(`
+            <div class="text-left">
+                <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." />
+                <span style="color: red; font-family: Arial, sans-serif; font-weight: transform: skew(-10deg);">
+                    Fetching your location...
+                </span>
+            </div>
+        `)
+      
+        // Start fetching the location
+        fetchUserLocation()
       })
+      
+      // Renamed function to fetch location from the user's device
+      function fetchUserLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              // Set latitude and longitude to hidden input fields
+              var latitude = position.coords.latitude
+              var longitude = position.coords.longitude
+      
+              // Log the latitude and longitude to verify they're being received
+              console.log('Latitude: ', latitude)
+              console.log('Longitude: ', longitude)
+      
+              // Update the hidden input fields with the latitude and longitude
+              $('#id_latitude_full').val(latitude)
+              $('#id_longitude_full').val(longitude)
+      
+              // Once location is fetched, update the modal content with instructions
+              $('#modalContent_full').html(`
+                    <label for="inputAddress" style="color: green;">
+                        <strong><i class="fa fa-map-pin"></i> Your Geolocation was fetched Successfully.</strong>
+                    </label>
+                    <p>You can go ahead to complete..</p> <hr>
+                `)
+      
+              // Enable the "Save Location" button and change color to green after location is fetched
+              $('#confirmSaveFullReportBtn').prop('disabled', false).removeClass('btn-primary').addClass('btn-success')
+      
+              // Hide the loading message
+              $('#loadingMessage').text('')
+            },
+            function () {
+              // If there is an error fetching the location, alert the user
+              alert('Error occurred while fetching geolocation. Please enable location services.')
+              // Hide the loading message
+              $('#loadingMessage').text('')
+            }
+          )
+        } else {
+          alert('Geolocation is not supported by this browser.')
+          // Hide the loading message if geolocation is not supported
+          $('#loadingMessage').text('')
+        }
+      }
+      
+      // Handle the form submission inside the confirmation modal
+      $('#saveFullReportForm').on('submit', function (e) {
+        e.preventDefault() // Prevent the form from submitting the default way
+      
+        var reportId = $('#confirmSaveFullReportBtn').data('id') // Get the report ID from the button's data attribute
+      
+        // Get latitude and longitude from hidden fields
+        var latitude = $('#id_latitude_full').val()
+        var longitude = $('#id_longitude_full').val()
+      
+        // Ensure latitude and longitude are available before submitting
+        if (!latitude || !longitude) {
+          alert('Location not detected. Please enable location services or enter the address manually.')
+          return // Prevent the form from submitting if location is not available
+        }
+        // Create FormData to handle file uploads
+        var formData = new FormData(this)
+      
+        // Show loading image while processing
+        $('#loadingImage').show()
+      
+        // Make an AJAX request to save the location and update the full report
+        $.ajax({
+          url: '/reportAddress/' + reportId + '/', // Update this URL to your AJAX handler
+          method: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (data) {
+            // Hide the loading image
+            $('#loadingImage').hide()
+      
+            // Update the modal content to indicate success
+            $('#modalContent_full').html(`
+                    <div style="text-align: center;">
+                        <p style="color: green; font-weight: bold;">
+                            <i class="fa fa-check-circle" style="color: green;"></i> Your Geolocation has been saved successfully.
+                        </p>
+                    </div>
+                `)
+      
+            // Reload the table and refresh the page after a short delay
+            reloadPage()
+          },
+          error: function (error) {
+            // Handle any errors
+            $('#loadingImage').hide()
+            alert('An error occurred while saving the location. Please try again.')
+          }
+        })
+      })
+      
+      // Reload the table and the page after successful submission
+      function reloadPage() {
+        $('#agentspendingjobsrecorddatatable').DataTable().ajax.reload(null, false) // Reload without resetting pagination
+      
+        // Optionally, close the modal after a brief delay (2 seconds)
+        setTimeout(function () {
+          window.location.reload() // Refresh the entire page
+        }, 2000) // Delay of 3 seconds before reloading the page
+      }
+      //##################################################################################################################//
+      
+      // =========================== Function to Open the Partial Report Save Page =============================
+      $(document).on('click', '.save-job-btn', function () {
+        var reportId = $(this).data('id') // Get the report ID from the data attribute
+      
+        // Show the confirmation modal immediately
+        $('#confirmSaveLocationModal').modal('show')
+        $('#confirmSaveLocationBtn').data('id', reportId) // Pass reportId to the confirmation button
+      
+        // Change modal content to show loading image while location is being fetched
+        $('#modalContent').html(`
+        <div class="text-left">
+          <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." />
+          <span style="color: red; font-family: Arial, sans-serif; font-weight: transform: skew(-10deg);">
+            Fetching your location...
+          </span>
+        </div>
+      `)
+      
+        // Start fetching the location
+        getLocation()
+      })
+      
+      // Function to get the location from the user's device
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              // Set latitude and longitude to hidden input fields
+              var latitude = position.coords.latitude
+              var longitude = position.coords.longitude
+      
+              // Log the latitude and longitude to verify they're being received
+              console.log('Latitude: ', latitude)
+              console.log('Longitude: ', longitude)
+      
+              // Update the hidden input fields with the latitude and longitude
+              $('#id_latitude').val(latitude)
+              $('#id_longitude').val(longitude)
+      
+              // Once location is fetched, update the modal content with instructions
+              $('#modalContent').html(`
+                <label for="inputAddress" style="color: red;">
+                  <strong><i class="fa fa-map-pin"></i> Important: You are about to save your Geolocation.</strong>
+                </label>
+                <p>Once saved, you will be able to return and update the full report later.</p>
+                     `)
+      
+              // Enable the "Save Location" button and change color to green after location is fetched
+              $('#confirmSaveLocationBtn').prop('disabled', false).removeClass('btn-primary').addClass('btn-success')
+      
+              // Hide the loading message
+              $('#loadingMessage').text('')
+            },
+            function () {
+              // If there is an error fetching the location, alert the user
+              alert('Error occurred while fetching geolocation. Please enable location services.')
+              // Hide the loading message
+              $('#loadingMessage').text('')
+            }
+          )
+        } else {
+          alert('Geolocation is not supported by this browser.')
+          // Hide the loading message if geolocation is not supported
+          $('#loadingMessage').text('')
+        }
+      }
+      
+      // Handle the form submission inside the confirmation modal
+      $('#saveLocationForm').on('submit', function (e) {
+        e.preventDefault() // Prevent the form from submitting the default way
+      
+        var reportId = $('#confirmSaveLocationBtn').data('id') // Get the report ID from the button's data attribute
+      
+        // Get latitude and longitude from hidden fields
+        var latitude = $('#id_latitude').val()
+        var longitude = $('#id_longitude').val()
+      
+        // Ensure latitude and longitude are available before submitting
+        if (!latitude || !longitude) {
+          alert('Location not detected. Please enable location services or enter the address manually.')
+          return // Prevent the form from submitting if location is not available
+        }
+      
+        // Show loading image while processing
+        $('#loadingImage').show()
+      
+        // Make an AJAX request to save the location
+        $.ajax({
+          url: '/partialSavereport/' + reportId + '/', // Update this URL to your AJAX handler
+          method: 'POST',
+          data: {
+            latitude: latitude,
+            longitude: longitude,
+            csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token for security
+          },
+          success: function (data) {
+            // Hide the loading image
+            $('#loadingImage').hide()
+      
+            // Update the modal content to indicate success
+            // Update the modal content to indicate success
+            $('#modalContent').html(`
+        <div style="text-align: center;">
+          <p style="color: green; font-weight: bold;">
+            <i class="fa fa-check-circle" style="color: green;"></i> Your Geolocation has been saved successfully.
+          </p>
+          
+        </div>
+      `)
+      
+            // Force the table to reload (refresh its content)
+            $('#agentspendingjobsrecorddatatable').DataTable().ajax.reload(null, false) // Reload without resetting pagination
+      
+            // Optionally, close the modal after a brief delay (2 seconds)
+            setTimeout(function () {
+              window.location.reload() // Refresh the entire page
+            }, 2000) // Delay of 2 seconds before reloading the page
+          },
+          error: function (xhr, status, error) {
+            // Hide the loading image in case of error
+            $('#loadingImage').hide()
+      
+            // Handle errors, e.g., display an error message
+            console.error('Error:', error)
+            alert('Error occurred while saving location. Please try again.')
+          }
+        })
+      })
+      //###################################################################################################//
       
       //=======================================export to csv reports=======================
       // Handle CSV export button click

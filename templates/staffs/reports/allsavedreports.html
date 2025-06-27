@@ -37,7 +37,7 @@
                             <div class="card card-statistics h-100 m-b-0">
                                 <div class="card-header d-flex justify-content-between">
                                     <div class="card-heading text-end">
-                                      <h4 class="card-title">Pending Reports <span class="nav-label label label-primary">{{totalpending_no_of_reports}}</span></span></h4>
+                                      <h4 class="card-title">Saved Reports <span class="nav-label label label-primary">{{total_no_of_saved_reports}}</span></span></h4>
                                     </div>
                                    
                                 </div>
@@ -89,31 +89,26 @@
                                         <div id="loadingImage" class="text-center" style="display: none;">
                                             <img src="{% static 'assets/processingReportapproval.gif' %}" alt="Loading..." /> Approving Reports and Sending Feedback...
                                           </div>
-                                                <div class="text-end" style="margin-bottom:20px">
-                                                    <button type="button" class="btn btn-primary" id="bulkApprovalBtn"><i class="fa fa-check"></i> Approve</button>
- 
-                                                </div>
+                                                
                                             
-                                        <table   id="pendingreportsdatatable"   class="table table-hover table-bordered table-xl mb-0">
+                                        <table   id="savedreportsdatatable"   class="table table-hover table-bordered table-xl mb-0">
                                           <thead class="thead-light">
                                                
                                             <tr>
-                                              <th>
-                                                  <span class="custom-checkbox">
-                                                      <input type="checkbox" id="check-all">
-                                                      <label for="selectAll"></label>
-                                                  </span>
-                                              </th>
+                                             
                                                       <th>Action</th>
                                                     
                                                       <th>Client Job Ref No.</th>
                                                       <th>Customer Name</th>
                                                       <th>Customer Address</th>
                                                       <th>Client</th>
-                                                      <th>Agent</th>
+                                                    
                                                       <th>Verification Status</th>
                                                       <th>Verification Message</th>
                                                       <th>Report Status</th>
+                                                      <th>buildingCondition</th>
+                                                      <th>buildingColor</th>
+                                                      <th>buildingType</th>
                                                       <th>TAT</th>
                                                       <th>Date Added</th>
                                                      
